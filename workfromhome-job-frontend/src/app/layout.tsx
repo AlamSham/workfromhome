@@ -1,0 +1,141 @@
+import { Manrope, Playfair_Display } from "next/font/google";
+import type { Metadata } from "next";
+import type { ReactNode } from "react";
+import Link from "next/link";
+import "./globals.css";
+
+const manrope = Manrope({
+  variable: "--font-manrope",
+  subsets: ["latin"],
+});
+
+const playfair = Playfair_Display({
+  variable: "--font-playfair",
+  subsets: ["latin"],
+  preload: false,
+});
+
+export const metadata: Metadata = {
+  title: {
+    default: "RemoteJobDesk — Work From Home Jobs in US & Europe",
+    template: "%s | RemoteJobDesk",
+  },
+  description:
+    "Browse thousands of fresh remote and work-from-home jobs across the US, UK, and Europe. Updated daily with AI-enhanced listings.",
+  keywords: ["remote jobs", "work from home", "wfh jobs", "remote work US", "online jobs"],
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    siteName: "RemoteJobDesk",
+    title: "RemoteJobDesk — Work From Home Jobs in US & Europe",
+    description:
+      "Browse thousands of fresh remote and work-from-home jobs. Updated daily.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "RemoteJobDesk — Work From Home Jobs",
+    description: "Fresh remote jobs updated daily for US & Europe.",
+  },
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL || "https://remotejobdesk.com"
+  ),
+};
+
+export default function RootLayout({ children }: { children: ReactNode }) {
+  return (
+    <html
+      lang="en"
+      className={`${manrope.variable} ${playfair.variable} h-full antialiased`}
+    >
+      <body className="flex min-h-full flex-col">
+        {/* ── Navbar ── */}
+        <nav className="sticky top-0 z-50 border-b border-white/60 bg-white/80 backdrop-blur-md shadow-sm">
+          <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-10">
+            <Link
+              href="/"
+              className="flex items-center gap-2 font-serif text-xl font-bold text-brand-ink"
+            >
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand text-white text-sm font-black">R</span>
+              RemoteJobDesk
+            </Link>
+            <div className="flex items-center gap-1 sm:gap-3">
+              <Link
+                href="/"
+                className="rounded-xl px-3 py-1.5 text-sm font-semibold text-slate-600 transition hover:bg-brand/10 hover:text-brand-ink"
+              >
+                Jobs
+              </Link>
+              <Link
+                href="/about"
+                className="rounded-xl px-3 py-1.5 text-sm font-semibold text-slate-600 transition hover:bg-brand/10 hover:text-brand-ink"
+              >
+                About
+              </Link>
+              <Link
+                href="/contact"
+                className="rounded-xl px-3 py-1.5 text-sm font-semibold text-slate-600 transition hover:bg-brand/10 hover:text-brand-ink"
+              >
+                Contact
+              </Link>
+              <Link
+                href="/?country=US"
+                className="hidden sm:inline-flex rounded-xl bg-brand px-4 py-1.5 text-sm font-semibold text-white transition hover:bg-brand-ink"
+              >
+                🇺🇸 US Jobs
+              </Link>
+            </div>
+          </div>
+        </nav>
+
+        {/* ── Main Content ── */}
+        <main className="flex flex-1 flex-col">{children}</main>
+
+        {/* ── Footer ── */}
+        <footer className="mt-auto border-t border-white/60 bg-white/70 backdrop-blur">
+          <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-10">
+            <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
+              <div>
+                <p className="font-serif text-lg font-bold text-brand-ink">RemoteJobDesk</p>
+                <p className="mt-1 text-xs text-slate-500">
+                  Fresh remote jobs updated daily for US & Europe.
+                </p>
+              </div>
+              <nav className="flex flex-wrap items-center gap-4 text-sm text-slate-600">
+                <Link href="/" className="hover:text-brand-ink transition">Home</Link>
+                <Link href="/about" className="hover:text-brand-ink transition">About</Link>
+                <Link href="/contact" className="hover:text-brand-ink transition">Contact</Link>
+                <Link href="/privacy" className="hover:text-brand-ink transition">Privacy Policy</Link>
+              </nav>
+            </div>
+            <p className="mt-6 text-center text-xs text-slate-400">
+              © {new Date().getFullYear()} RemoteJobDesk. All rights reserved. Job listings are aggregated from public sources.
+            </p>
+          </div>
+        </footer>
+
+        {/* ── JSON-LD Schema ── */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: "RemoteJobDesk",
+              url: process.env.NEXT_PUBLIC_SITE_URL || "https://remotejobdesk.com",
+              description:
+                "Browse fresh remote and work-from-home jobs across the US, UK, and Europe.",
+              potentialAction: {
+                "@type": "SearchAction",
+                target: {
+                  "@type": "EntryPoint",
+                  urlTemplate: `${process.env.NEXT_PUBLIC_SITE_URL || "https://remotejobdesk.com"}/?search={search_term_string}`,
+                },
+                "query-input": "required name=search_term_string",
+              },
+            }),
+          }}
+        />
+      </body>
+    </html>
+  );
+}

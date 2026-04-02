@@ -1,0 +1,194 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f0faf7;
+  --foreground: #0d1f1a;
+  --brand: #0b8f75;
+  --brand-ink: #075f4e;
+  --brand-light: #e0f5f0;
+  --brand-mid: #c2ece4;
+  --sun: #f59e0b;
+  --card: #ffffff;
+  --muted: #64748b;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-brand: var(--brand);
+  --color-brand-ink: var(--brand-ink);
+  --color-brand-light: var(--brand-light);
+  --color-brand-mid: var(--brand-mid);
+  --color-sun: var(--sun);
+  --color-card: var(--card);
+  --color-muted: var(--muted);
+  --font-sans: var(--font-manrope);
+  --font-serif: var(--font-playfair);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: #f0faf7;
+  background-image:
+    radial-gradient(ellipse 80% 60% at 0% 0%,   rgba(11,143,117,0.13) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 50% at 100% 5%,  rgba(245,158,11,0.15) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 40% at 50% 100%, rgba(11,143,117,0.08) 0%, transparent 45%);
+  color: var(--foreground);
+  font-family: var(--font-manrope), sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+::selection { background: rgba(11,143,117,0.2); color: #052c22; }
+
+/* ── Utility Classes ── */
+@layer components {
+
+  /* Glass Card */
+  .glass-card {
+    background: rgba(255,255,255,0.92);
+    border: 1px solid rgba(255,255,255,0.75);
+    border-radius: 1.5rem;
+    box-shadow: 0 4px 24px rgba(13,31,26,0.07), 0 1px 4px rgba(13,31,26,0.04);
+    backdrop-filter: blur(10px);
+  }
+
+  /* Job card — the main card component */
+  .job-card {
+    background: rgba(255,255,255,0.94);
+    border: 1px solid rgba(209,231,225,0.7);
+    border-left: 3px solid transparent;
+    border-radius: 1.25rem;
+    box-shadow: 0 2px 12px rgba(13,31,26,0.05);
+    transition: border-left-color 0.18s ease, box-shadow 0.22s ease, transform 0.2s ease;
+    padding: 1.25rem 1.5rem;
+  }
+  .job-card:hover {
+    border-left-color: var(--brand);
+    box-shadow: 0 8px 32px rgba(11,143,117,0.13), 0 1px 4px rgba(11,143,117,0.06);
+    transform: translateY(-2px);
+  }
+
+  /* Animations */
+  .fade-up {
+    animation: fadeUp 0.5s ease-out both;
+  }
+
+  /* Badges */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    border-radius: 9999px;
+    padding: 0.2rem 0.65rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .badge-brand { background: var(--brand-light); color: var(--brand-ink); }
+  .badge-dark  { background: #1e293b; color: #fff; }
+  .badge-gray  { background: #f1f5f9; color: #475569; }
+
+  /* Buttons */
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    border-radius: 0.75rem;
+    background: var(--brand);
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.5rem 1.1rem;
+    transition: background 0.18s ease, transform 0.12s ease;
+    white-space: nowrap;
+  }
+  .btn-primary:hover { background: var(--brand-ink); }
+  .btn-primary:active { transform: scale(0.97); }
+
+  .btn-outline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    border-radius: 0.75rem;
+    border: 1.5px solid rgba(11,143,117,0.28);
+    background: #fff;
+    color: var(--brand-ink);
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.5rem 1.1rem;
+    transition: background 0.18s ease, border-color 0.18s ease;
+    white-space: nowrap;
+  }
+  .btn-outline:hover { background: var(--brand-light); border-color: var(--brand); }
+
+  .tag-pill {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 9999px;
+    padding: 0.18rem 0.6rem;
+    font-size: 0.72rem;
+    background: #f1f5f9;
+    color: #475569;
+    transition: background 0.15s, color 0.15s;
+    text-decoration: none;
+  }
+  .tag-pill:hover { background: var(--brand-light); color: var(--brand-ink); }
+
+  .section-title {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -0.01em;
+  }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+/* Stagger for job cards */
+section.grid > article:nth-child(1) { animation-delay: 0ms; }
+section.grid > article:nth-child(2) { animation-delay: 55ms; }
+section.grid > article:nth-child(3) { animation-delay: 110ms; }
+section.grid > article:nth-child(4) { animation-delay: 165ms; }
+section.grid > article:nth-child(5) { animation-delay: 220ms; }
+section.grid > article:nth-child(6) { animation-delay: 275ms; }
+section.grid > article:nth-child(7) { animation-delay: 330ms; }
+section.grid > article:nth-child(8) { animation-delay: 385ms; }
+section.grid > article:nth-child(9) { animation-delay: 440ms; }
+section.grid > article:nth-child(10){ animation-delay: 495ms; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(11,143,117,0.28); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(11,143,117,0.5); }
+
+/* Hero gradient animated orbs */
+.hero-orb-1 {
+  position: absolute;
+  top: -60px; right: -80px;
+  width: 260px; height: 260px;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(11,143,117,0.22), transparent 70%);
+  animation: floatOrb 8s ease-in-out infinite alternate;
+}
+.hero-orb-2 {
+  position: absolute;
+  bottom: -60px; left: -40px;
+  width: 200px; height: 200px;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(245,158,11,0.22), transparent 70%);
+  animation: floatOrb 10s ease-in-out infinite alternate-reverse;
+}
+@keyframes floatOrb {
+  from { transform: translate(0,0) scale(1); }
+  to   { transform: translate(20px,15px) scale(1.08); }
+}
