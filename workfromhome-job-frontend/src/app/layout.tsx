@@ -2,6 +2,7 @@ import { Manrope, Playfair_Display } from "next/font/google";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -135,7 +136,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             }),
           }}
         />
+        <Analytics />
       </body>
     </html>
+
   );
 }
