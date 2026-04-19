@@ -1,5 +1,8 @@
 import type { MetadataRoute } from "next";
+import { getCompanyCountryPath, getCompanyPath } from "./lib/companies";
+import { JOB_CATEGORIES, getJobCategoryCountryPath, getJobCategoryPath } from "./lib/jobCategories";
 import { getJobPath } from "./lib/jobUrls";
+import { getFeaturedComboCountries, getSeoCountryByCode } from "./lib/seoCountries";
 
 export const revalidate = 3600;
 
@@ -21,6 +24,21 @@ interface SitemapJob {
   publishedAt?: string;
   updatedAt?: string;
   seo?: { slug?: string };
+}
+
+interface SitemapCompany {
+  label: string;
+  slug: string;
+  totalJobs: number;
+  latestPublishedAt?: string;
+}
+
+interface SitemapCompanyCountryCombo {
+  companyLabel: string;
+  companySlug: string;
+  country: string;
+  totalJobs: number;
+  latestPublishedAt?: string;
 }
 
 async function getAllJobs(): Promise<SitemapJob[]> {
@@ -49,8 +67,36 @@ async function getAllJobs(): Promise<SitemapJob[]> {
   }
 }
 
+async function getAllCompanies(): Promise<SitemapCompany[]> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/jobs/companies?limit=100`, {
+      next: { revalidate }
+    });
+    if (!res.ok) return [];
+    const payload = await res.json();
+    return Array.isArray(payload?.data) ? payload.data : [];
+  } catch {
+    return [];
+  }
+}
+
+async function getAllCompanyCountryCombos(): Promise<SitemapCompanyCountryCombo[]> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/jobs/company-country-combos?limit=500&minJobs=2`, {
+      next: { revalidate }
+    });
+    if (!res.ok) return [];
+    const payload = await res.json();
+    return Array.isArray(payload?.data) ? payload.data : [];
+  } catch {
+    return [];
+  }
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const jobs = await getAllJobs();
+  const companies = await getAllCompanies();
+  const companyCountryCombos = await getAllCompanyCountryCombos();
   const countrySet = new Set(
     jobs.map((job) => String(job.country || "").toUpperCase()).filter((country) => COUNTRIES.includes(country))
   );
@@ -80,6 +126,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.4,
     },
+    {
+      url: `${SITE_URL}/editorial-policy`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.5,
+    },
+    {
+      url: `${SITE_URL}/how-we-source-jobs`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.5,
+    },
   ];
 
   const countryPages: MetadataRoute.Sitemap = Array.from(countrySet).map((code) => ({
@@ -89,6 +147,42 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.9,
   }));
 
+  const categoryPages: MetadataRoute.Sitemap = JOB_CATEGORIES.map((category) => ({
+    url: `${SITE_URL}${getJobCategoryPath(category.slug)}`,
+    lastModified: new Date(),
+    changeFrequency: "daily" as const,
+    priority: 0.7,
+  }));
+
+  const categoryCountryPages: MetadataRoute.Sitemap = JOB_CATEGORIES.flatMap((category) =>
+    getFeaturedComboCountries().map((country) => ({
+      url: `${SITE_URL}${getJobCategoryCountryPath(category.slug, country.slug)}`,
+      lastModified: new Date(),
+      changeFrequency: "daily" as const,
+      priority: 0.65,
+    }))
+  );
+
+  const companyPages: MetadataRoute.Sitemap = companies.map((company) => ({
+    url: `${SITE_URL}${getCompanyPath(company.label)}`,
+    lastModified: new Date(company.latestPublishedAt || Date.now()),
+    changeFrequency: "daily" as const,
+    priority: 0.6,
+  }));
+
+  const companyCountryPages: MetadataRoute.Sitemap = companyCountryCombos
+    .map((combo) => {
+      const country = getSeoCountryByCode(combo.country);
+      if (!country) return null;
+      return {
+        url: `${SITE_URL}${getCompanyCountryPath(combo.companyLabel, country.slug)}`,
+        lastModified: new Date(combo.latestPublishedAt || Date.now()),
+        changeFrequency: "daily" as const,
+        priority: 0.58,
+      };
+    })
+    .filter((value): value is NonNullable<typeof value> => Boolean(value));
+
   const jobPages: MetadataRoute.Sitemap = jobs.map((job) => ({
     url: `${SITE_URL}${getJobPath(job)}`,
     lastModified: new Date(job.updatedAt || job.publishedAt || Date.now()),
@@ -96,5 +190,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  return [...staticPages, ...countryPages, ...jobPages];
+  return [...staticPages, ...countryPages, ...categoryPages, ...categoryCountryPages, ...companyPages, ...companyCountryPages, ...jobPages];
 }

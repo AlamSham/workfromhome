@@ -11,6 +11,21 @@ const seoSchema = new mongoose.Schema(
   { _id: false }
 );
 
+const signalsSchema = new mongoose.Schema(
+  {
+    seniority: { type: String, trim: true },
+    experienceText: { type: String, trim: true },
+    experienceMinYears: { type: Number },
+    experienceMaxYears: { type: Number },
+    salaryText: { type: String, trim: true },
+    salaryCurrency: { type: String, trim: true },
+    salaryMin: { type: Number },
+    salaryMax: { type: Number },
+    salaryInterval: { type: String, trim: true }
+  },
+  { _id: false }
+);
+
 const jobSchema = new mongoose.Schema(
   {
     source: { type: String, default: 'google-rss' },
@@ -24,6 +39,7 @@ const jobSchema = new mongoose.Schema(
     publishedAt: { type: Date },
     expiresAt: { type: Date, index: true },
     seo: seoSchema,
+    signals: signalsSchema,
     rawItem: { type: Object }
   },
   { timestamps: true }
@@ -31,5 +47,8 @@ const jobSchema = new mongoose.Schema(
 
 // MongoDB TTL cleanup: document auto-deletes once expiresAt is reached.
 jobSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
+jobSchema.index({ 'signals.seniority': 1, publishedAt: -1 });
+jobSchema.index({ 'signals.experienceMinYears': 1, publishedAt: -1 });
+jobSchema.index({ 'signals.salaryMax': 1, publishedAt: -1 });
 
 module.exports = mongoose.model('Job', jobSchema);

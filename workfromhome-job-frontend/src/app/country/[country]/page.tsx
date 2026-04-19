@@ -1,33 +1,39 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import SharedJobsFeed, { JobListItem, PaginationData, COUNTRY_LABELS } from "../../components/SharedJobsFeed";
+import {
+  applyJobFiltersToParams,
+  getSearchParamValue,
+  hasActiveJobFilters,
+  readJobFilters,
+  SearchParamValue,
+} from "../../lib/jobFilters";
+import { JOB_CATEGORIES, getJobCategoryCountryPath } from "../../lib/jobCategories";
+import { getSeoCountryByCode } from "../../lib/seoCountries";
 
 export const revalidate = 900;
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://remotejobdesk.com";
 
-type SearchParamValue = string | string[] | undefined;
 interface JobsApiPayload { success?: boolean; data?: JobListItem[]; pagination?: Partial<PaginationData>; }
 interface CountryPageProps {
   params: Promise<{ country: string }>;
   searchParams: Promise<Record<string, SearchParamValue>>;
 }
 
-function getParamValue(v: SearchParamValue): string {
-  if (Array.isArray(v)) return String(v[0] || "");
-  return String(v || "");
-}
 function toInt(v: unknown, fallback = 1): number {
   const p = Number(v);
   if (!Number.isFinite(p)) return fallback;
   return Math.max(1, Math.floor(p));
 }
 
-async function fetchJobs({ page, search, country }: { page: number; search: string; country: string }) {
+async function fetchJobs({ page, search, country, filters }: { page: number; search: string; country: string; filters: ReturnType<typeof readJobFilters> }) {
   const params = new URLSearchParams({ page: String(page), limit: "10" });
   if (search) params.set("search", search);
   if (country) params.set("country", country);
+  applyJobFiltersToParams(params, filters);
   try {
     const res = await fetch(`${API_BASE_URL}/api/jobs?${params}`, { next: { revalidate } });
     if (!res.ok) throw new Error();
@@ -56,12 +62,13 @@ export async function generateMetadata({ params, searchParams }: CountryPageProp
   }
 
   const r = await searchParams;
-  const search = getParamValue(r?.search).trim();
-  const page = toInt(getParamValue(r?.page) || 1, 1);
+  const search = getSearchParamValue(r?.search).trim();
+  const page = toInt(getSearchParamValue(r?.page) || 1, 1);
+  const filters = readJobFilters(r);
   const title = `Remote Work-From-Home Jobs in ${COUNTRY_LABELS[rawCountry] || rawCountry}${search ? ` for "${search}"` : ""}`;
   const desc = `Find fresh remote jobs in ${COUNTRY_LABELS[rawCountry] || rawCountry}${search ? ` for "${search}"` : ""}. Updated daily with AI-enhanced listings.`;
   const url = `${SITE_URL}/remote-jobs-in-${rawCountry.toLowerCase()}`;
-  const shouldIndex = !search && page <= 1;
+  const shouldIndex = !search && page <= 1 && !hasActiveJobFilters(filters);
 
   return {
     title,
@@ -82,19 +89,42 @@ export default async function CountryPage({ params, searchParams }: CountryPageP
   }
 
   const r = await searchParams;
-  const search = getParamValue(r?.search).trim();
-  const page = toInt(getParamValue(r?.page) || 1, 1);
+  const search = getSearchParamValue(r?.search).trim();
+  const page = toInt(getSearchParamValue(r?.page) || 1, 1);
+  const filters = readJobFilters(r);
 
-  const { jobs, pagination, error } = await fetchJobs({ page, search, country: rawCountry });
+  const { jobs, pagination, error } = await fetchJobs({ page, search, country: rawCountry, filters });
+  const seoCountry = getSeoCountryByCode(rawCountry);
 
   return (
-    <SharedJobsFeed
-      jobs={jobs}
-      pagination={pagination}
-      error={error}
-      search={search}
-      country={rawCountry}
-      baseUrl={`/remote-jobs-in-${rawCountry.toLowerCase()}`}
-    />
+    <div className="flex flex-1 flex-col gap-6">
+      <SharedJobsFeed
+        jobs={jobs}
+        pagination={pagination}
+        error={error}
+        search={search}
+        country={rawCountry}
+        baseUrl={`/remote-jobs-in-${rawCountry.toLowerCase()}`}
+        filters={filters}
+      />
+      {!search && seoCountry && (
+        <div className="mx-auto flex w-full max-w-[1120px] flex-col gap-6 px-4 pb-10">
+          <section className="glass-card fade-up rounded-3xl p-6 sm:p-8">
+            <h2 className="section-title">Popular Remote Searches in {seoCountry.name}</h2>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {JOB_CATEGORIES.slice(0, 8).map((category) => (
+                <Link
+                  key={category.slug}
+                  href={getJobCategoryCountryPath(category.slug, seoCountry.slug)}
+                  className="tag-pill"
+                >
+                  {category.label}
+                </Link>
+              ))}
+            </div>
+          </section>
+        </div>
+      )}
+    </div>
   );
 }

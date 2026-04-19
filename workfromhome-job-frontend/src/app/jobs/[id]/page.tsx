@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { cache } from "react";
 import RelatedJobs from "../../components/RelatedJobs";
 import NewsletterCTA from "../../components/NewsletterCTA";
+import { getCompanyPath } from "../../lib/companies";
 import { extractJobId, getJobPath } from "../../lib/jobUrls";
 
 export const revalidate = 1800;
@@ -19,6 +20,18 @@ interface SeoFields {
   metaDescription?: string;
   keywords?: string[];
   slug?: string;
+}
+
+interface JobSignals {
+  seniority?: string;
+  experienceText?: string;
+  experienceMinYears?: number | null;
+  experienceMaxYears?: number | null;
+  salaryText?: string;
+  salaryCurrency?: string;
+  salaryMin?: number | null;
+  salaryMax?: number | null;
+  salaryInterval?: string;
 }
 
 interface RawJobItem extends Record<string, unknown> {
@@ -40,6 +53,7 @@ interface JobDetail {
   publishedAt?: string;
   expiresAt?: string;
   seo?: SeoFields;
+  signals?: JobSignals;
   rawItem?: RawJobItem;
 }
 
@@ -95,6 +109,44 @@ function extractDomain(sourceLabel = ""): string {
   const noProtocol = value.replace(/^https?:\/\//, "").replace(/^www\./, "");
   if (/^[a-z0-9.-]+\.[a-z]{2,}$/i.test(noProtocol)) return noProtocol;
   return "";
+}
+
+function formatSeniority(value: string | undefined): string {
+  const normalized = String(value || "").trim().toLowerCase();
+  if (!normalized) return "";
+  switch (normalized) {
+    case "entry-level":
+      return "Entry Level";
+    case "mid-level":
+      return "Mid Level";
+    case "internship":
+      return "Internship";
+    default:
+      return normalized.replace(/\b\w/g, (char) => char.toUpperCase());
+  }
+}
+
+function buildBaseSalary(signals: JobSignals | undefined) {
+  if (!signals?.salaryCurrency || !signals?.salaryInterval) {
+    return undefined;
+  }
+
+  const minValue = signals.salaryMin ?? signals.salaryMax;
+  const maxValue = signals.salaryMax ?? signals.salaryMin;
+  if (!Number.isFinite(minValue) || !Number.isFinite(maxValue)) {
+    return undefined;
+  }
+
+  return {
+    "@type": "MonetaryAmount",
+    currency: signals.salaryCurrency,
+    value: {
+      "@type": "QuantitativeValue",
+      minValue,
+      maxValue,
+      unitText: signals.salaryInterval,
+    },
+  };
 }
 
 async function fetchWordPressDetail(job: JobDetail): Promise<string> {
@@ -223,7 +275,15 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
       sameAs: job.link,
     },
     url: pageUrl,
+    ...(job.signals?.experienceText ? { experienceRequirements: job.signals.experienceText } : {}),
+    ...(buildBaseSalary(job.signals) ? { baseSalary: buildBaseSalary(job.signals) } : {}),
   };
+
+  const signalPills = [
+    job.signals?.salaryText ? `Salary: ${job.signals.salaryText}` : "",
+    job.signals?.experienceText ? `Experience: ${job.signals.experienceText}` : "",
+    job.signals?.seniority ? `Level: ${formatSeniority(job.signals.seniority)}` : "",
+  ].filter(Boolean);
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-4 py-8 sm:px-6 lg:px-10">
@@ -252,7 +312,9 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
               <span className="badge bg-brand/10 text-brand-ink">{job.country || "Global"}</span>
               <span className="badge bg-slate-900 text-white">{(job.category || "WFH").toUpperCase()}</span>
               {job.sourceLabel && (
-                <span className="badge bg-slate-100 text-slate-600">{job.sourceLabel}</span>
+                <Link href={getCompanyPath(job.sourceLabel)} className="badge bg-slate-100 text-slate-600" style={{ textDecoration: "none" }}>
+                  {job.sourceLabel}
+                </Link>
               )}
               <span className="ml-auto text-slate-400 text-xs">{formatDate(job.publishedAt)}</span>
             </div>
@@ -264,6 +326,16 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
             <p className="mt-3 text-sm leading-7 text-slate-600">
               {job.seo?.metaDescription || job.summary}
             </p>
+
+            {signalPills.length > 0 && (
+              <div className="mt-4 flex flex-wrap gap-2">
+                {signalPills.map((pill) => (
+                  <span key={pill} className="badge bg-slate-100 text-slate-700">
+                    {pill}
+                  </span>
+                ))}
+              </div>
+            )}
 
           </header>
 
@@ -278,6 +350,9 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
                 { label: "Region", value: job.country || "Global" },
                 { label: "Type", value: "Remote / Work From Home" },
                 { label: "Category", value: (job.category || "wfh").toUpperCase() },
+                ...(job.signals?.salaryText ? [{ label: "Salary", value: job.signals.salaryText }] : []),
+                ...(job.signals?.experienceText ? [{ label: "Experience", value: job.signals.experienceText }] : []),
+                ...(job.signals?.seniority ? [{ label: "Seniority", value: formatSeniority(job.signals.seniority) }] : []),
               ].map(({ label, value }) => (
                 <div key={label} className="rounded-2xl bg-slate-50 p-3">
                   <p className="text-xs font-bold uppercase tracking-wide text-slate-400">{label}</p>
@@ -323,7 +398,18 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
           />
 
           {/* Lead Capture */}
-          <NewsletterCTA />
+          <NewsletterCTA
+            search={job.category || ""}
+            country={job.country || ""}
+            company={job.sourceLabel || ""}
+            basePath={canonicalPath}
+            filters={{
+              seniority: job.signals?.seniority || "",
+              experience: "",
+              minSalary: "",
+            }}
+            alertLabel={`Save alerts for similar remote jobs${job.sourceLabel ? ` from ${job.sourceLabel}` : ""}.`}
+          />
 
           {/* ══ APPLY CTA — BOTTOM (always visible on all screens) ══ */}
           <section

@@ -9,6 +9,30 @@ const COUNTRY_OPTIONS = [
 ] as const;
 
 export default function HeroSearchForm({ search, country }: { search: string, country: string }) {
+  function buildDestination(searchValue: string, countryValue: string) {
+    const params = new URLSearchParams(window.location.search);
+    const nextSearch = String(searchValue || "").trim();
+    const nextCountry = String(countryValue || "").trim().toUpperCase();
+
+    params.delete("page");
+
+    if (nextSearch) {
+      params.set("search", nextSearch);
+    } else {
+      params.delete("search");
+    }
+
+    if (nextCountry) {
+      params.delete("country");
+      const query = params.toString();
+      return `/remote-jobs-in-${nextCountry.toLowerCase()}${query ? `?${query}` : ""}`;
+    }
+
+    params.delete("country");
+    const query = params.toString();
+    return `/${query ? `?${query}` : ""}`;
+  }
+
   return (
     <>
       <style>{`
@@ -55,11 +79,9 @@ export default function HeroSearchForm({ search, country }: { search: string, co
           name="country"
           defaultValue={country}
           onChange={(e) => {
-            if (e.target.value) {
-              window.location.href = `/remote-jobs-in-${e.target.value.toLowerCase()}${search ? `?search=${search}` : ''}`;
-            } else {
-              window.location.href = `/${search ? `?search=${search}` : ''}`;
-            }
+            const form = document.querySelector('.hero-search-form');
+            const input = form?.querySelector('input[name="search"]') as HTMLInputElement;
+            window.location.href = buildDestination(input?.value || search, e.target.value);
           }}
           style={{
             height: "48px", borderRadius: "0.875rem",
@@ -78,16 +100,12 @@ export default function HeroSearchForm({ search, country }: { search: string, co
         <button
           type="button"
           onClick={() => {
-            const form = document.querySelector('form');
+            const form = document.querySelector('.hero-search-form');
             const input = form?.querySelector('input[name="search"]') as HTMLInputElement;
             const select = form?.querySelector('select[name="country"]') as HTMLSelectElement;
             const sVal = input?.value || "";
             const cVal = select?.value || "";
-            if (cVal) {
-              window.location.href = `/remote-jobs-in-${cVal.toLowerCase()}${sVal ? `?search=${sVal}` : ''}`;
-            } else {
-              window.location.href = `/${sVal ? `?search=${sVal}` : ''}`;
-            }
+            window.location.href = buildDestination(sVal, cVal);
           }}
           style={{
             height: "48px", borderRadius: "0.875rem",

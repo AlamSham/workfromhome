@@ -1,60 +1,121 @@
 "use client";
 
 import { useState } from "react";
+import type { JobFilterState } from "../lib/jobFilters";
 
-export default function NewsletterCTA() {
+interface NewsletterCTAProps {
+  title?: string;
+  description?: string;
+  buttonLabel?: string;
+  search?: string;
+  country?: string;
+  company?: string;
+  basePath?: string;
+  filters?: JobFilterState;
+  alertLabel?: string;
+}
+
+export default function NewsletterCTA({
+  title = "Save this remote job alert.",
+  description = "Store your email with the current page context so you can keep track of similar remote opportunities and reuse this search later.",
+  buttonLabel = "Save Alert",
+  search = "",
+  country = "",
+  company = "",
+  basePath = "/",
+  filters,
+  alertLabel = "Daily remote jobs alert",
+}: NewsletterCTAProps) {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [message, setMessage] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
     if (!email) return;
+
     setStatus("loading");
-    
-    // Simulate API call
-    setTimeout(() => {
+    setMessage("");
+
+    try {
+      const response = await fetch("/api/alerts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          frequency: "daily",
+          search,
+          country,
+          company,
+          seniority: filters?.seniority || "",
+          experience: filters?.experience || "",
+          minSalary: filters?.minSalary ? Number(filters.minSalary) : 0,
+          basePath,
+          label: alertLabel,
+        }),
+      });
+
+      const payload = await response.json().catch(() => null);
+      if (!response.ok || !payload?.success) {
+        throw new Error(payload?.message || "Unable to subscribe right now.");
+      }
+
       setStatus("success");
+      setMessage(payload?.message || "Alert saved successfully.");
       setEmail("");
-    }, 800);
+    } catch (error) {
+      setStatus("error");
+      setMessage(error instanceof Error ? error.message : "Unable to subscribe right now.");
+    }
   };
 
   return (
-    <section className="fade-up w-full mt-10 mb-6">
-      <div className="relative overflow-hidden rounded-3xl bg-slate-900 px-6 py-10 md:p-14 sm:px-10 text-center shadow-2xl">
-        {/* Decorative elements */}
-        <div className="absolute -top-24 -right-24 h-64 w-64 rounded-full bg-brand opacity-20 blur-3xl mix-blend-screen" />
+    <section className="fade-up mb-6 mt-10 w-full">
+      <div className="relative overflow-hidden rounded-3xl bg-slate-900 px-6 py-10 text-center shadow-2xl sm:px-10 md:p-14">
+        <div className="absolute -right-24 -top-24 h-64 w-64 rounded-full bg-brand opacity-20 blur-3xl mix-blend-screen" />
         <div className="absolute -bottom-24 -left-24 h-64 w-64 rounded-full bg-violet-600 opacity-20 blur-3xl mix-blend-screen" />
-        
+
         <div className="relative z-10 mx-auto max-w-xl">
-          <h2 className="font-serif text-3xl font-bold tracking-tight text-white sm:text-4xl leading-tight">
-            Never miss a <span className="text-brand">remote opportunity</span> again.
+          <h2 className="font-serif text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl">
+            {title.includes("remote job alert") ? (
+              <>
+                Save this <span className="text-brand">remote job alert</span>.
+              </>
+            ) : (
+              title
+            )}
           </h2>
           <p className="mt-4 text-sm leading-6 text-slate-300 sm:text-base">
-            Join 15,000+ knowledge workers getting the best Work-From-Home jobs in the US & Europe sent directly to their inbox daily.
+            {description}
           </p>
-          
-          <form className="mt-8 flex flex-col sm:flex-row gap-3 max-w-md mx-auto" onSubmit={handleSubmit}>
+
+          <form className="mx-auto mt-8 flex max-w-md flex-col gap-3 sm:flex-row" onSubmit={handleSubmit}>
             <input
               type="email"
               required
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(event) => setEmail(event.target.value)}
               disabled={status === "loading" || status === "success"}
               placeholder="Enter your email address"
-              className="flex-1 rounded-xl border border-white/10 bg-white/5 px-4 py-3.5 text-sm text-white placeholder-slate-400 backdrop-blur-sm focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand disabled:opacity-50 transition-all"
+              className="flex-1 rounded-xl border border-white/10 bg-white/5 px-4 py-3.5 text-sm text-white placeholder-slate-400 backdrop-blur-sm transition-all focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand disabled:opacity-50"
             />
             <button
               type="submit"
               disabled={status === "loading" || status === "success"}
-              className="rounded-xl bg-brand px-6 py-3.5 text-sm font-bold text-white shadow-lg transition-all hover:bg-brand-ink disabled:opacity-50 sm:w-auto w-full flex items-center justify-center min-w-[120px]"
+              className="flex min-w-[120px] w-full items-center justify-center rounded-xl bg-brand px-6 py-3.5 text-sm font-bold text-white shadow-lg transition-all hover:bg-brand-ink disabled:opacity-50 sm:w-auto"
             >
-              {status === "loading" ? "Subscribing..." : status === "success" ? "Subscribed! 🎉" : "Subscribe"}
+              {status === "loading" ? "Saving..." : status === "success" ? "Saved! 🎉" : buttonLabel}
             </button>
           </form>
-          
+
           <p className="mt-4 text-xs text-slate-400">
-            No spam, ever. Unsubscribe at any time.
+            Search alerts are stored with your current page context so you can track similar jobs over time.
           </p>
+          {message && (
+            <p className={`mt-3 text-sm font-semibold ${status === "error" ? "text-rose-300" : "text-emerald-300"}`}>
+              {message}
+            </p>
+          )}
         </div>
       </div>
     </section>

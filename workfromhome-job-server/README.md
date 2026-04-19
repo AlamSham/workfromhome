@@ -6,6 +6,7 @@ Ye backend SEO-focused job ingestion API hai. Har 2 ghante Google RSS se jobs fe
 
 - Node.js + Express MVC structure
 - `node-cron` scheduler (default: every 2 hours)
+- Saved search alert digests via email
 - Multi-country RSS ingestion with US + Europe focus (configurable)
 - Ingestion mix target: 80% WFH + 20% mixed
 - Per run max 10 jobs
@@ -34,6 +35,7 @@ src/
     openai.js
   controllers/
     adminController.js
+    alertController.js
     jobController.js
   cron/
     jobCron.js
@@ -42,15 +44,20 @@ src/
     errorHandler.js
   models/
     Job.js
+    SavedSearchAlert.js
   routes/
     adminRoutes.js
+    alertRoutes.js
     index.js
     jobRoutes.js
   services/
+    alertDigestService.js
+    emailService.js
     jobIngestionService.js
     rssService.js
     seoService.js
   utils/
+    runAlertDigestsOnce.js
     runIngestOnce.js
 ```
 
@@ -72,7 +79,7 @@ cp .env.example .env
 
 - `MONGODB_URI`
 - `OPENAI_API_KEY` (ya NVIDIA key)
-- optional: `OPENAI_BASE_URL` (NVIDIA ke liye: `https://integrate.api.nvidia.com/v1`), `CRON_SCHEDULE`, `TARGET_COUNTRIES`, `RSS_RECENCY_DAYS`, `GOOGLE_RSS_URL_*_WFH`, `GOOGLE_RSS_URL_*_MIXED`, `INGEST_MAX_JOBS_PER_RUN`, `INGEST_FRESH_HOURS`, `INGEST_WFH_RATIO`, `INGEST_MIN_JOB_RELEVANCE_SCORE`, `JOB_TTL_DAYS`, `BODY_LIMIT`, `MAX_SEARCH_CHARS`, `ADMIN_API_KEY`, `OPENAI_MODEL`
+- optional: `OPENAI_BASE_URL` (NVIDIA ke liye: `https://integrate.api.nvidia.com/v1`), `CRON_SCHEDULE`, `ALERT_DIGEST_CRON_SCHEDULE`, `SITE_URL`, `RESEND_API_KEY`, `EMAIL_FROM`, `TARGET_COUNTRIES`, `RSS_RECENCY_DAYS`, `GOOGLE_RSS_URL_*_WFH`, `GOOGLE_RSS_URL_*_MIXED`, `INGEST_MAX_JOBS_PER_RUN`, `INGEST_FRESH_HOURS`, `INGEST_WFH_RATIO`, `INGEST_MIN_JOB_RELEVANCE_SCORE`, `JOB_TTL_DAYS`, `BODY_LIMIT`, `MAX_SEARCH_CHARS`, `ADMIN_API_KEY`, `OPENAI_MODEL`
 
 4. Start server
 
@@ -85,8 +92,17 @@ Server default port: `5000`
 ## Cron Behavior
 
 - Default schedule: `0 */2 * * *` (har 2 ghante)
+- Alert digest schedule: `15 * * * *` (har ghante ke 15 minute par due alerts check)
 - Timezone: `Asia/Kolkata`
 - Server start hone ke ~3 second baad initial ingestion run hota hai
+
+## Alert Digests
+
+- Frontend se saved search alerts `POST /api/alerts` par store hote hain.
+- Backend cron due alerts ko scan karta hai aur matching jobs ka daily/weekly digest banata hai.
+- Real email delivery ke liye `RESEND_API_KEY` aur `EMAIL_FROM` required hain.
+- Jobs digest me site ke canonical job URLs use hote hain, direct source links nahi.
+- Delivery state `SavedSearchAlert` document me track hoti hai: `lastDigestAt`, `lastSentAt`, `sendCount`, `lastError`.
 
 ## API Endpoints
 
@@ -99,9 +115,14 @@ Server default port: `5000`
 - `GET /api/jobs?page=1&limit=10&search=remote&country=US`
 - `GET /api/jobs/:id`
 
+### Alerts
+
+- `POST /api/alerts`
+
 ### Admin
 
 - `POST /api/admin/jobs/ingest`
+- `POST /api/admin/alerts/digest`
 
 ## Example Requests
 
@@ -115,6 +136,12 @@ Manual ingest:
 
 ```bash
 curl -X POST http://localhost:5000/api/admin/jobs/ingest
+```
+
+Manual digest run:
+
+```bash
+curl -X POST http://localhost:5000/api/admin/alerts/digest
 ```
 
 ## Notes
@@ -133,4 +160,10 @@ One-time ingestion run:
 
 ```bash
 npm run ingest
+```
+
+One-time alert digest run:
+
+```bash
+npm run digest-alerts
 ```

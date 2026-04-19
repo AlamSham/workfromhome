@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { Analytics } from "@vercel/analytics/react";
+import { JOB_CATEGORIES, getJobCategoryPath } from "./lib/jobCategories";
+import { getCompanyPath } from "./lib/companies";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -43,6 +45,13 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
+  const featuredCategories = JOB_CATEGORIES.slice(0, 6);
+  const featuredCompanies = [
+    "Amazon",
+    "NVIDIA",
+    "Cloudera",
+    "Honeycomb.io",
+  ];
   return (
     <html
       lang="en"
@@ -116,8 +125,42 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                 <Link href="/" className="hover:text-brand-ink transition">Home</Link>
                 <Link href="/about" className="hover:text-brand-ink transition">About</Link>
                 <Link href="/contact" className="hover:text-brand-ink transition">Contact</Link>
+                <Link href="/editorial-policy" className="hover:text-brand-ink transition">Editorial Policy</Link>
+                <Link href="/how-we-source-jobs" className="hover:text-brand-ink transition">How We Source Jobs</Link>
                 <Link href="/privacy" className="hover:text-brand-ink transition">Privacy Policy</Link>
               </nav>
+            </div>
+            <div className="mt-6 border-t border-white/60 pt-4">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">
+                Popular Categories
+              </p>
+              <div className="mt-3 flex flex-wrap gap-3 text-sm text-slate-600">
+                {featuredCategories.map((category) => (
+                  <Link
+                    key={category.slug}
+                    href={getJobCategoryPath(category.slug)}
+                    className="hover:text-brand-ink transition"
+                  >
+                    {category.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+            <div className="mt-4">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">
+                Company Pages
+              </p>
+              <div className="mt-3 flex flex-wrap gap-3 text-sm text-slate-600">
+                {featuredCompanies.map((company) => (
+                  <Link
+                    key={company}
+                    href={getCompanyPath(company)}
+                    className="hover:text-brand-ink transition"
+                  >
+                    {company}
+                  </Link>
+                ))}
+              </div>
             </div>
             <p className="mt-6 text-center text-xs text-slate-400">
               © {new Date().getFullYear()} RemoteJobDesk. All rights reserved. Job listings are aggregated from public sources.

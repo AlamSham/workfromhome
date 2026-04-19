@@ -1,6 +1,10 @@
 import Link from "next/link";
+import JobSearchToolbar from "./JobSearchToolbar";
 import NewsletterCTA from "./NewsletterCTA";
 import HeroSearchForm from "./HeroSearchForm";
+import { getCompanyPath } from "../lib/companies";
+import { applyJobFiltersToParams, JobFilterState } from "../lib/jobFilters";
+import { JOB_CATEGORIES, getJobCategoryPath } from "../lib/jobCategories";
 import { getJobPath } from "../lib/jobUrls";
 
 const COUNTRY_OPTIONS = [
@@ -22,6 +26,17 @@ export interface JobListItem {
   _id: string; country?: string; category?: string;
   source?: string; sourceLabel?: string; publishedAt?: string;
   originalTitle: string; summary?: string; link: string; seo?: any;
+  signals?: {
+    seniority?: string;
+    experienceText?: string;
+    experienceMinYears?: number | null;
+    experienceMaxYears?: number | null;
+    salaryText?: string;
+    salaryCurrency?: string;
+    salaryMin?: number | null;
+    salaryMax?: number | null;
+    salaryInterval?: string;
+  };
 }
 export interface PaginationData { page: number; totalPages: number; total: number; }
 
@@ -32,7 +47,14 @@ interface SharedJobsFeedProps {
   search: string;
   country: string; // uppercase code
   baseUrl: string; // "/" or "/remote-jobs-in-xx"
+  filters: JobFilterState;
   hideBannerText?: boolean;
+  heroBadgeText?: string;
+  heroTitle?: string;
+  heroDescription?: string;
+  paginationSearch?: string;
+  alertCompany?: string;
+  alertLabel?: string;
 }
 
 function timeAgo(value: string | undefined): string {
@@ -50,11 +72,27 @@ function trimText(v: string | undefined, max = 155): string {
   const t = String(v || "").trim();
   return t.length <= max ? t : `${t.slice(0, max).trim()}…`;
 }
-function makeQS(search: string, overrideCountryParam: boolean, page: number): string {
+function makeQS(search: string, page: number, filters: JobFilterState): string {
   const p = new URLSearchParams();
   if (search) p.set("search", search);
+  applyJobFiltersToParams(p, filters);
   p.set("page", String(page));
   return p.toString();
+}
+
+function buildBrowseHref(path: string, search: string, filters: JobFilterState): string {
+  const params = new URLSearchParams();
+  if (search) {
+    params.set("search", search);
+  }
+  applyJobFiltersToParams(params, filters);
+  const query = params.toString();
+  return query ? `${path}?${query}` : path;
+}
+
+function buildPaginationHref(path: string, search: string, page: number, filters: JobFilterState): string {
+  const query = makeQS(search, page, filters);
+  return query ? `${path}?${query}` : path;
 }
 function getInitials(label: string | undefined): string {
   if (!label) return "J";
@@ -67,10 +105,54 @@ function getColor(s: string): string {
   return colors[h];
 }
 
-export default function SharedJobsFeed({ jobs, pagination, error, search, country, baseUrl, hideBannerText }: SharedJobsFeedProps) {
+function formatSeniority(value: string | undefined): string {
+  const normalized = String(value || "").trim().toLowerCase();
+  if (!normalized) return "";
+  switch (normalized) {
+    case "entry-level":
+      return "Entry Level";
+    case "mid-level":
+      return "Mid Level";
+    case "internship":
+      return "Internship";
+    default:
+      return normalized.replace(/\b\w/g, (char) => char.toUpperCase());
+  }
+}
+
+export default function SharedJobsFeed({
+  jobs,
+  pagination,
+  error,
+  search,
+  country,
+  baseUrl,
+  filters,
+  hideBannerText,
+  heroBadgeText,
+  heroTitle,
+  heroDescription,
+  paginationSearch,
+  alertCompany,
+  alertLabel,
+}: SharedJobsFeedProps) {
   const currentPage = Math.max(1, pagination.page);
   const totalPages = Math.max(1, pagination.totalPages);
   const totalJobs = pagination.total || jobs.length;
+  const effectivePaginationSearch = paginationSearch ?? search;
+  const currentAlertLabel =
+    alertLabel ||
+    (search
+      ? `Save alerts for ${search}${country ? ` in ${COUNTRY_LABELS[country] || country}` : ""}.`
+      : country
+        ? `Save alerts for remote jobs in ${COUNTRY_LABELS[country] || country}.`
+        : "Save alerts for fresh remote jobs across your current search page.");
+  const displayHeroTitle =
+    heroTitle ||
+    `Find Your Next Work-From-Home Job ${country ? `in ${COUNTRY_LABELS[country] || country}` : ""}`.trim();
+  const displayHeroDescription =
+    heroDescription ||
+    `Browse fresh remote opportunities ${country ? `in ${COUNTRY_LABELS[country] || country}` : "across the US, UK, and Europe"} — curated daily with AI-enhanced listings from top companies.`;
 
   return (
     <div style={{ maxWidth: "1120px", margin: "0 auto", padding: "1rem 1rem", display: "flex", flexDirection: "column", gap: "1.25rem" }}>
@@ -91,7 +173,7 @@ export default function SharedJobsFeed({ jobs, pagination, error, search, countr
                 fontSize: "0.7rem", fontWeight: 800, letterSpacing: "0.12em", textTransform: "uppercase",
               }}
             >
-              🌍 Remote Job Discovery Platform
+              {heroBadgeText || "🌍 Remote Job Discovery Platform"}
             </span>
           </div>
 
@@ -106,14 +188,11 @@ export default function SharedJobsFeed({ jobs, pagination, error, search, countr
               maxWidth: "700px",
             }}
           >
-            Find Your Next{" "}
-            <span style={{ color: "var(--brand)" }}>Work-From-Home</span>{" "}
-            Job {country ? `in ${COUNTRY_LABELS[country] || country}` : ""}
+            {displayHeroTitle}
           </h1>
 
           <p style={{ color: "#475569", maxWidth: "560px", lineHeight: 1.65, marginBottom: "1.25rem", fontSize: "clamp(0.875rem, 2.5vw, 1rem)" }}>
-            Browse fresh remote opportunities {country ? `in ${COUNTRY_LABELS[country] || country}` : "across the US, UK, and Europe"} —
-            curated daily with AI-enhanced listings from top companies.
+            {displayHeroDescription}
           </p>
 
           <HeroSearchForm search={search} country={country} />
@@ -136,7 +215,7 @@ export default function SharedJobsFeed({ jobs, pagination, error, search, countr
       {/* ══ COUNTRY FILTERS ══ */}
       <section style={{ display: "flex", flexWrap: "wrap", gap: "6px", overflowX: "auto", WebkitOverflowScrolling: "touch", paddingBottom: "4px" }}>
         <Link
-          href={`/${search ? `?search=${search}` : ''}`}
+          href={buildBrowseHref("/", search, filters)}
           style={{
             borderRadius: "9999px",
             padding: "6px 14px",
@@ -154,7 +233,7 @@ export default function SharedJobsFeed({ jobs, pagination, error, search, countr
         {COUNTRY_OPTIONS.map((item) => (
           <Link
             key={item}
-            href={`/remote-jobs-in-${item.toLowerCase()}${search ? `?search=${search}` : ''}`}
+            href={buildBrowseHref(`/remote-jobs-in-${item.toLowerCase()}`, search, filters)}
             style={{
               borderRadius: "9999px",
               padding: "6px 13px",
@@ -171,6 +250,32 @@ export default function SharedJobsFeed({ jobs, pagination, error, search, countr
           </Link>
         ))}
       </section>
+
+      <JobSearchToolbar
+        baseUrl={baseUrl}
+        initialFilters={filters}
+        search={search}
+        country={country}
+        company={alertCompany}
+        alertLabel={currentAlertLabel}
+      />
+
+      {!search && !country && (
+        <section className="fade-up">
+          <div className="glass-card" style={{ padding: "1rem 1rem 1.1rem" }}>
+            <p style={{ margin: 0, fontSize: "0.78rem", fontWeight: 800, letterSpacing: "0.12em", textTransform: "uppercase", color: "#64748b" }}>
+              Popular Remote Job Pages
+            </p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "0.8rem" }}>
+              {JOB_CATEGORIES.slice(0, 8).map((category) => (
+                <Link key={category.slug} href={buildBrowseHref(getJobCategoryPath(category.slug), "", filters)} className="tag-pill">
+                  {category.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ══ ERROR ══ */}
       {error && (
@@ -209,6 +314,11 @@ export default function SharedJobsFeed({ jobs, pagination, error, search, countr
             const bgColor = getColor(job.sourceLabel || job._id);
             const label = job.seo?.metaTitle || job.originalTitle || job.seo?.title;
             const desc = trimText(job.seo?.metaDescription || job.summary || "");
+            const signalPills = [
+              job.signals?.salaryText ? `Salary: ${job.signals.salaryText}` : "",
+              job.signals?.experienceText ? `Experience: ${job.signals.experienceText}` : "",
+              job.signals?.seniority ? `Level: ${formatSeniority(job.signals.seniority)}` : "",
+            ].filter(Boolean);
             return (
               <article key={job._id} className="job-card fade-up">
                 <div style={{ display: "flex", gap: "1rem", alignItems: "flex-start" }}>
@@ -229,7 +339,11 @@ export default function SharedJobsFeed({ jobs, pagination, error, search, countr
                     <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", alignItems: "center", marginBottom: "0.5rem" }}>
                       <span className="badge badge-brand">{COUNTRY_LABELS[job.country || ""] || job.country || "Global"}</span>
                       <span className="badge badge-dark">{(job.category || "WFH").toUpperCase()}</span>
-                      {job.sourceLabel && <span className="badge badge-gray">{job.sourceLabel}</span>}
+                      {job.sourceLabel && (
+                        <Link href={getCompanyPath(job.sourceLabel)} className="badge badge-gray" style={{ textDecoration: "none" }}>
+                          {job.sourceLabel}
+                        </Link>
+                      )}
                       <span style={{ marginLeft: "auto", fontSize: "0.75rem", color: "#94a3b8", fontWeight: 600, whiteSpace: "nowrap" }}>
                         🕒 {timeAgo(job.publishedAt)}
                       </span>
@@ -241,6 +355,15 @@ export default function SharedJobsFeed({ jobs, pagination, error, search, countr
                       {label}
                     </Link>
                     {desc && <p style={{ marginTop: "0.4rem", fontSize: "0.85rem", color: "#64748b", lineHeight: 1.65 }}>{desc}</p>}
+                    {signalPills.length > 0 && (
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginTop: "0.65rem" }}>
+                        {signalPills.map((pill) => (
+                          <span key={pill} className="badge badge-gray" style={{ fontWeight: 700 }}>
+                            {pill}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                     {(job.seo?.keywords || []).length > 0 && (
                       <div style={{ display: "flex", flexWrap: "wrap", gap: "5px", marginTop: "0.6rem" }}>
                         {(job.seo.keywords || []).slice(0, 5).map((kw: string) => (
@@ -263,7 +386,7 @@ export default function SharedJobsFeed({ jobs, pagination, error, search, countr
       {totalPages > 1 && (
         <nav style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.5rem 0 2rem" }}>
           <Link
-            href={`${baseUrl}?${makeQS(search, false, Math.max(1, currentPage - 1))}`}
+            href={buildPaginationHref(baseUrl, effectivePaginationSearch, Math.max(1, currentPage - 1), filters)}
             className="btn-outline"
             style={{ opacity: currentPage <= 1 ? 0.4 : 1, pointerEvents: currentPage <= 1 ? "none" : "auto" }}
           >
@@ -274,7 +397,7 @@ export default function SharedJobsFeed({ jobs, pagination, error, search, countr
             <strong style={{ color: "#0f172a" }}>{totalPages}</strong>
           </p>
           <Link
-            href={`${baseUrl}?${makeQS(search, false, Math.min(totalPages, currentPage + 1))}`}
+            href={buildPaginationHref(baseUrl, effectivePaginationSearch, Math.min(totalPages, currentPage + 1), filters)}
             className="btn-outline"
             style={{ opacity: currentPage >= totalPages ? 0.4 : 1, pointerEvents: currentPage >= totalPages ? "none" : "auto" }}
           >
@@ -284,7 +407,14 @@ export default function SharedJobsFeed({ jobs, pagination, error, search, countr
       )}
 
       {/* ══ LEAD CAPTURE ══ */}
-      <NewsletterCTA />
+      <NewsletterCTA
+        search={search}
+        country={country}
+        company={alertCompany}
+        basePath={baseUrl}
+        filters={filters}
+        alertLabel={currentAlertLabel}
+      />
     </div>
   );
 }

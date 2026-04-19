@@ -6,6 +6,7 @@ const {
   getJobRelevanceScore,
   isLikelyJobPosting
 } = require('./rssService');
+const { extractJobSignals } = require('../utils/jobSignals');
 const { generateSeoFields } = require('./seoService');
 const TRUSTED_SOURCES = new Set([
   'remotive-api',
@@ -254,6 +255,11 @@ async function ingestJobs() {
       summary: item.summary,
       link: item.link
     });
+    const signals = extractJobSignals({
+      title: item.title,
+      summary: item.summary,
+      rawItem: item.rawItem
+    });
 
     try {
       await Job.create({
@@ -268,6 +274,7 @@ async function ingestJobs() {
         publishedAt: item.publishedAt,
         expiresAt: computeExpiresAt(item.publishedAt),
         seo,
+        signals,
         rawItem: item.rawItem
       });
 

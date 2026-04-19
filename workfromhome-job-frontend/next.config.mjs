@@ -15,6 +15,26 @@ const nextConfig = {
         destination: "/remote-jobs-in-:country",
         permanent: true,
       },
+      {
+        source: "/job-categories/:slug",
+        destination: "/remote-:slug-jobs",
+        permanent: true,
+      },
+      {
+        source: "/companies/:slug",
+        destination: "/remote-jobs-at-:slug",
+        permanent: true,
+      },
+      {
+        source: "/job-categories/:slug/country/:country",
+        destination: "/remote-:slug-jobs-in-:country",
+        permanent: true,
+      },
+      {
+        source: "/companies/:slug/country/:country",
+        destination: "/remote-jobs-at-:slug-in-:country",
+        permanent: true,
+      },
     ];
   },
   async rewrites() {
@@ -22,6 +42,22 @@ const nextConfig = {
       {
         source: '/remote-jobs-in-:country',
         destination: '/country/:country',
+      },
+      {
+        source: "/remote-:slug-jobs",
+        destination: "/job-categories/:slug",
+      },
+      {
+        source: "/remote-jobs-at-:slug",
+        destination: "/companies/:slug",
+      },
+      {
+        source: "/remote-:slug-jobs-in-:country",
+        destination: "/job-categories/:slug/country/:country",
+      },
+      {
+        source: "/remote-jobs-at-:slug-in-:country",
+        destination: "/companies/:slug/country/:country",
       },
     ];
   },
