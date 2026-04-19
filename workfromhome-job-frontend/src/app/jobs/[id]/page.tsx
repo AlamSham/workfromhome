@@ -253,18 +253,6 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
               {job.seo?.metaDescription || job.summary}
             </p>
 
-            {/* Action buttons (visible in mobile, hidden on lg — sticky sidebar handles it) */}
-            <div className="mt-6 flex flex-wrap gap-3 lg:hidden">
-              <a
-                href={job.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-primary"
-              >
-                Apply Now ↗
-              </a>
-              <Link href="/" className="btn-outline">← Back to Jobs</Link>
-            </div>
           </header>
 
           {/* Overview */}
@@ -324,6 +312,80 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
 
           {/* Lead Capture */}
           <NewsletterCTA />
+
+          {/* ══ APPLY CTA — BOTTOM (always visible on all screens) ══ */}
+          <section
+            className="fade-up"
+            style={{
+              background: "linear-gradient(135deg, rgba(11,143,117,0.12) 0%, rgba(11,143,117,0.04) 100%)",
+              border: "2px solid rgba(11,143,117,0.25)",
+              borderRadius: "1.5rem",
+              padding: "2rem 1.5rem",
+              textAlign: "center",
+            }}
+          >
+            <div style={{ fontSize: "2.5rem", marginBottom: "0.5rem" }}>🚀</div>
+            <h2
+              style={{
+                fontFamily: "var(--font-playfair), Georgia, serif",
+                fontSize: "clamp(1.3rem, 4vw, 1.75rem)",
+                fontWeight: 800,
+                color: "#0f172a",
+                margin: "0 0 0.5rem",
+              }}
+            >
+              Ready to Apply?
+            </h2>
+            <p style={{ color: "#475569", fontSize: "0.9rem", lineHeight: 1.65, marginBottom: "1.5rem", maxWidth: "480px", margin: "0 auto 1.5rem" }}>
+              Click the button below to apply on the employer&apos;s official website.
+              Always verify job details before submitting personal information.
+            </p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem", justifyContent: "center", alignItems: "center" }}>
+              <a
+                href={job.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "0.4rem",
+                  background: "var(--brand)",
+                  color: "#fff",
+                  fontWeight: 800,
+                  fontSize: "1rem",
+                  padding: "0.85rem 2.5rem",
+                  borderRadius: "0.875rem",
+                  textDecoration: "none",
+                  transition: "background 0.18s ease, transform 0.12s ease",
+                  boxShadow: "0 4px 20px rgba(11,143,117,0.35)",
+                  minWidth: "200px",
+                }}
+              >
+                ✨ Apply Now ↗
+              </a>
+              <Link
+                href="/"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "0.4rem",
+                  border: "1.5px solid rgba(11,143,117,0.3)",
+                  background: "#fff",
+                  color: "var(--brand-ink)",
+                  fontWeight: 700,
+                  fontSize: "0.875rem",
+                  padding: "0.85rem 1.75rem",
+                  borderRadius: "0.875rem",
+                  textDecoration: "none",
+                  transition: "background 0.18s ease",
+                }}
+              >
+                ← Browse More Jobs
+              </Link>
+            </div>
+          </section>
         </div>
 
         {/* ── Sticky Sidebar ── */}

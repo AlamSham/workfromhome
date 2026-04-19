@@ -72,22 +72,22 @@ export default function SharedJobsFeed({ jobs, pagination, error, search, countr
   const totalJobs = pagination.total || jobs.length;
 
   return (
-    <div style={{ maxWidth: "1120px", margin: "0 auto", padding: "2rem 1.25rem", display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+    <div style={{ maxWidth: "1120px", margin: "0 auto", padding: "1rem 1rem", display: "flex", flexDirection: "column", gap: "1.25rem" }}>
       {/* ══ HERO ══ */}
       <header
-        className="fade-up glass-card"
-        style={{ padding: "2.5rem 2rem 2rem", position: "relative", overflow: "hidden" }}
+        className="fade-up glass-card hero-section"
+        style={{ padding: "clamp(1.25rem, 4vw, 2.5rem) clamp(1rem, 4vw, 2rem) clamp(1.25rem, 4vw, 2rem)", position: "relative", overflow: "hidden" }}
       >
         <div className="hero-orb-1" />
         <div className="hero-orb-2" />
         <div style={{ position: "relative", zIndex: 1 }}>
-          <div style={{ marginBottom: "1rem" }}>
+          <div style={{ marginBottom: "0.75rem" }}>
             <span
               style={{
                 display: "inline-flex", alignItems: "center", gap: "6px",
                 background: "rgba(11,143,117,0.1)", color: "var(--brand-ink)",
                 borderRadius: "9999px", padding: "4px 14px",
-                fontSize: "0.72rem", fontWeight: 800, letterSpacing: "0.12em", textTransform: "uppercase",
+                fontSize: "0.7rem", fontWeight: 800, letterSpacing: "0.12em", textTransform: "uppercase",
               }}
             >
               🌍 Remote Job Discovery Platform
@@ -97,11 +97,11 @@ export default function SharedJobsFeed({ jobs, pagination, error, search, countr
           <h1
             style={{
               fontFamily: "var(--font-playfair), Georgia, serif",
-              fontSize: "clamp(2rem, 5vw, 3.25rem)",
+              fontSize: "clamp(1.6rem, 5vw, 3.25rem)",
               fontWeight: 800,
-              lineHeight: 1.15,
+              lineHeight: 1.2,
               color: "#0f172a",
-              margin: "0 0 1rem",
+              margin: "0 0 0.75rem",
               maxWidth: "700px",
             }}
           >
@@ -110,21 +110,21 @@ export default function SharedJobsFeed({ jobs, pagination, error, search, countr
             Job {country ? `in ${COUNTRY_LABELS[country] || country}` : ""}
           </h1>
 
-          <p style={{ color: "#475569", maxWidth: "560px", lineHeight: 1.75, marginBottom: "1.5rem", fontSize: "1rem" }}>
+          <p style={{ color: "#475569", maxWidth: "560px", lineHeight: 1.65, marginBottom: "1.25rem", fontSize: "clamp(0.875rem, 2.5vw, 1rem)" }}>
             Browse fresh remote opportunities {country ? `in ${COUNTRY_LABELS[country] || country}` : "across the US, UK, and Europe"} —
             curated daily with AI-enhanced listings from top companies.
           </p>
 
           <HeroSearchForm search={search} country={country} />
 
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "1.25rem", marginTop: "1.25rem" }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem", marginTop: "1rem" }}>
             {[
-              { icon: "📋", label: `${totalJobs.toLocaleString()} listings found` },
+              { icon: "📋", label: `${totalJobs.toLocaleString()} listings` },
               { icon: "🔄", label: "Updated daily" },
               { icon: "🌎", label: "22 countries" },
-              { icon: "✅", label: "100% remote only" },
+              { icon: "✅", label: "100% remote" },
             ].map(({ icon, label }) => (
-              <span key={label} style={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "0.8rem", color: "#64748b", fontWeight: 600 }}>
+              <span key={label} style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "0.75rem", color: "#64748b", fontWeight: 600 }}>
                 {icon} <span style={{ color: "#1e293b" }}>{label}</span>
               </span>
             ))}
@@ -133,7 +133,7 @@ export default function SharedJobsFeed({ jobs, pagination, error, search, countr
       </header>
 
       {/* ══ COUNTRY FILTERS ══ */}
-      <section style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+      <section style={{ display: "flex", flexWrap: "wrap", gap: "6px", overflowX: "auto", WebkitOverflowScrolling: "touch", paddingBottom: "4px" }}>
         <Link
           href={`/${search ? `?search=${search}` : ''}`}
           style={{
@@ -180,14 +180,14 @@ export default function SharedJobsFeed({ jobs, pagination, error, search, countr
 
       {/* ══ RESULTS HEADER ══ */}
       {!error && (
-        <div className="fade-up" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <p style={{ fontSize: "0.85rem", color: "#64748b", fontWeight: 600 }}>
+        <div className="fade-up" style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "0.5rem", flexWrap: "wrap" }}>
+          <p style={{ fontSize: "0.82rem", color: "#64748b", fontWeight: 600, margin: 0 }}>
             Showing <strong style={{ color: "#0f172a" }}>{jobs.length}</strong> of{" "}
             <strong style={{ color: "#0f172a" }}>{totalJobs.toLocaleString()}</strong> jobs
             {country && <> in <strong style={{ color: "var(--brand-ink)" }}>{COUNTRY_LABELS[country] || country}</strong></>}
             {search && <> for <strong style={{ color: "var(--brand-ink)" }}>&quot;{search}&quot;</strong></>}
           </p>
-          <p style={{ fontSize: "0.8rem", color: "#94a3b8" }}>
+          <p style={{ fontSize: "0.78rem", color: "#94a3b8", margin: 0, whiteSpace: "nowrap" }}>
             Page {currentPage} of {totalPages}
           </p>
         </div>
@@ -249,7 +249,6 @@ export default function SharedJobsFeed({ jobs, pagination, error, search, countr
                     )}
                     <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.875rem", flexWrap: "wrap" }}>
                       <Link href={`/jobs/${job._id}`} className="btn-primary">View Details →</Link>
-                      <a href={job.link} target="_blank" rel="noopener noreferrer" className="btn-outline">Apply at Source ↗</a>
                     </div>
                   </div>
                 </div>
