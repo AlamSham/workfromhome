@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import SharedJobsFeed, { JobListItem, PaginationData } from "./components/SharedJobsFeed";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 900;
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://remotejobdesk.com";
@@ -25,7 +25,7 @@ async function fetchJobs({ page, search, country }: { page: number; search: stri
   if (search) params.set("search", search);
   if (country) params.set("country", country);
   try {
-    const res = await fetch(`${API_BASE_URL}/api/jobs?${params}`, { cache: "no-store" });
+    const res = await fetch(`${API_BASE_URL}/api/jobs?${params}`, { next: { revalidate } });
     if (!res.ok) throw new Error();
     const payload = (await res.json()) as JobsApiPayload;
     if (!payload?.success) throw new Error();
@@ -46,14 +46,17 @@ async function fetchJobs({ page, search, country }: { page: number; search: stri
 export async function generateMetadata({ searchParams }: HomeProps): Promise<Metadata> {
   const r = await searchParams;
   const search = getParamValue(r?.search).trim();
+  const page = toInt(getParamValue(r?.page) || 1, 1);
   // We no longer read country here. Root / is global. Country routing handles countries.
   const title = search ? `"${search}" — Remote Work-From-Home Jobs` : "Remote Work-From-Home Jobs";
   const desc = `Find fresh remote jobs across the US & Europe${search ? ` for "${search}"` : ""}. Updated daily.`;
+  const shouldIndex = !search && page <= 1;
   return {
     title,
     description: desc,
     alternates: { canonical: `${SITE_URL}/` },
     openGraph: { title, description: desc, url: `${SITE_URL}/` },
+    robots: shouldIndex ? undefined : { index: false, follow: true },
   };
 }
 

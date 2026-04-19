@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { JobListItem } from "./SharedJobsFeed";
+import { getJobPath } from "../lib/jobUrls";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
 
@@ -43,7 +44,7 @@ async function fetchRelatedJobs(currentJobId: string, country?: string, category
   }
 
   try {
-    const res = await fetch(`${API_BASE_URL}/api/jobs?${params}`, { cache: "no-store" });
+    const res = await fetch(`${API_BASE_URL}/api/jobs?${params}`, { next: { revalidate: 900 } });
     if (!res.ok) return [];
     const payload = await res.json();
     if (!payload?.success || !Array.isArray(payload?.data)) return [];
@@ -74,7 +75,7 @@ export default async function RelatedJobs({ currentJobId, country, category }: R
           return (
             <Link
               key={job._id}
-              href={`/jobs/${job._id}`}
+              href={getJobPath(job)}
               className="group flex flex-col justify-between glass-card p-5 rounded-2xl hover:-translate-y-1 transition-transform border-l-[3px] border-l-transparent hover:border-l-brand"
             >
               <div className="flex gap-3 mb-3">

@@ -1,4 +1,7 @@
 import type { MetadataRoute } from "next";
+import { getJobPath } from "./lib/jobUrls";
+
+export const revalidate = 3600;
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
@@ -11,36 +14,46 @@ const COUNTRIES = [
   "PL","CZ","HU","RO","GR","IN",
 ];
 
-async function getAllJobIds(): Promise<string[]> {
+interface SitemapJob {
+  _id: string;
+  originalTitle?: string;
+  country?: string;
+  publishedAt?: string;
+  updatedAt?: string;
+  seo?: { slug?: string };
+}
+
+async function getAllJobs(): Promise<SitemapJob[]> {
   try {
     let page = 1;
-    const ids: string[] = [];
+    const jobsForSitemap: SitemapJob[] = [];
 
     while (true) {
       const res = await fetch(
         `${API_BASE_URL}/api/jobs?page=${page}&limit=100`,
-        { cache: "no-store" }
+        { next: { revalidate } }
       );
       if (!res.ok) break;
       const data = await res.json();
       const jobs = data?.data || [];
       if (!Array.isArray(jobs) || jobs.length === 0) break;
-      for (const job of jobs) {
-        if (job._id) ids.push(job._id);
-      }
+      jobsForSitemap.push(...jobs.filter((job: SitemapJob) => job?._id));
       const totalPages = data?.pagination?.totalPages || 1;
       if (page >= totalPages) break;
       page++;
     }
 
-    return ids;
+    return jobsForSitemap;
   } catch {
     return [];
   }
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const jobIds = await getAllJobIds();
+  const jobs = await getAllJobs();
+  const countrySet = new Set(
+    jobs.map((job) => String(job.country || "").toUpperCase()).filter((country) => COUNTRIES.includes(country))
+  );
 
   const staticPages: MetadataRoute.Sitemap = [
     {
@@ -69,16 +82,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  const countryPages: MetadataRoute.Sitemap = COUNTRIES.map((code) => ({
+  const countryPages: MetadataRoute.Sitemap = Array.from(countrySet).map((code) => ({
     url: `${SITE_URL}/remote-jobs-in-${code.toLowerCase()}`,
     lastModified: new Date(),
     changeFrequency: "daily" as const,
     priority: 0.9,
   }));
 
-  const jobPages: MetadataRoute.Sitemap = jobIds.map((id) => ({
-    url: `${SITE_URL}/jobs/${id}`,
-    lastModified: new Date(),
+  const jobPages: MetadataRoute.Sitemap = jobs.map((job) => ({
+    url: `${SITE_URL}${getJobPath(job)}`,
+    lastModified: new Date(job.updatedAt || job.publishedAt || Date.now()),
     changeFrequency: "weekly" as const,
     priority: 0.8,
   }));

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import SharedJobsFeed, { JobListItem, PaginationData, COUNTRY_LABELS } from "../../components/SharedJobsFeed";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 900;
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://remotejobdesk.com";
@@ -29,7 +29,7 @@ async function fetchJobs({ page, search, country }: { page: number; search: stri
   if (search) params.set("search", search);
   if (country) params.set("country", country);
   try {
-    const res = await fetch(`${API_BASE_URL}/api/jobs?${params}`, { cache: "no-store" });
+    const res = await fetch(`${API_BASE_URL}/api/jobs?${params}`, { next: { revalidate } });
     if (!res.ok) throw new Error();
     const payload = (await res.json()) as JobsApiPayload;
     if (!payload?.success) throw new Error();
@@ -57,15 +57,18 @@ export async function generateMetadata({ params, searchParams }: CountryPageProp
 
   const r = await searchParams;
   const search = getParamValue(r?.search).trim();
+  const page = toInt(getParamValue(r?.page) || 1, 1);
   const title = `Remote Work-From-Home Jobs in ${COUNTRY_LABELS[rawCountry] || rawCountry}${search ? ` for "${search}"` : ""}`;
   const desc = `Find fresh remote jobs in ${COUNTRY_LABELS[rawCountry] || rawCountry}${search ? ` for "${search}"` : ""}. Updated daily with AI-enhanced listings.`;
   const url = `${SITE_URL}/remote-jobs-in-${rawCountry.toLowerCase()}`;
+  const shouldIndex = !search && page <= 1;
 
   return {
     title,
     description: desc,
     alternates: { canonical: url },
     openGraph: { title, description: desc, url },
+    robots: shouldIndex ? undefined : { index: false, follow: true },
   };
 }
 

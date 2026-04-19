@@ -1,6 +1,7 @@
 import Link from "next/link";
 import NewsletterCTA from "./NewsletterCTA";
 import HeroSearchForm from "./HeroSearchForm";
+import { getJobPath } from "../lib/jobUrls";
 
 const COUNTRY_OPTIONS = [
   "US","UK","DE","FR","NL","IE","ES","IT",
@@ -234,7 +235,7 @@ export default function SharedJobsFeed({ jobs, pagination, error, search, countr
                       </span>
                     </div>
                     <Link
-                      href={`/jobs/${job._id}`}
+                      href={getJobPath(job)}
                       style={{ display: "block", fontSize: "1.025rem", fontWeight: 800, color: "#0f172a", textDecoration: "none", lineHeight: 1.4 }}
                     >
                       {label}
@@ -248,7 +249,7 @@ export default function SharedJobsFeed({ jobs, pagination, error, search, countr
                       </div>
                     )}
                     <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.875rem", flexWrap: "wrap" }}>
-                      <Link href={`/jobs/${job._id}`} className="btn-primary">View Details →</Link>
+                      <Link href={getJobPath(job)} className="btn-primary">View Details →</Link>
                     </div>
                   </div>
                 </div>

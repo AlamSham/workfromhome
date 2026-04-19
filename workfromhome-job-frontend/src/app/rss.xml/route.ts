@@ -1,3 +1,5 @@
+import { getJobPath } from "../lib/jobUrls";
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://remotejobdesk.com";
 
@@ -32,7 +34,7 @@ export async function GET() {
     const jobs = payload?.data || [];
 
     const rssItems = jobs.map((job: any) => {
-      const url = `${SITE_URL}/jobs/${job._id}`;
+      const url = `${SITE_URL}${getJobPath(job)}`;
       const title = job.seo?.metaTitle || job.originalTitle || "Remote Job";
       const desc = job.seo?.metaDescription || job.summary || "";
       const pubDate = new Date(job.publishedAt || Date.now()).toUTCString();

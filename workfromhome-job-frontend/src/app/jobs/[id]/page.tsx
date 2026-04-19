@@ -1,9 +1,12 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import type { Metadata } from "next";
 import { cache } from "react";
 import RelatedJobs from "../../components/RelatedJobs";
 import NewsletterCTA from "../../components/NewsletterCTA";
+import { extractJobId, getJobPath } from "../../lib/jobUrls";
+
+export const revalidate = 1800;
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
@@ -15,6 +18,7 @@ interface SeoFields {
   metaTitle?: string;
   metaDescription?: string;
   keywords?: string[];
+  slug?: string;
 }
 
 interface RawJobItem extends Record<string, unknown> {
@@ -105,7 +109,7 @@ async function fetchWordPressDetail(job: JobDetail): Promise<string> {
     try {
       const res = await fetch(
         `https://${host}/wp-json/wp/v2/posts?search=${encodeURIComponent(cleanTitle)}&per_page=5&_fields=title,content,excerpt`,
-        { cache: "no-store" }
+        { next: { revalidate } }
       );
       if (!res.ok) continue;
       const posts = (await res.json()) as WordPressPost[];
@@ -141,7 +145,7 @@ async function buildRichDescription(job: JobDetail): Promise<string> {
 const getJobById = cache(async (id: string): Promise<JobDetail | null> => {
   if (!id) return null;
   try {
-    const response = await fetch(`${API_BASE_URL}/api/jobs/${id}`, { cache: "no-store" });
+    const response = await fetch(`${API_BASE_URL}/api/jobs/${id}`, { next: { revalidate } });
     if (response.status === 404) return null;
     if (!response.ok) throw new Error(`API responded with ${response.status}`);
     const payload = await response.json();
@@ -152,13 +156,14 @@ const getJobById = cache(async (id: string): Promise<JobDetail | null> => {
 
 export async function generateMetadata({ params }: DetailPageProps): Promise<Metadata> {
   const resolved = await params;
-  const job = await getJobById(String(resolved?.id || ""));
+  const job = await getJobById(extractJobId(String(resolved?.id || "")));
   if (!job) {
     return { title: "Job Not Found", description: "This listing is unavailable or has expired." };
   }
   const title = job.seo?.metaTitle || job.originalTitle;
   const desc = job.seo?.metaDescription || job.summary || "Remote work opportunity. Apply now.";
-  const url = `${SITE_URL}/jobs/${job._id}`;
+  const canonicalPath = getJobPath(job);
+  const url = `${SITE_URL}${canonicalPath}`;
   
   const ogImageUrl = `${SITE_URL}/api/og?title=${encodeURIComponent(title)}&company=${encodeURIComponent(job.sourceLabel || "Remote Company")}&country=${encodeURIComponent(job.country || "Global")}&category=${encodeURIComponent(job.category || "WFH")}`;
 
@@ -185,11 +190,18 @@ export async function generateMetadata({ params }: DetailPageProps): Promise<Met
 
 export default async function JobDetailPage({ params }: DetailPageProps) {
   const resolved = await params;
-  const job = await getJobById(String(resolved?.id || ""));
+  const rawParam = String(resolved?.id || "");
+  const job = await getJobById(extractJobId(rawParam));
   if (!job) notFound();
 
+  const canonicalPath = getJobPath(job);
+  const canonicalParam = canonicalPath.replace("/jobs/", "");
+  if (rawParam !== canonicalParam) {
+    permanentRedirect(canonicalPath);
+  }
+
   const richDescription = await buildRichDescription(job);
-  const pageUrl = `${SITE_URL}/jobs/${job._id}`;
+  const pageUrl = `${SITE_URL}${canonicalPath}`;
   const displayTitle = job.seo?.title || job.originalTitle;
 
   const jsonLd = {

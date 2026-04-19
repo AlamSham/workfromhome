@@ -8,6 +8,15 @@ const nextConfig = {
   turbopack: {
     root: __dirname,
   },
+  async redirects() {
+    return [
+      {
+        source: "/country/:country",
+        destination: "/remote-jobs-in-:country",
+        permanent: true,
+      },
+    ];
+  },
   async rewrites() {
     return [
       {
