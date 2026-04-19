@@ -51,36 +51,47 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body className="flex min-h-full flex-col">
         {/* ── Navbar ── */}
         <nav className="sticky top-0 z-50 border-b border-white/60 bg-white/80 backdrop-blur-md shadow-sm">
-          <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-10">
+          <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-10">
             <Link
               href="/"
-              className="flex items-center gap-2 font-serif text-xl font-bold text-brand-ink"
+              className="flex min-w-0 items-center gap-2 font-serif text-lg font-bold text-brand-ink sm:text-xl"
             >
               <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand text-white text-sm font-black">R</span>
-              RemoteJobDesk
+              <span className="truncate">RemoteJobDesk</span>
             </Link>
-            <div className="flex items-center gap-1 sm:gap-3">
+            <div className="flex items-center justify-between gap-3 sm:hidden">
+              <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                Browse
+              </div>
+              <Link
+                href="/?country=US"
+                className="inline-flex rounded-xl bg-brand px-3 py-1.5 text-sm font-semibold whitespace-nowrap text-white transition hover:bg-brand-ink"
+              >
+                🇺🇸 US Jobs
+              </Link>
+            </div>
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-3">
               <Link
                 href="/"
-                className="rounded-xl px-3 py-1.5 text-sm font-semibold text-slate-600 transition hover:bg-brand/10 hover:text-brand-ink"
+                className="rounded-xl px-3 py-1.5 text-sm font-semibold whitespace-nowrap text-slate-600 transition hover:bg-brand/10 hover:text-brand-ink"
               >
                 Jobs
               </Link>
               <Link
                 href="/about"
-                className="rounded-xl px-3 py-1.5 text-sm font-semibold text-slate-600 transition hover:bg-brand/10 hover:text-brand-ink"
+                className="rounded-xl px-3 py-1.5 text-sm font-semibold whitespace-nowrap text-slate-600 transition hover:bg-brand/10 hover:text-brand-ink"
               >
                 About
               </Link>
               <Link
                 href="/contact"
-                className="rounded-xl px-3 py-1.5 text-sm font-semibold text-slate-600 transition hover:bg-brand/10 hover:text-brand-ink"
+                className="rounded-xl px-3 py-1.5 text-sm font-semibold whitespace-nowrap text-slate-600 transition hover:bg-brand/10 hover:text-brand-ink"
               >
                 Contact
               </Link>
               <Link
                 href="/?country=US"
-                className="hidden sm:inline-flex rounded-xl bg-brand px-4 py-1.5 text-sm font-semibold text-white transition hover:bg-brand-ink"
+                className="hidden sm:inline-flex rounded-xl bg-brand px-4 py-1.5 text-sm font-semibold whitespace-nowrap text-white transition hover:bg-brand-ink"
               >
                 🇺🇸 US Jobs
               </Link>
