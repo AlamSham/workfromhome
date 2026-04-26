@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { cache } from "react";
 import PopularCompanies from "./components/PopularCompanies";
 import SharedJobsFeed, { JobListItem, PaginationData } from "./components/SharedJobsFeed";
 import {
@@ -9,7 +10,7 @@ import {
   SearchParamValue,
 } from "./lib/jobFilters";
 
-export const revalidate = 900;
+export const revalidate = 3600; // 1 hour - optimized for low traffic
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://remotejobdesk.com";
@@ -23,7 +24,7 @@ function toInt(v: unknown, fallback = 1): number {
   return Math.max(1, Math.floor(p));
 }
 
-async function fetchJobs({ page, search, country, filters }: { page: number; search: string; country: string; filters: ReturnType<typeof readJobFilters> }) {
+const fetchJobs = cache(async ({ page, search, country, filters }: { page: number; search: string; country: string; filters: ReturnType<typeof readJobFilters> }) => {
   const params = new URLSearchParams({ page: String(page), limit: "10" });
   if (search) params.set("search", search);
   if (country) params.set("country", country);
@@ -45,7 +46,7 @@ async function fetchJobs({ page, search, country, filters }: { page: number; sea
   } catch {
     return { jobs: [], pagination: { page: 1, totalPages: 1, total: 0 }, error: "Unable to load jobs. Please refresh." };
   }
-}
+});
 
 export async function generateMetadata({ searchParams }: HomeProps): Promise<Metadata> {
   const r = await searchParams;

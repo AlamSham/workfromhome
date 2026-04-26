@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { cache } from "react";
 import SharedJobsFeed, { JobListItem, PaginationData } from "../../components/SharedJobsFeed";
 import {
   applyJobFiltersToParams,
@@ -17,7 +18,7 @@ import {
 } from "../../lib/jobCategories";
 import { getFeaturedComboCountries } from "../../lib/seoCountries";
 
-export const revalidate = 900;
+export const revalidate = 14400; // 4 hours - optimized for low traffic
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://remotejobdesk.com";
@@ -38,7 +39,7 @@ function toInt(v: unknown, fallback = 1): number {
   return Math.max(1, Math.floor(p));
 }
 
-async function fetchJobs(query: string, page: number, filters: ReturnType<typeof readJobFilters>) {
+const fetchJobs = cache(async (query: string, page: number, filters: ReturnType<typeof readJobFilters>) => {
   const params = new URLSearchParams({
     page: String(page),
     limit: "10",
@@ -67,7 +68,7 @@ async function fetchJobs(query: string, page: number, filters: ReturnType<typeof
       error: "Unable to load jobs. Please refresh.",
     };
   }
-}
+});
 
 export async function generateStaticParams() {
   return JOB_CATEGORIES.map((category) => ({ slug: category.slug }));

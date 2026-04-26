@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { cache } from "react";
 import PopularCompanies from "../../components/PopularCompanies";
 import SharedJobsFeed, { JobListItem, PaginationData } from "../../components/SharedJobsFeed";
 import {
@@ -14,7 +15,7 @@ import { JOB_CATEGORIES, getJobCategoryPath } from "../../lib/jobCategories";
 import { CompanyCountrySummary, CompanySummary, getCompanyCountryPath, getCompanyPath } from "../../lib/companies";
 import { getSeoCountryByCode } from "../../lib/seoCountries";
 
-export const revalidate = 900;
+export const revalidate = 14400; // 4 hours - optimized for low traffic
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://remotejobdesk.com";
@@ -47,7 +48,7 @@ function toInt(v: unknown, fallback = 1): number {
   return Math.max(1, Math.floor(p));
 }
 
-async function fetchCompany(slug: string): Promise<CompanySummary | null> {
+const fetchCompany = cache(async (slug: string): Promise<CompanySummary | null> => {
   try {
     const res = await fetch(`${API_BASE_URL}/api/jobs/companies/${slug}`, {
       next: { revalidate },
@@ -59,9 +60,9 @@ async function fetchCompany(slug: string): Promise<CompanySummary | null> {
   } catch {
     return null;
   }
-}
+});
 
-async function fetchJobs(companyLabel: string, page: number, filters: ReturnType<typeof readJobFilters>) {
+const fetchJobs = cache(async (companyLabel: string, page: number, filters: ReturnType<typeof readJobFilters>) => {
   const params = new URLSearchParams({
     page: String(page),
     limit: "10",
@@ -90,9 +91,9 @@ async function fetchJobs(companyLabel: string, page: number, filters: ReturnType
       error: "Unable to load jobs. Please refresh.",
     };
   }
-}
+});
 
-async function fetchTopCompanies(): Promise<CompanySummary[]> {
+const fetchTopCompanies = cache(async (): Promise<CompanySummary[]> => {
   try {
     const res = await fetch(`${API_BASE_URL}/api/jobs/companies?limit=60`, {
       next: { revalidate },
@@ -103,9 +104,9 @@ async function fetchTopCompanies(): Promise<CompanySummary[]> {
   } catch {
     return [];
   }
-}
+});
 
-async function fetchCompanyCountries(slug: string): Promise<CompanyCountrySummary[]> {
+const fetchCompanyCountries = cache(async (slug: string): Promise<CompanyCountrySummary[]> => {
   try {
     const res = await fetch(`${API_BASE_URL}/api/jobs/companies/${slug}/countries?minJobs=1&limit=12`, {
       next: { revalidate },
@@ -116,7 +117,7 @@ async function fetchCompanyCountries(slug: string): Promise<CompanyCountrySummar
   } catch {
     return [];
   }
-}
+});
 
 export async function generateStaticParams() {
   const companies = await fetchTopCompanies();

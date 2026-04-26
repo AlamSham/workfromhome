@@ -7,7 +7,7 @@ import NewsletterCTA from "../../components/NewsletterCTA";
 import { getCompanyPath } from "../../lib/companies";
 import { extractJobId, getJobPath } from "../../lib/jobUrls";
 
-export const revalidate = 1800;
+export const revalidate = 7200; // 2 hours - optimized for low traffic
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
@@ -103,14 +103,6 @@ function normalizeText(value = ""): string {
     .trim();
 }
 
-function extractDomain(sourceLabel = ""): string {
-  const value = String(sourceLabel || "").trim().toLowerCase();
-  if (!value) return "";
-  const noProtocol = value.replace(/^https?:\/\//, "").replace(/^www\./, "");
-  if (/^[a-z0-9.-]+\.[a-z]{2,}$/i.test(noProtocol)) return noProtocol;
-  return "";
-}
-
 function formatSeniority(value: string | undefined): string {
   const normalized = String(value || "").trim().toLowerCase();
   if (!normalized) return "";
@@ -149,36 +141,6 @@ function buildBaseSalary(signals: JobSignals | undefined) {
   };
 }
 
-async function fetchWordPressDetail(job: JobDetail): Promise<string> {
-  const domain = extractDomain(job?.sourceLabel);
-  if (!domain) return "";
-  const cleanTitle = (job?.originalTitle || "")
-    .replace(/[^a-zA-Z0-9\s-]+/g, " ").replace(/\s+/g, " ").trim().slice(0, 120);
-  if (!cleanTitle) return "";
-
-  const hosts = [domain, `www.${domain}`];
-  for (const host of hosts) {
-    try {
-      const res = await fetch(
-        `https://${host}/wp-json/wp/v2/posts?search=${encodeURIComponent(cleanTitle)}&per_page=5&_fields=title,content,excerpt`,
-        { next: { revalidate } }
-      );
-      if (!res.ok) continue;
-      const posts = (await res.json()) as WordPressPost[];
-      if (!Array.isArray(posts) || !posts.length) continue;
-      let best = "";
-      for (const post of posts) {
-        const full = normalizeText(post?.content?.rendered || "");
-        const excerpt = normalizeText(post?.excerpt?.rendered || "");
-        const candidate = full.length > excerpt.length ? full : excerpt;
-        if (candidate.length > best.length) best = candidate;
-      }
-      if (best.length >= 300) return best;
-    } catch { continue; }
-  }
-  return "";
-}
-
 async function buildRichDescription(job: JobDetail): Promise<string> {
   const raw = (job?.rawItem || {}) as RawJobItem;
   const candidates = [
@@ -186,12 +148,8 @@ async function buildRichDescription(job: JobDetail): Promise<string> {
     raw?.contentSnippet, raw?.job_description,
   ].map((item) => normalizeText(String(item || ""))).filter(Boolean);
 
-  let best = candidates.sort((a, b) => b.length - a.length)[0] || "";
-  if (String(job?.source || "").toLowerCase() === "google-rss" && best.length < 260) {
-    const wpDetail = await fetchWordPressDetail(job);
-    if (wpDetail.length > best.length) best = wpDetail;
-  }
-  return best;
+  // Return the longest available description
+  return candidates.sort((a, b) => b.length - a.length)[0] || "";
 }
 
 const getJobById = cache(async (id: string): Promise<JobDetail | null> => {
