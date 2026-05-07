@@ -7,7 +7,7 @@ import NewsletterCTA from "../../components/NewsletterCTA";
 import { getCompanyPath } from "../../lib/companies";
 import { extractJobId, getJobPath } from "../../lib/jobUrls";
 
-export const revalidate = 7200; // 2 hours - optimized for low traffic
+export const revalidate = 28800; // 8 hours — job detail rarely changes
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
@@ -103,6 +103,115 @@ function normalizeText(value = ""): string {
     .trim();
 }
 
+// ── Smart job description parser: converts wall-of-text into structured sections ──
+interface DescriptionSection {
+  heading: string;
+  items: string[];
+  type: "paragraph" | "bullets";
+}
+
+const SECTION_HEADINGS = [
+  /\b(key\s+)?responsibilities\b/i,
+  /\bwhat\s+you('ll|.ll|\s+will)\s+(do|be\s+doing)\b/i,
+  /\byour\s+role\b/i,
+  /\brequirements?\b/i,
+  /\bqualifications?\b/i,
+  /\bwhat\s+(we('re|.re|\s+are)\s+looking\s+for|you('ll|.ll|\s+will)\s+need)\b/i,
+  /\bskills?\s*(required|needed)?\b/i,
+  /\bwhat\s+we\s+offer\b/i,
+  /\bbenefits?\b/i,
+  /\bperks?\b/i,
+  /\bcompensation\b/i,
+  /\babout\s+(us|the\s+(company|team|role))\b/i,
+  /\bwho\s+(we\s+are|you\s+are)\b/i,
+  /\bnice\s+to\s+have\b/i,
+  /\bbonus\s+points?\b/i,
+  /\bhow\s+to\s+apply\b/i,
+  /\bwhy\s+(join|work\s+(with|at|for))\b/i,
+];
+
+function isLikelySectionHeading(text: string): boolean {
+  const trimmed = text.trim();
+  if (trimmed.length > 80) return false; // Too long for a heading
+  if (trimmed.endsWith(":")) return true;
+  return SECTION_HEADINGS.some((re) => re.test(trimmed));
+}
+
+function isLikelyBulletPoint(text: string): boolean {
+  const trimmed = text.trim();
+  return /^[-•–—✅✓⭐▶►●○◆★☑]\s/.test(trimmed) ||
+    /^\d+[.)]\s/.test(trimmed) ||
+    /^[a-z][.)]\s/i.test(trimmed);
+}
+
+function cleanBulletPrefix(text: string): string {
+  return text.trim()
+    .replace(/^[-•–—✅✓⭐▶►●○◆★☑]\s*/, "")
+    .replace(/^\d+[.)]\s*/, "")
+    .replace(/^[a-z][.)]\s*/i, "")
+    .trim();
+}
+
+function formatJobDescription(rawText: string): DescriptionSection[] {
+  if (!rawText || rawText.trim().length === 0) return [];
+
+  // First, try to split by existing newlines
+  let lines = rawText.split(/\n+/).map((l) => l.trim()).filter(Boolean);
+
+  // If the text is one giant paragraph (no newlines), split by sentence boundaries
+  // that look like section transitions
+  if (lines.length <= 2 && rawText.length > 300) {
+    lines = rawText
+      .replace(/\.\s+(?=[A-Z])/g, ".\n")                // Split on ". A" (sentence + capital)
+      .replace(/:\s*(?=[A-Z])/g, ":\n")                   // Split after colons
+      .replace(/(?<=[.!])\s*(?=(Key\s+Responsibilities|Requirements|What\s+We\s+Offer|About\s+Us|Benefits|Qualifications|Skills|How\s+to\s+Apply|We\s+Offer|Nice\s+to\s+Have|Your\s+Role))/gi, "\n")  // Split before known headings
+      .split(/\n+/)
+      .map((l) => l.trim())
+      .filter(Boolean);
+  }
+
+  const sections: DescriptionSection[] = [];
+  let currentSection: DescriptionSection = { heading: "", items: [], type: "paragraph" };
+
+  for (const line of lines) {
+    if (isLikelySectionHeading(line)) {
+      // Save previous section if it has content
+      if (currentSection.items.length > 0) {
+        sections.push({ ...currentSection });
+      }
+      currentSection = {
+        heading: line.replace(/:$/, "").trim(),
+        items: [],
+        type: "paragraph",
+      };
+    } else if (isLikelyBulletPoint(line)) {
+      currentSection.type = "bullets";
+      currentSection.items.push(cleanBulletPrefix(line));
+    } else {
+      // Regular text — check if it's short enough to be a bullet
+      if (line.length < 120 && currentSection.type === "bullets") {
+        currentSection.items.push(line);
+      } else {
+        currentSection.items.push(line);
+      }
+    }
+  }
+
+  // Push the last section
+  if (currentSection.items.length > 0) {
+    sections.push(currentSection);
+  }
+
+  // If everything ended up in one section with no heading, try to split long paragraphs
+  if (sections.length === 1 && sections[0].heading === "" && sections[0].items.length === 1 && sections[0].items[0].length > 500) {
+    const text = sections[0].items[0];
+    const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+    return [{ heading: "", items: sentences.map((s) => s.trim()), type: "paragraph" }];
+  }
+
+  return sections;
+}
+
 function formatSeniority(value: string | undefined): string {
   const normalized = String(value || "").trim().toLowerCase();
   if (!normalized) return "";
@@ -182,6 +291,7 @@ export async function generateMetadata({ params }: DetailPageProps): Promise<Met
     description: desc,
     keywords: job.seo?.keywords,
     alternates: { canonical: url },
+    robots: { index: true, follow: true, "max-snippet": -1 as const, "max-image-preview": "large" as const },
     openGraph: { 
       title, 
       description: desc, 
@@ -250,6 +360,19 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      {/* JSON-LD: BreadcrumbList */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+            ...(job.country ? [{ "@type": "ListItem", position: 2, name: `Remote Jobs in ${job.country}`, item: `${SITE_URL}/remote-jobs-in-${(job.country || "us").toLowerCase()}` }] : []),
+            { "@type": "ListItem", position: job.country ? 3 : 2, name: displayTitle, item: pageUrl },
+          ],
+        }) }}
       />
 
       {/* Breadcrumb */}
@@ -321,14 +444,49 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
           </section>
 
           {/* Description */}
-          {(richDescription || job.summary) && (
-            <section className="glass-card fade-up rounded-3xl p-6 sm:p-8">
-              <h2 className="section-title">Job Description</h2>
-              <p className="mt-3 whitespace-pre-wrap text-sm leading-7 text-slate-700">
-                {richDescription || job.summary}
-              </p>
-            </section>
-          )}
+          {(richDescription || job.summary) && (() => {
+            const descText = richDescription || job.summary || "";
+            const sections = formatJobDescription(descText);
+            
+            return (
+              <section className="glass-card fade-up rounded-3xl p-6 sm:p-8">
+                <h2 className="section-title">Job Description</h2>
+                {sections.length > 0 ? (
+                  <div className="mt-4 space-y-5">
+                    {sections.map((section, si) => (
+                      <div key={si}>
+                        {section.heading && (
+                          <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wide mb-2">
+                            {section.heading}
+                          </h3>
+                        )}
+                        {section.type === "bullets" ? (
+                          <ul className="space-y-2 pl-1">
+                            {section.items.map((item, ii) => (
+                              <li key={ii} className="flex items-start gap-2 text-sm leading-7 text-slate-700">
+                                <span className="mt-2 h-1.5 w-1.5 rounded-full bg-brand shrink-0" />
+                                <span>{item}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <div className="space-y-3">
+                            {section.items.map((item, ii) => (
+                              <p key={ii} className="text-sm leading-7 text-slate-700">{item}</p>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="mt-3 whitespace-pre-wrap text-sm leading-7 text-slate-700">
+                    {descText}
+                  </p>
+                )}
+              </section>
+            );
+          })()}
 
           {/* Keywords */}
           {(job.seo?.keywords || []).length > 0 && (
@@ -336,13 +494,12 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
               <h2 className="section-title">Related Skills & Keywords</h2>
               <div className="mt-4 flex flex-wrap gap-2">
                 {(job.seo?.keywords || []).map((kw) => (
-                  <Link
+                  <span
                     key={kw}
-                    href={`/?search=${encodeURIComponent(kw)}`}
                     className="tag-pill"
                   >
                     #{kw}
-                  </Link>
+                  </span>
                 ))}
               </div>
             </section>

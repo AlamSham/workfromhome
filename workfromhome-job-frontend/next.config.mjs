@@ -8,6 +8,43 @@ const nextConfig = {
   turbopack: {
     root: __dirname,
   },
+  async headers() {
+    return [
+      // ── Security headers for all pages ──
+      {
+        source: "/(.*)",
+        headers: [
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          { key: "X-XSS-Protection", value: "1; mode=block" },
+          { key: "Referrer-Policy", value: "origin-when-cross-origin" },
+        ],
+      },
+      // ── Block search/filter URLs at HTTP header level ──
+      // This ensures Google sees noindex even before rendering the page
+      {
+        source: "/",
+        has: [{ type: "query", key: "search" }],
+        headers: [
+          { key: "X-Robots-Tag", value: "noindex, follow" },
+        ],
+      },
+      {
+        source: "/remote-jobs-in-:country",
+        has: [{ type: "query", key: "search" }],
+        headers: [
+          { key: "X-Robots-Tag", value: "noindex, follow" },
+        ],
+      },
+      {
+        source: "/(.*)",
+        has: [{ type: "query", key: "page" }],
+        headers: [
+          { key: "X-Robots-Tag", value: "noindex, follow" },
+        ],
+      },
+    ];
+  },
   async redirects() {
     return [
       {

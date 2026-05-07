@@ -216,6 +216,7 @@ export default function SharedJobsFeed({
       <section style={{ display: "flex", flexWrap: "wrap", gap: "6px", overflowX: "auto", WebkitOverflowScrolling: "touch", paddingBottom: "4px" }}>
         <Link
           href={buildBrowseHref("/", search, filters)}
+          rel={search ? "nofollow" : undefined}
           style={{
             borderRadius: "9999px",
             padding: "6px 14px",
@@ -234,6 +235,7 @@ export default function SharedJobsFeed({
           <Link
             key={item}
             href={buildBrowseHref(`/remote-jobs-in-${item.toLowerCase()}`, search, filters)}
+            rel={search ? "nofollow" : undefined}
             style={{
               borderRadius: "9999px",
               padding: "6px 13px",
@@ -388,6 +390,7 @@ export default function SharedJobsFeed({
           <Link
             href={buildPaginationHref(baseUrl, effectivePaginationSearch, Math.max(1, currentPage - 1), filters)}
             className="btn-outline"
+            rel="nofollow"
             style={{ opacity: currentPage <= 1 ? 0.4 : 1, pointerEvents: currentPage <= 1 ? "none" : "auto" }}
           >
             ← Previous
@@ -399,6 +402,7 @@ export default function SharedJobsFeed({
           <Link
             href={buildPaginationHref(baseUrl, effectivePaginationSearch, Math.min(totalPages, currentPage + 1), filters)}
             className="btn-outline"
+            rel="nofollow"
             style={{ opacity: currentPage >= totalPages ? 0.4 : 1, pointerEvents: currentPage >= totalPages ? "none" : "auto" }}
           >
             Next →

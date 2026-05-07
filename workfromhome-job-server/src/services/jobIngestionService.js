@@ -8,6 +8,7 @@ const {
 } = require('./rssService');
 const { extractJobSignals } = require('../utils/jobSignals');
 const { generateSeoFields } = require('./seoService');
+const { submitToIndexNow } = require('./indexNow');
 const TRUSTED_SOURCES = new Set([
   'remotive-api',
   'arbeitnow-api',
@@ -216,6 +217,7 @@ async function ingestJobs() {
 
   const seenLinksInRun = new Set();
   const seenDedupeKeysInRun = new Set();
+  const newlyCreatedJobs = [];
 
   for (const item of sourceBalancedItems) {
     if (result.created >= maxJobsPerRun) {
@@ -262,7 +264,7 @@ async function ingestJobs() {
     });
 
     try {
-      await Job.create({
+      const createdJob = await Job.create({
         source: item.source || 'google-rss',
         sourceLabel: item.sourceLabel || '',
         country: item.country || 'US',
@@ -278,6 +280,7 @@ async function ingestJobs() {
         rawItem: item.rawItem
       });
 
+      newlyCreatedJobs.push(createdJob);
       result.created += 1;
     } catch (error) {
       if (error?.code === 11000) {
@@ -286,6 +289,11 @@ async function ingestJobs() {
       }
       throw error;
     }
+  }
+
+  // Notify search engines about new URLs (Bing, Yandex — instant indexing)
+  if (newlyCreatedJobs.length > 0) {
+    submitToIndexNow(newlyCreatedJobs).catch(() => {});
   }
 
   return result;

@@ -19,7 +19,7 @@ import {
 import { JOB_CATEGORIES, getJobCategoryCountryPath } from "../../../../lib/jobCategories";
 import { getSeoCountryByCode, getSeoCountryBySlug } from "../../../../lib/seoCountries";
 
-export const revalidate = 900;
+export const revalidate = 21600; // 6 hours — was 900s (15min), way too aggressive for Hobby
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://remotejobdesk.com";

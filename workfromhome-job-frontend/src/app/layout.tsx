@@ -2,6 +2,7 @@ import { Manrope, Playfair_Display } from "next/font/google";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import Link from "next/link";
+import Script from "next/script";
 import { Analytics } from "@vercel/analytics/react";
 import { JOB_CATEGORIES, getJobCategoryPath } from "./lib/jobCategories";
 import { getCompanyPath } from "./lib/companies";
@@ -20,24 +21,69 @@ const playfair = Playfair_Display({
 
 export const metadata: Metadata = {
   title: {
-    default: "RemoteJobDesk — Work From Home Jobs in US & Europe",
+    default: "RemoteJobDesk — Work From Home Jobs in US & Europe | Updated Daily",
     template: "%s | RemoteJobDesk",
   },
   description:
-    "Browse thousands of fresh remote and work-from-home jobs across the US, UK, and Europe. Updated daily with AI-enhanced listings.",
-  keywords: ["remote jobs", "work from home", "wfh jobs", "remote work US", "online jobs"],
+    "Find 1000+ fresh remote and work-from-home jobs across the US, UK, Germany, and 20+ countries. AI-enhanced listings updated daily. Software, marketing, design, customer support & more.",
+  keywords: [
+    // Primary
+    "remote jobs", "work from home jobs", "wfh jobs", "remote work",
+    "online jobs", "telecommute jobs", "work remotely",
+    // By country
+    "remote jobs USA", "remote jobs UK", "remote jobs Europe",
+    "work from home US", "remote jobs Germany", "remote jobs France",
+    // By role
+    "remote software engineer jobs", "remote marketing jobs",
+    "remote customer support jobs", "remote design jobs",
+    "remote data analyst jobs", "remote product manager jobs",
+    // By level
+    "entry level remote jobs", "senior remote jobs", "remote internships",
+    // Long-tail
+    "best remote jobs 2026", "legitimate work from home jobs",
+    "high paying remote jobs", "remote jobs no experience",
+    "part time remote jobs", "full time remote work",
+  ],
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large" as const,
+      "max-snippet": -1,
+    },
+  },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION || "",
+  },
+  alternates: {
+    canonical: "/",
+    types: {
+      "application/rss+xml": "/rss.xml",
+    },
+  },
   openGraph: {
     type: "website",
     locale: "en_US",
     siteName: "RemoteJobDesk",
     title: "RemoteJobDesk — Work From Home Jobs in US & Europe",
     description:
-      "Browse thousands of fresh remote and work-from-home jobs. Updated daily.",
+      "Find fresh remote jobs across 20+ countries. Software, marketing, design & more. Updated daily with AI-enhanced listings.",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "RemoteJobDesk — Fresh Remote Jobs Updated Daily",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "RemoteJobDesk — Work From Home Jobs",
-    description: "Fresh remote jobs updated daily for US & Europe.",
+    description: "Fresh remote jobs updated daily for US, UK & Europe. 20+ countries covered.",
   },
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL || "https://remotejobdesk.com"
@@ -99,6 +145,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                 Contact
               </Link>
               <Link
+                href="/blog"
+                className="rounded-xl px-3 py-1.5 text-sm font-semibold whitespace-nowrap text-slate-600 transition hover:bg-brand/10 hover:text-brand-ink"
+              >
+                Blog
+              </Link>
+              <Link
                 href="/?country=US"
                 className="hidden sm:inline-flex rounded-xl bg-brand px-4 py-1.5 text-sm font-semibold whitespace-nowrap text-white transition hover:bg-brand-ink"
               >
@@ -127,6 +179,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                 <Link href="/contact" className="hover:text-brand-ink transition">Contact</Link>
                 <Link href="/editorial-policy" className="hover:text-brand-ink transition">Editorial Policy</Link>
                 <Link href="/how-we-source-jobs" className="hover:text-brand-ink transition">How We Source Jobs</Link>
+                <Link href="/blog" className="hover:text-brand-ink transition">Blog</Link>
                 <Link href="/privacy" className="hover:text-brand-ink transition">Privacy Policy</Link>
               </nav>
             </div>
@@ -168,7 +221,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           </div>
         </footer>
 
-        {/* ── JSON-LD Schema ── */}
+        {/* ── JSON-LD: WebSite + SearchAction ── */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -178,7 +231,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               name: "RemoteJobDesk",
               url: process.env.NEXT_PUBLIC_SITE_URL || "https://remotejobdesk.com",
               description:
-                "Browse fresh remote and work-from-home jobs across the US, UK, and Europe.",
+                "Find fresh remote and work-from-home jobs across the US, UK, and 20+ European countries. Updated daily.",
               potentialAction: {
                 "@type": "SearchAction",
                 target: {
@@ -190,9 +243,40 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             }),
           }}
         />
+        {/* ── JSON-LD: Organization ── */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: "RemoteJobDesk",
+              url: process.env.NEXT_PUBLIC_SITE_URL || "https://remotejobdesk.com",
+              logo: `${process.env.NEXT_PUBLIC_SITE_URL || "https://remotejobdesk.com"}/favicon.ico`,
+              sameAs: [],
+              description: "AI-powered remote job discovery platform covering US, UK, and 20+ European countries.",
+            }),
+          }}
+        />
+        {/* ── Google Analytics ── */}
+        {process.env.NEXT_PUBLIC_GA_ID && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
+              strategy="afterInteractive"
+            />
+            <Script id="google-analytics" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}');
+              `}
+            </Script>
+          </>
+        )}
         <Analytics />
       </body>
     </html>
-
   );
 }
