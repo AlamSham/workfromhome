@@ -1,4 +1,6 @@
 import type { MetadataRoute } from "next";
+import fs from "fs";
+import path from "path";
 import { getCompanyCountryPath, getCompanyPath } from "./lib/companies";
 import { JOB_CATEGORIES, getJobCategoryCountryPath, getJobCategoryPath } from "./lib/jobCategories";
 import { getJobPath } from "./lib/jobUrls";
@@ -150,43 +152,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly",
       priority: 0.7,
     },
-    {
-      url: `${SITE_URL}/blog/best-remote-jobs-2026`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: `${SITE_URL}/blog/how-to-get-remote-job-no-experience`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: `${SITE_URL}/blog/highest-paying-remote-jobs`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: `${SITE_URL}/blog/remote-job-interview-tips`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: `${SITE_URL}/blog/remote-jobs-usa-vs-europe`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: `${SITE_URL}/blog/remote-work-tools-2026`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
   ];
+
+  // ── Dynamic Blog Pages (read from directory) ──
+  let blogPages: MetadataRoute.Sitemap = [];
+  try {
+    const blogDir = path.join(process.cwd(), "src", "app", "blog");
+    const entries = fs.readdirSync(blogDir, { withFileTypes: true });
+    blogPages = entries
+      .filter((entry) => entry.isDirectory())
+      .map((dir) => ({
+        url: `${SITE_URL}/blog/${dir.name}`,
+        lastModified: new Date(),
+        changeFrequency: "monthly" as const,
+        priority: 0.8,
+      }));
+  } catch (error) {
+    console.error("Failed to generate blog sitemap entries:", error);
+  }
 
   // ── Country Pages (ALL 22 countries — always present, no API dependency) ──
   const countryPages: MetadataRoute.Sitemap = COUNTRIES.map((code) => ({
@@ -253,6 +236,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [
     ...staticPages,
+    ...blogPages,
     ...countryPages,
     ...categoryPages,
     ...categoryCountryPages,

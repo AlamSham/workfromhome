@@ -71,15 +71,15 @@ export default function NewsletterCTA({
 
   return (
     <section className="fade-up mb-6 mt-10 w-full">
-      <div className="relative overflow-hidden rounded-3xl bg-slate-900 px-6 py-10 text-center shadow-2xl sm:px-10 md:p-14">
-        <div className="absolute -right-24 -top-24 h-64 w-64 rounded-full bg-brand opacity-20 blur-3xl mix-blend-screen" />
-        <div className="absolute -bottom-24 -left-24 h-64 w-64 rounded-full bg-violet-600 opacity-20 blur-3xl mix-blend-screen" />
+      <div className="relative overflow-hidden rounded-3xl bg-[rgba(15,23,42,0.8)] px-6 py-10 text-center shadow-2xl sm:px-10 md:p-14 border border-slate-800">
+        <div className="absolute -right-24 -top-24 h-64 w-64 rounded-full bg-cyan-500 opacity-10 blur-3xl mix-blend-screen" />
+        <div className="absolute -bottom-24 -left-24 h-64 w-64 rounded-full bg-blue-500 opacity-10 blur-3xl mix-blend-screen" />
 
         <div className="relative z-10 mx-auto max-w-xl">
           <h2 className="font-serif text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl">
             {title.includes("remote job alert") ? (
               <>
-                Save this <span className="text-brand">remote job alert</span>.
+                Save this <span className="gradient-text">remote job alert</span>.
               </>
             ) : (
               title
@@ -97,12 +97,12 @@ export default function NewsletterCTA({
               onChange={(event) => setEmail(event.target.value)}
               disabled={status === "loading" || status === "success"}
               placeholder="Enter your email address"
-              className="flex-1 rounded-xl border border-white/10 bg-white/5 px-4 py-3.5 text-sm text-white placeholder-slate-400 backdrop-blur-sm transition-all focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand disabled:opacity-50"
+              className="flex-1 rounded-xl border border-slate-700 bg-slate-900/50 px-4 py-3.5 text-sm text-white placeholder-slate-500 backdrop-blur-sm transition-all focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 disabled:opacity-50"
             />
             <button
               type="submit"
               disabled={status === "loading" || status === "success"}
-              className="flex min-w-[120px] w-full items-center justify-center rounded-xl bg-brand px-6 py-3.5 text-sm font-bold text-white shadow-lg transition-all hover:bg-brand-ink disabled:opacity-50 sm:w-auto"
+              className="btn-primary flex min-w-[120px] w-full items-center justify-center py-3.5 sm:w-auto"
             >
               {status === "loading" ? "Saving..." : status === "success" ? "Saved! 🎉" : buttonLabel}
             </button>

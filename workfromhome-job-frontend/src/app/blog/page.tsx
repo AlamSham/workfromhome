@@ -25,6 +25,54 @@ interface BlogPost {
 
 const BLOG_POSTS: BlogPost[] = [
   {
+    slug: "remote-customer-support-jobs-no-experience",
+    title: "Remote Customer Support Jobs (No Experience Needed) — 2026",
+    excerpt: "Looking to start working from home? Remote customer support is the perfect entry point. Discover how to land these roles with zero prior experience in 2026.",
+    date: "2026-05-12",
+    readTime: "7 min",
+    category: "Getting Started",
+  },
+  {
+    slug: "work-from-home-data-entry-jobs",
+    title: "Work From Home Data Entry Jobs — Apply Now 2026",
+    excerpt: "Find legitimate work-from-home data entry jobs in 2026. Learn how to spot scams, what skills you need, and where to apply today.",
+    date: "2026-05-12",
+    readTime: "6 min",
+    category: "Data & Admin",
+  },
+  {
+    slug: "remote-jobs-for-beginners",
+    title: "Remote Jobs for Beginners — Complete Guide 2026",
+    excerpt: "The ultimate guide to finding remote jobs for beginners. Discover the top 5 roles you can land with no prior remote work experience.",
+    date: "2026-05-12",
+    readTime: "8 min",
+    category: "Getting Started",
+  },
+  {
+    slug: "remote-jobs-that-pay-well",
+    title: "Remote Jobs That Pay Well Without a Degree",
+    excerpt: "You don't need a college degree to make six figures from home. Discover the highest paying remote jobs that focus on skills over formal education.",
+    date: "2026-05-12",
+    readTime: "9 min",
+    category: "Salary Guide",
+  },
+  {
+    slug: "best-companies-hiring-remotely-2026",
+    title: "Best Companies Hiring Remotely in 2026",
+    excerpt: "Looking for the best remote employers? We highlight the top remote-first companies offering great benefits, async work, and global hiring in 2026.",
+    date: "2026-05-12",
+    readTime: "8 min",
+    category: "Company Spotlight",
+  },
+  {
+    slug: "remote-jobs-in-europe-for-americans",
+    title: "Remote Jobs in Europe for Americans — 2026 Guide",
+    excerpt: "Want to work for a European company while living in the US? Learn about the benefits, tax implications, and how to find EU remote jobs as an American.",
+    date: "2026-05-12",
+    readTime: "7 min",
+    category: "Global Remote",
+  },
+  {
     slug: "best-remote-jobs-2026",
     title: "15 Best Remote Jobs in 2026 — High Paying & No Experience Required",
     excerpt: "Discover the top remote jobs hiring in 2026, from software engineering to customer support. Includes salary ranges, required skills, and where to apply.",
@@ -91,17 +139,17 @@ export default function BlogPage() {
     <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-8 px-4 py-10 sm:px-6 lg:px-10">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-      <header className="fade-up glass-card rounded-3xl p-6 sm:p-10 relative overflow-hidden">
-        <div className="hero-orb-1" />
-        <div className="hero-orb-2" />
+      <header className="fade-up glass-card rounded-3xl p-6 sm:p-10 relative overflow-hidden" style={{ border: "1px solid rgba(148,163,184,0.1)", background: "rgba(15,23,42,0.6)" }}>
+        <div className="hero-orb-1" style={{ opacity: 0.15 }} />
+        <div className="hero-orb-2" style={{ opacity: 0.15 }} />
         <div style={{ position: "relative", zIndex: 1 }}>
-          <span className="inline-flex rounded-full bg-brand/10 px-3 py-1 text-xs font-bold tracking-widest text-brand-ink uppercase">
+          <span className="inline-flex rounded-full bg-cyan-500/10 px-3 py-1 text-xs font-bold tracking-widest text-cyan-400 uppercase">
             📚 Remote Work Blog
           </span>
-          <h1 className="mt-3 font-serif text-3xl font-bold text-slate-900 sm:text-4xl">
+          <h1 className="mt-3 font-serif text-3xl font-bold text-slate-100 sm:text-4xl">
             Remote Work Guides & Career Advice
           </h1>
-          <p className="mt-4 text-base leading-7 text-slate-600 max-w-2xl">
+          <p className="mt-4 text-base leading-7 text-slate-400 max-w-2xl">
             Expert guides on finding remote jobs, negotiating salaries, acing virtual interviews,
             and building a successful work-from-home career.
           </p>
@@ -113,24 +161,29 @@ export default function BlogPage() {
           <Link
             key={post.slug}
             href={`/blog/${post.slug}`}
-            className="glass-card fade-up rounded-2xl p-6 transition hover:shadow-lg hover:border-brand/30"
-            style={{ textDecoration: "none", borderLeft: "3px solid transparent", transition: "all 0.2s" }}
+            className="fade-up rounded-2xl p-6 transition hover:shadow-[0_8px_30px_rgb(0,0,0,0.4)]"
+            style={{ 
+              textDecoration: "none", 
+              transition: "all 0.2s",
+              background: "rgba(148,163,184,0.04)", 
+              border: "1px solid rgba(148,163,184,0.1)"
+            }}
           >
             <div className="flex items-center gap-2 mb-3">
-              <span className="badge bg-brand/10 text-brand-ink">{post.category}</span>
-              <span className="text-xs text-slate-400 font-semibold">{post.readTime} read</span>
-              <span className="ml-auto text-xs text-slate-400">{new Date(post.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
+              <span className="badge badge-accent" style={{ background: "transparent", border: "1px solid rgba(6,182,212,0.3)" }}>{post.category}</span>
+              <span className="text-xs text-slate-500 font-semibold">{post.readTime} read</span>
+              <span className="ml-auto text-xs text-slate-500">{new Date(post.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
             </div>
-            <h2 className="text-base font-bold text-slate-900 leading-snug">{post.title}</h2>
-            <p className="mt-2 text-sm text-slate-600 leading-6">{post.excerpt}</p>
-            <span className="mt-3 inline-flex text-sm font-bold text-brand-ink">Read more →</span>
+            <h2 className="text-base font-bold text-slate-200 leading-snug">{post.title}</h2>
+            <p className="mt-2 text-sm text-slate-400 leading-6">{post.excerpt}</p>
+            <span className="mt-3 inline-flex text-sm font-bold text-cyan-500">Read more →</span>
           </Link>
         ))}
       </section>
 
-      <section className="glass-card fade-up rounded-3xl p-6 sm:p-8">
+      <section className="glass-card fade-up rounded-3xl p-6 sm:p-8" style={{ background: "rgba(15,23,42,0.6)", border: "1px solid rgba(148,163,184,0.1)" }}>
         <h2 className="section-title">Browse Remote Jobs</h2>
-        <p className="mt-2 text-sm text-slate-600">Done reading? Jump straight into fresh remote job listings.</p>
+        <p className="mt-2 text-sm text-slate-400">Done reading? Jump straight into fresh remote job listings.</p>
         <div className="mt-4 flex flex-wrap gap-3">
           <Link href="/" className="btn-primary">Browse All Jobs →</Link>
           <Link href="/remote-jobs-in-us" className="btn-outline">🇺🇸 US Jobs</Link>

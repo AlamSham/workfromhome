@@ -186,6 +186,23 @@ export default async function CountryPage({ params, searchParams }: CountryPageP
     ],
   };
 
+  // ── Structured Data: CollectionPage ──
+  const collectionPageJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: `Remote Jobs in ${countryName}`,
+    description: seoContent.intro,
+    url: `${SITE_URL}/remote-jobs-in-${rawCountry.toLowerCase()}`,
+    mainEntity: {
+      "@type": "ItemList",
+      itemListElement: jobs.map((job, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        url: `${SITE_URL}/jobs/${job._id}`,
+      })),
+    },
+  };
+
   // ── Structured Data: FAQPage (boosts SERP real estate) ──
   const faqJsonLd = seoContent.faq.length > 0 ? {
     "@context": "https://schema.org",
@@ -201,6 +218,8 @@ export default async function CountryPage({ params, searchParams }: CountryPageP
     <div className="flex flex-1 flex-col gap-6">
       {/* JSON-LD: Breadcrumbs */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
+      {/* JSON-LD: CollectionPage */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionPageJsonLd) }} />
       {/* JSON-LD: FAQ */}
       {faqJsonLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />}
 
@@ -220,15 +239,15 @@ export default async function CountryPage({ params, searchParams }: CountryPageP
           {/* ── About remote work in this country ── */}
           <section className="glass-card fade-up rounded-3xl p-6 sm:p-8">
             <h2 className="section-title">Remote Jobs in {countryName} — Overview</h2>
-            <p className="mt-3 text-sm leading-7 text-slate-600">{seoContent.intro}</p>
+            <p className="mt-3 text-sm leading-7 text-slate-400">{seoContent.intro}</p>
           </section>
 
           {/* ── Why work remotely here ── */}
           <section className="glass-card fade-up rounded-3xl p-6 sm:p-8">
             <h2 className="section-title">Why Work Remotely in {countryName}?</h2>
-            <p className="mt-3 text-sm leading-7 text-slate-600">{seoContent.whyRemote}</p>
+            <p className="mt-3 text-sm leading-7 text-slate-400">{seoContent.whyRemote}</p>
             <div className="mt-4">
-              <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400">Top Remote Roles</h3>
+              <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500">Top Remote Roles</h3>
               <div className="mt-3 flex flex-wrap gap-2">
                 {seoContent.topRoles.map((role) => (
                   <span key={role} className="tag-pill">{role}</span>
@@ -277,11 +296,11 @@ export default async function CountryPage({ params, searchParams }: CountryPageP
               <h2 className="section-title">Frequently Asked Questions — Remote Jobs in {countryName}</h2>
               <div className="mt-4 space-y-4">
                 {seoContent.faq.map((item, i) => (
-                  <details key={i} className="group rounded-2xl bg-slate-50 p-4" open={i === 0}>
-                    <summary className="cursor-pointer text-sm font-bold text-slate-800 leading-6 group-open:mb-2">
+                  <details key={i} className="group rounded-2xl bg-[rgba(15,23,42,0.6)] border border-[rgba(148,163,184,0.1)] p-4" open={i === 0}>
+                    <summary className="cursor-pointer text-sm font-bold text-slate-200 leading-6 group-open:mb-2 group-open:text-cyan-400 transition-colors">
                       {item.q}
                     </summary>
-                    <p className="text-sm leading-7 text-slate-600">{item.a}</p>
+                    <p className="text-sm leading-7 text-slate-400">{item.a}</p>
                   </details>
                 ))}
               </div>

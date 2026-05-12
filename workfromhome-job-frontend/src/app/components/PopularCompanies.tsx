@@ -34,9 +34,9 @@ export default async function PopularCompanies({
   if (!companies.length) return null;
 
   return (
-    <section className="glass-card fade-up rounded-3xl p-6 sm:p-8">
+    <section className="glass-card fade-up" style={{ borderRadius: "1.25rem", padding: "1.5rem 2rem" }}>
       <h2 className="section-title">{title}</h2>
-      <p className="mt-3 text-sm leading-7 text-slate-600">{subtitle}</p>
+      <p style={{ marginTop: "0.5rem", fontSize: "0.85rem", lineHeight: 1.7, color: "#64748b" }}>{subtitle}</p>
       <div className="mt-5 flex flex-wrap gap-2">
         {companies.map((company) => (
           <Link key={company.slug} href={getCompanyPath(company.label)} className="tag-pill">

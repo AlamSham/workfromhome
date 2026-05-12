@@ -400,9 +400,33 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
               <span className="ml-auto text-slate-400 text-xs">{formatDate(job.publishedAt)}</span>
             </div>
 
-            <h1 className="font-serif text-2xl font-bold leading-tight text-slate-900 sm:text-3xl">
-              {displayTitle}
-            </h1>
+            {/* Company logo + title row */}
+            <div className="flex items-start gap-4">
+              {job.sourceLabel && (
+                <div
+                  className="shrink-0 w-14 h-14 rounded-2xl bg-brand/10 border border-slate-100 flex items-center justify-center overflow-hidden text-sm font-black text-brand-ink"
+                  style={{
+                    backgroundImage: `url(https://logo.clearbit.com/${job.sourceLabel.toLowerCase().replace(/\s+/g, '').replace(/[^a-z0-9.]/g, '')}.com)`,
+                    backgroundSize: '70%',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat',
+                  }}
+                  aria-label={job.sourceLabel}
+                >
+                  <span className="opacity-30">{(job.sourceLabel || "J").slice(0, 2).toUpperCase()}</span>
+                </div>
+              )}
+              <div className="flex-1 min-w-0">
+                <h1 className="font-serif text-2xl font-bold leading-tight text-slate-900 sm:text-3xl">
+                  {displayTitle}
+                </h1>
+                {job.sourceLabel && (
+                  <p className="mt-1 text-sm font-semibold text-brand-ink">
+                    at {job.sourceLabel}
+                  </p>
+                )}
+              </div>
+            </div>
 
             <p className="mt-3 text-sm leading-7 text-slate-600">
               {job.seo?.metaDescription || job.summary}
@@ -411,17 +435,38 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
             {signalPills.length > 0 && (
               <div className="mt-4 flex flex-wrap gap-2">
                 {signalPills.map((pill) => (
-                  <span key={pill} className="badge bg-slate-100 text-slate-700">
+                  <span key={pill} className="badge badge-gray">
                     {pill}
                   </span>
                 ))}
               </div>
             )}
 
+            {/* Apply CTA — Above the fold */}
+            <div className="mt-5 flex flex-wrap items-center gap-3 pt-4 border-t border-slate-100">
+              <a
+                href={job.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-primary"
+                style={{
+                  padding: "0.7rem 2rem",
+                  fontSize: "0.95rem",
+                  borderRadius: "0.875rem",
+                  boxShadow: "0 4px 16px rgba(11,143,117,0.3)",
+                }}
+              >
+                ✨ Apply Now ↗
+              </a>
+              <span className="text-xs text-slate-400 font-medium">
+                Opens employer&apos;s official career page
+              </span>
+            </div>
+
           </header>
 
           {/* Overview */}
-          <section className="glass-card fade-up rounded-3xl p-6 sm:p-8">
+          <section className="glass-card fade-up" style={{ borderRadius: "1.25rem", padding: "1.5rem 2rem" }}>
             <h2 className="section-title">Job Overview</h2>
             <div className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
               {[
@@ -435,9 +480,9 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
                 ...(job.signals?.experienceText ? [{ label: "Experience", value: job.signals.experienceText }] : []),
                 ...(job.signals?.seniority ? [{ label: "Seniority", value: formatSeniority(job.signals.seniority) }] : []),
               ].map(({ label, value }) => (
-                <div key={label} className="rounded-2xl bg-slate-50 p-3">
-                  <p className="text-xs font-bold uppercase tracking-wide text-slate-400">{label}</p>
-                  <p className="mt-0.5 font-semibold text-slate-800">{value}</p>
+                <div key={label} style={{ borderRadius: "12px", background: "rgba(148,163,184,0.04)", border: "1px solid rgba(148,163,184,0.06)", padding: "0.85rem" }}>
+                  <p className="text-xs font-bold uppercase tracking-wide text-cyan-400">{label}</p>
+                  <p className="mt-0.5 font-semibold text-slate-100">{value}</p>
                 </div>
               ))}
             </div>
@@ -449,22 +494,22 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
             const sections = formatJobDescription(descText);
             
             return (
-              <section className="glass-card fade-up rounded-3xl p-6 sm:p-8">
+              <section className="glass-card fade-up" style={{ borderRadius: "1.25rem", padding: "1.5rem 2rem" }}>
                 <h2 className="section-title">Job Description</h2>
                 {sections.length > 0 ? (
                   <div className="mt-4 space-y-5">
                     {sections.map((section, si) => (
                       <div key={si}>
                         {section.heading && (
-                          <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wide mb-2">
+                          <h3 className="text-sm font-bold text-slate-100 uppercase tracking-wide mb-2">
                             {section.heading}
                           </h3>
                         )}
                         {section.type === "bullets" ? (
                           <ul className="space-y-2 pl-1">
                             {section.items.map((item, ii) => (
-                              <li key={ii} className="flex items-start gap-2 text-sm leading-7 text-slate-700">
-                                <span className="mt-2 h-1.5 w-1.5 rounded-full bg-brand shrink-0" />
+                              <li key={ii} className="flex items-start gap-2 text-sm leading-7 text-slate-300">
+                                <span className="mt-2 h-1.5 w-1.5 rounded-full bg-cyan-400 shrink-0 shadow-[0_0_8px_rgba(34,211,238,0.6)]" />
                                 <span>{item}</span>
                               </li>
                             ))}
@@ -472,7 +517,7 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
                         ) : (
                           <div className="space-y-3">
                             {section.items.map((item, ii) => (
-                              <p key={ii} className="text-sm leading-7 text-slate-700">{item}</p>
+                              <p key={ii} className="text-sm leading-7 text-slate-300">{item}</p>
                             ))}
                           </div>
                         )}
@@ -480,7 +525,7 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
                     ))}
                   </div>
                 ) : (
-                  <p className="mt-3 whitespace-pre-wrap text-sm leading-7 text-slate-700">
+                  <p className="mt-3 whitespace-pre-wrap text-sm leading-7 text-slate-300">
                     {descText}
                   </p>
                 )}
@@ -490,7 +535,7 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
 
           {/* Keywords */}
           {(job.seo?.keywords || []).length > 0 && (
-            <section className="glass-card fade-up rounded-3xl p-6 sm:p-8">
+            <section className="glass-card fade-up" style={{ borderRadius: "1.25rem", padding: "1.5rem 2rem" }}>
               <h2 className="section-title">Related Skills & Keywords</h2>
               <div className="mt-4 flex flex-wrap gap-2">
                 {(job.seo?.keywords || []).map((kw) => (
@@ -530,26 +575,27 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
           <section
             className="fade-up"
             style={{
-              background: "linear-gradient(135deg, rgba(11,143,117,0.12) 0%, rgba(11,143,117,0.04) 100%)",
-              border: "2px solid rgba(11,143,117,0.25)",
-              borderRadius: "1.5rem",
+              background: "linear-gradient(135deg, rgba(6,182,212,0.08) 0%, rgba(59,130,246,0.04) 100%)",
+              border: "1px solid rgba(6,182,212,0.15)",
+              borderRadius: "1.25rem",
               padding: "2rem 1.5rem",
               textAlign: "center",
+              boxShadow: "0 8px 32px rgba(0,0,0,0.2)",
             }}
           >
             <div style={{ fontSize: "2.5rem", marginBottom: "0.5rem" }}>🚀</div>
             <h2
+              className="gradient-text"
               style={{
                 fontFamily: "var(--font-playfair), Georgia, serif",
                 fontSize: "clamp(1.3rem, 4vw, 1.75rem)",
                 fontWeight: 800,
-                color: "#0f172a",
                 margin: "0 0 0.5rem",
               }}
             >
               Ready to Apply?
             </h2>
-            <p style={{ color: "#475569", fontSize: "0.9rem", lineHeight: 1.65, marginBottom: "1.5rem", maxWidth: "480px", margin: "0 auto 1.5rem" }}>
+            <p style={{ color: "#94a3b8", fontSize: "0.9rem", lineHeight: 1.65, marginBottom: "1.5rem", maxWidth: "480px", margin: "0 auto 1.5rem" }}>
               Click the button below to apply on the employer&apos;s official website.
               Always verify job details before submitting personal information.
             </p>
@@ -558,41 +604,22 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
                 href={job.link}
                 target="_blank"
                 rel="noopener noreferrer"
+                className="btn-primary"
                 style={{
                   display: "inline-flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "0.4rem",
-                  background: "var(--brand)",
-                  color: "#fff",
-                  fontWeight: 800,
-                  fontSize: "1rem",
                   padding: "0.85rem 2.5rem",
-                  borderRadius: "0.875rem",
-                  textDecoration: "none",
-                  transition: "background 0.18s ease, transform 0.12s ease",
-                  boxShadow: "0 4px 20px rgba(11,143,117,0.35)",
-                  minWidth: "200px",
+                  fontSize: "1.05rem",
                 }}
               >
                 ✨ Apply Now ↗
               </a>
               <Link
                 href="/"
+                className="btn-outline"
                 style={{
                   display: "inline-flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "0.4rem",
-                  border: "1.5px solid rgba(11,143,117,0.3)",
-                  background: "#fff",
-                  color: "var(--brand-ink)",
-                  fontWeight: 700,
-                  fontSize: "0.875rem",
                   padding: "0.85rem 1.75rem",
-                  borderRadius: "0.875rem",
-                  textDecoration: "none",
-                  transition: "background 0.18s ease",
+                  fontSize: "0.875rem",
                 }}
               >
                 ← Browse More Jobs

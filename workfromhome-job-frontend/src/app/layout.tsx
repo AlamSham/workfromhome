@@ -5,6 +5,7 @@ import Link from "next/link";
 import Script from "next/script";
 import { Analytics } from "@vercel/analytics/react";
 import { JOB_CATEGORIES, getJobCategoryPath } from "./lib/jobCategories";
+import { SEO_COUNTRIES } from "./lib/seoCountries";
 import { getCompanyPath } from "./lib/companies";
 import "./globals.css";
 
@@ -98,6 +99,15 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     "Cloudera",
     "Honeycomb.io",
   ];
+  const featuredCountries = SEO_COUNTRIES.slice(0, 6);
+
+  const navLinks = [
+    { href: "/", label: "Jobs" },
+    { href: "/about", label: "About" },
+    { href: "/contact", label: "Contact" },
+    { href: "/blog", label: "Blog" },
+  ];
+
   return (
     <html
       lang="en"
@@ -105,54 +115,113 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     >
       <body className="flex min-h-full flex-col">
         {/* ── Navbar ── */}
-        <nav className="sticky top-0 z-50 border-b border-white/60 bg-white/80 backdrop-blur-md shadow-sm">
-          <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-10">
+        <nav
+          style={{
+            position: "sticky",
+            top: 0,
+            zIndex: 50,
+            borderBottom: "1px solid rgba(148,163,184,0.06)",
+            background: "rgba(6,10,20,0.85)",
+            backdropFilter: "blur(20px) saturate(1.5)",
+            WebkitBackdropFilter: "blur(20px) saturate(1.5)",
+          }}
+        >
+          <div
+            style={{
+              maxWidth: "1200px",
+              margin: "0 auto",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              padding: "0.75rem 1.25rem",
+              gap: "1rem",
+            }}
+          >
+            {/* Logo */}
             <Link
               href="/"
-              className="flex min-w-0 items-center gap-2 font-serif text-lg font-bold text-brand-ink sm:text-xl"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                textDecoration: "none",
+                flexShrink: 0,
+              }}
             >
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand text-white text-sm font-black">R</span>
-              <span className="truncate">RemoteJobDesk</span>
+              <span
+                style={{
+                  display: "flex",
+                  width: "34px",
+                  height: "34px",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: "10px",
+                  background: "linear-gradient(135deg, #06b6d4, #3b82f6)",
+                  color: "#fff",
+                  fontSize: "0.8rem",
+                  fontWeight: 900,
+                  boxShadow: "0 2px 12px rgba(6,182,212,0.3)",
+                }}
+              >
+                R
+              </span>
+              <span
+                style={{
+                  fontFamily: "var(--font-playfair), Georgia, serif",
+                  fontSize: "1.15rem",
+                  fontWeight: 700,
+                  color: "#f1f5f9",
+                  letterSpacing: "-0.01em",
+                }}
+              >
+                Remote<span style={{ color: "#06b6d4" }}>Job</span>Desk
+              </span>
             </Link>
-            <div className="flex items-center justify-between gap-3 sm:hidden">
-              <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
-                Browse
-              </div>
+
+            {/* Nav Links */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.25rem",
+              }}
+            >
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  style={{
+                    padding: "0.4rem 0.85rem",
+                    fontSize: "0.82rem",
+                    fontWeight: 600,
+                    color: "#94a3b8",
+                    textDecoration: "none",
+                    borderRadius: "0.5rem",
+                    transition: "color 0.2s, background 0.2s",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {link.label}
+                </Link>
+              ))}
               <Link
-                href="/?country=US"
-                className="inline-flex rounded-xl bg-brand px-3 py-1.5 text-sm font-semibold whitespace-nowrap text-white transition hover:bg-brand-ink"
-              >
-                🇺🇸 US Jobs
-              </Link>
-            </div>
-            <div className="flex flex-wrap items-center gap-1.5 sm:gap-3">
-              <Link
-                href="/"
-                className="rounded-xl px-3 py-1.5 text-sm font-semibold whitespace-nowrap text-slate-600 transition hover:bg-brand/10 hover:text-brand-ink"
-              >
-                Jobs
-              </Link>
-              <Link
-                href="/about"
-                className="rounded-xl px-3 py-1.5 text-sm font-semibold whitespace-nowrap text-slate-600 transition hover:bg-brand/10 hover:text-brand-ink"
-              >
-                About
-              </Link>
-              <Link
-                href="/contact"
-                className="rounded-xl px-3 py-1.5 text-sm font-semibold whitespace-nowrap text-slate-600 transition hover:bg-brand/10 hover:text-brand-ink"
-              >
-                Contact
-              </Link>
-              <Link
-                href="/blog"
-                className="rounded-xl px-3 py-1.5 text-sm font-semibold whitespace-nowrap text-slate-600 transition hover:bg-brand/10 hover:text-brand-ink"
-              >
-                Blog
-              </Link>
-              <Link
-                href="/?country=US"
-                className="hidden sm:inline-flex rounded-xl bg-brand px-4 py-1.5 text-sm font-semibold whitespace-nowrap text-white transition hover:bg-brand-ink"
+                href="/remote-jobs-in-us"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.3rem",
+                  marginLeft: "0.5rem",
+                  padding: "0.45rem 1rem",
+                  fontSize: "0.8rem",
+                  fontWeight: 700,
+                  color: "#fff",
+                  background: "linear-gradient(135deg, #06b6d4, #3b82f6)",
+                  borderRadius: "0.6rem",
+                  textDecoration: "none",
+                  boxShadow: "0 2px 12px rgba(6,182,212,0.25)",
+                  transition: "all 0.2s",
+                  whiteSpace: "nowrap",
+                }}
               >
                 🇺🇸 US Jobs
               </Link>
@@ -164,60 +233,148 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <main className="flex flex-1 flex-col">{children}</main>
 
         {/* ── Footer ── */}
-        <footer className="mt-auto border-t border-white/60 bg-white/70 backdrop-blur">
-          <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-10">
-            <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
+        <footer
+          style={{
+            marginTop: "auto",
+            borderTop: "1px solid rgba(148,163,184,0.06)",
+            background: "rgba(6,10,20,0.9)",
+          }}
+        >
+          <div
+            style={{
+              maxWidth: "1200px",
+              margin: "0 auto",
+              padding: "3rem 1.25rem 2rem",
+            }}
+          >
+            {/* Top row: 4 columns */}
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+                gap: "2rem",
+              }}
+            >
+              {/* Brand */}
               <div>
-                <p className="font-serif text-lg font-bold text-brand-ink">RemoteJobDesk</p>
-                <p className="mt-1 text-xs text-slate-500">
-                  Fresh remote jobs updated daily for US & Europe.
+                <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", marginBottom: "0.75rem" }}>
+                  <span
+                    style={{
+                      display: "flex",
+                      width: "28px",
+                      height: "28px",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      borderRadius: "8px",
+                      background: "linear-gradient(135deg, #06b6d4, #3b82f6)",
+                      color: "#fff",
+                      fontSize: "0.65rem",
+                      fontWeight: 900,
+                    }}
+                  >
+                    R
+                  </span>
+                  <span style={{ fontFamily: "var(--font-playfair), Georgia, serif", fontWeight: 700, color: "#f1f5f9" }}>
+                    Remote<span style={{ color: "#06b6d4" }}>Job</span>Desk
+                  </span>
+                </div>
+                <p style={{ fontSize: "0.78rem", color: "#64748b", lineHeight: 1.7 }}>
+                  AI-powered remote job discovery across 22+ countries. Updated daily.
                 </p>
               </div>
-              <nav className="flex flex-wrap items-center gap-4 text-sm text-slate-600">
-                <Link href="/" className="hover:text-brand-ink transition">Home</Link>
-                <Link href="/about" className="hover:text-brand-ink transition">About</Link>
-                <Link href="/contact" className="hover:text-brand-ink transition">Contact</Link>
-                <Link href="/editorial-policy" className="hover:text-brand-ink transition">Editorial Policy</Link>
-                <Link href="/how-we-source-jobs" className="hover:text-brand-ink transition">How We Source Jobs</Link>
-                <Link href="/blog" className="hover:text-brand-ink transition">Blog</Link>
-                <Link href="/privacy" className="hover:text-brand-ink transition">Privacy Policy</Link>
-              </nav>
-            </div>
-            <div className="mt-6 border-t border-white/60 pt-4">
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">
-                Popular Categories
-              </p>
-              <div className="mt-3 flex flex-wrap gap-3 text-sm text-slate-600">
-                {featuredCategories.map((category) => (
-                  <Link
-                    key={category.slug}
-                    href={getJobCategoryPath(category.slug)}
-                    className="hover:text-brand-ink transition"
-                  >
-                    {category.label}
-                  </Link>
-                ))}
+
+              {/* Quick Links */}
+              <div>
+                <p style={{ fontSize: "0.7rem", fontWeight: 800, color: "#64748b", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "0.75rem" }}>
+                  Quick Links
+                </p>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                  <Link href="/" style={{ fontSize: "0.82rem", color: "#94a3b8", textDecoration: "none", transition: "color 0.2s" }}>Home</Link>
+                  <Link href="/about" style={{ fontSize: "0.82rem", color: "#94a3b8", textDecoration: "none", transition: "color 0.2s" }}>About</Link>
+                  <Link href="/contact" style={{ fontSize: "0.82rem", color: "#94a3b8", textDecoration: "none", transition: "color 0.2s" }}>Contact</Link>
+                  <Link href="/blog" style={{ fontSize: "0.82rem", color: "#94a3b8", textDecoration: "none", transition: "color 0.2s" }}>Blog</Link>
+                  <Link href="/editorial-policy" style={{ fontSize: "0.82rem", color: "#94a3b8", textDecoration: "none", transition: "color 0.2s" }}>Editorial Policy</Link>
+                  <Link href="/how-we-source-jobs" style={{ fontSize: "0.82rem", color: "#94a3b8", textDecoration: "none", transition: "color 0.2s" }}>How We Source Jobs</Link>
+                  <Link href="/privacy" style={{ fontSize: "0.82rem", color: "#94a3b8", textDecoration: "none", transition: "color 0.2s" }}>Privacy Policy</Link>
+                </div>
+              </div>
+
+              {/* Categories */}
+              <div>
+                <p style={{ fontSize: "0.7rem", fontWeight: 800, color: "#64748b", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "0.75rem" }}>
+                  Popular Categories
+                </p>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                  {featuredCategories.map((category) => (
+                    <Link
+                      key={category.slug}
+                      href={getJobCategoryPath(category.slug)}
+                      style={{ fontSize: "0.82rem", color: "#94a3b8", textDecoration: "none", transition: "color 0.2s" }}
+                    >
+                      {category.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              {/* Companies */}
+              <div>
+                <p style={{ fontSize: "0.7rem", fontWeight: 800, color: "#64748b", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "0.75rem" }}>
+                  Top Companies
+                </p>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                  {featuredCompanies.map((company) => (
+                    <Link
+                      key={company}
+                      href={getCompanyPath(company)}
+                      style={{ fontSize: "0.82rem", color: "#94a3b8", textDecoration: "none", transition: "color 0.2s" }}
+                    >
+                      {company}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              {/* Countries */}
+              <div>
+                <p style={{ fontSize: "0.7rem", fontWeight: 800, color: "#64748b", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "0.75rem" }}>
+                  Top Countries
+                </p>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                  {featuredCountries.map((country) => (
+                    <Link
+                      key={country.slug}
+                      href={`/remote-jobs-in-${country.slug}`}
+                      style={{ fontSize: "0.82rem", color: "#94a3b8", textDecoration: "none", transition: "color 0.2s" }}
+                    >
+                      {country.name}
+                    </Link>
+                  ))}
+                </div>
               </div>
             </div>
-            <div className="mt-4">
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">
-                Company Pages
+
+            {/* Bottom bar */}
+            <div
+              style={{
+                marginTop: "2.5rem",
+                paddingTop: "1.5rem",
+                borderTop: "1px solid rgba(148,163,184,0.06)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                flexWrap: "wrap",
+                gap: "0.75rem",
+              }}
+            >
+              <p style={{ fontSize: "0.72rem", color: "#475569" }}>
+                © {new Date().getFullYear()} RemoteJobDesk. All rights reserved. Job listings are aggregated from public sources.
               </p>
-              <div className="mt-3 flex flex-wrap gap-3 text-sm text-slate-600">
-                {featuredCompanies.map((company) => (
-                  <Link
-                    key={company}
-                    href={getCompanyPath(company)}
-                    className="hover:text-brand-ink transition"
-                  >
-                    {company}
-                  </Link>
-                ))}
+              <div style={{ display: "flex", gap: "1rem" }}>
+                <Link href="/rss.xml" style={{ fontSize: "0.72rem", color: "#475569", textDecoration: "none" }}>RSS Feed</Link>
+                <Link href="/sitemap.xml" style={{ fontSize: "0.72rem", color: "#475569", textDecoration: "none" }}>Sitemap</Link>
               </div>
             </div>
-            <p className="mt-6 text-center text-xs text-slate-400">
-              © {new Date().getFullYear()} RemoteJobDesk. All rights reserved. Job listings are aggregated from public sources.
-            </p>
           </div>
         </footer>
 

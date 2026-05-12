@@ -20,7 +20,6 @@ export async function GET(request: NextRequest) {
     const company = searchParams.get('company') || 'Remote Company';
     const country = searchParams.get('country') || 'Global';
     const category = searchParams.get('category') || 'WFH';
-
     const brandColor = getColor(company);
     const initials = company.replace(/^https?:\/\/(www\.)?/, "").split(/[.\-\s]/)[0].slice(0, 2).toUpperCase();
 
@@ -33,36 +32,13 @@ export async function GET(request: NextRequest) {
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
-            backgroundColor: '#f0faf7',
+            backgroundColor: '#060a14',
+            backgroundImage: 'radial-gradient(circle at 10% 20%, rgba(6, 182, 212, 0.08) 0%, transparent 40%), radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.08) 0%, transparent 40%)',
             padding: '60px',
             fontFamily: 'sans-serif',
             position: 'relative',
           }}
         >
-          {/* Decorative background orbs to match frontend styling */}
-          <div
-            style={{
-              position: 'absolute',
-              top: '-100px',
-              right: '-100px',
-              width: '400px',
-              height: '400px',
-              borderRadius: '9999px',
-              background: 'radial-gradient(circle, rgba(11,143,117,0.15) 0%, transparent 70%)',
-            }}
-          />
-          <div
-            style={{
-              position: 'absolute',
-              bottom: '-100px',
-              left: '-100px',
-              width: '400px',
-              height: '400px',
-              borderRadius: '9999px',
-              background: 'radial-gradient(circle, rgba(245,158,11,0.15) 0%, transparent 70%)',
-            }}
-          />
-
           {/* Header row (Logo / Watermark) */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', zIndex: 10 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
@@ -70,7 +46,7 @@ export async function GET(request: NextRequest) {
                 style={{
                   width: '48px',
                   height: '48px',
-                  backgroundColor: '#0b8f75',
+                  background: 'linear-gradient(135deg, #06b6d4, #3b82f6)',
                   borderRadius: '12px',
                   display: 'flex',
                   alignItems: 'center',
@@ -82,8 +58,8 @@ export async function GET(request: NextRequest) {
               >
                 R
               </div>
-              <span style={{ fontSize: '28px', fontWeight: 'bold', color: '#0d1f1a', letterSpacing: '-0.5px' }}>
-                RemoteJobDesk
+              <span style={{ fontSize: '28px', fontWeight: 'bold', color: '#f1f5f9', letterSpacing: '-0.5px' }}>
+                Remote<span style={{ color: '#06b6d4' }}>Job</span>Desk
               </span>
             </div>
             
@@ -91,8 +67,9 @@ export async function GET(request: NextRequest) {
               style={{
                 display: "flex",
                 alignItems: "center",
-                background: "rgba(11,143,117,0.1)",
-                color: "#075f4e",
+                background: "rgba(6,182,212,0.15)",
+                border: "1px solid rgba(6,182,212,0.3)",
+                color: "#22d3ee",
                 borderRadius: "9999px",
                 padding: "8px 20px",
                 fontSize: "18px",
@@ -109,31 +86,34 @@ export async function GET(request: NextRequest) {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', zIndex: 10, marginTop: '20px' }}>
             <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                <span style={{
-                 backgroundColor: '#e0f5f0',
-                 color: '#075f4e',
-                 padding: '8px 16px',
+                 backgroundColor: 'rgba(6,182,212,0.1)',
+                 border: '1px solid rgba(6,182,212,0.2)',
+                 color: '#22d3ee',
+                 padding: '8px 18px',
                  borderRadius: '9999px',
-                 fontSize: '20px',
+                 fontSize: '18px',
                  fontWeight: 'bold'
                }}>{country}</span>
                <span style={{
-                 backgroundColor: '#1e293b',
-                 color: 'white',
-                 padding: '8px 16px',
+                 backgroundColor: 'rgba(148,163,184,0.1)',
+                 border: '1px solid rgba(148,163,184,0.2)',
+                 color: '#f1f5f9',
+                 padding: '8px 18px',
                  borderRadius: '9999px',
-                 fontSize: '20px',
+                 fontSize: '18px',
                  fontWeight: 'bold'
                }}>{category.toUpperCase()}</span>
             </div>
 
             <h1
               style={{
-                fontSize: title!.length > 60 ? '54px' : '64px', // shrink text if it's very long
+                fontSize: title!.length > 60 ? '54px' : '64px',
                 fontWeight: '900',
-                color: '#0f172a',
-                lineHeight: 1.1,
+                color: '#ffffff',
+                lineHeight: 1.15,
                 margin: '10px 0 0 0',
-                maxWidth: '900px',
+                maxWidth: '960px',
+                letterSpacing: '-1px',
               }}
             >
               {title}
@@ -147,18 +127,18 @@ export async function GET(request: NextRequest) {
                 width: '64px',
                 height: '64px',
                 borderRadius: '16px',
-                border: `3px solid ${brandColor}33`,
+                border: `2px solid ${brandColor}`,
+                backgroundColor: 'rgba(15,23,42,0.6)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '28px',
+                fontSize: '24px',
                 fontWeight: '900',
               }}
             >
-                {/* To simulate the avatar background with alpha without css transparency issues in satori, just make text colored */}
                 <span style={{ color: brandColor }}>{initials}</span>
             </div>
-            <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#64748b' }}>
+            <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#94a3b8' }}>
               {company}
             </div>
           </div>

@@ -94,12 +94,12 @@ export default async function Home({ searchParams }: HomeProps) {
           <PopularCompanies />
 
           {/* ── SEO: Browse by Country ── */}
-          <section className="glass-card fade-up rounded-3xl p-6 sm:p-8">
+          <section className="glass-card fade-up" style={{ borderRadius: "1.25rem", padding: "1.5rem 2rem" }}>
             <h2 className="section-title">Browse Remote Jobs by Country</h2>
-            <p className="mt-2 text-sm text-slate-600 leading-6">
+            <p style={{ marginTop: "0.5rem", fontSize: "0.85rem", color: "#64748b", lineHeight: 1.7 }}>
               Find work-from-home opportunities in {SEO_COUNTRIES.length}+ countries across North America and Europe.
             </p>
-            <div className="mt-4 flex flex-wrap gap-2">
+            <div style={{ marginTop: "1rem", display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
               {SEO_COUNTRIES.map((c) => (
                 <Link
                   key={c.code}
@@ -113,12 +113,12 @@ export default async function Home({ searchParams }: HomeProps) {
           </section>
 
           {/* ── SEO: Browse by Category ── */}
-          <section className="glass-card fade-up rounded-3xl p-6 sm:p-8">
+          <section className="glass-card fade-up" style={{ borderRadius: "1.25rem", padding: "1.5rem 2rem" }}>
             <h2 className="section-title">Browse Remote Jobs by Category</h2>
-            <p className="mt-2 text-sm text-slate-600 leading-6">
+            <p style={{ marginTop: "0.5rem", fontSize: "0.85rem", color: "#64748b", lineHeight: 1.7 }}>
               Explore remote positions across the most popular job categories — from software engineering to customer support.
             </p>
-            <div className="mt-4 flex flex-wrap gap-2">
+            <div style={{ marginTop: "1rem", display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
               {JOB_CATEGORIES.map((category) => (
                 <Link
                   key={category.slug}
@@ -132,78 +132,88 @@ export default async function Home({ searchParams }: HomeProps) {
           </section>
 
           {/* ── SEO: What is RemoteJobDesk ── */}
-          <section className="glass-card fade-up rounded-3xl p-6 sm:p-8">
+          <section className="glass-card fade-up" style={{ borderRadius: "1.25rem", padding: "1.5rem 2rem" }}>
             <h2 className="section-title">What is RemoteJobDesk?</h2>
-            <p className="mt-3 text-sm leading-7 text-slate-600">
+            <p style={{ marginTop: "0.75rem", fontSize: "0.88rem", lineHeight: 1.8, color: "#94a3b8" }}>
               RemoteJobDesk is a free job discovery platform that aggregates the best remote and work-from-home 
               opportunities across the United States, United Kingdom, Germany, and 20+ European countries. 
               Our AI-powered system collects listings from dozens of trusted sources — job boards, company career 
               pages, and RSS feeds — and enhances them with smart metadata to help you find the perfect role faster.
             </p>
-            <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div style={{ marginTop: "1rem", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: "0.75rem" }}>
               {[
-                { icon: "🌍", label: "22+ Countries", desc: "US, UK, EU & more" },
-                { icon: "🤖", label: "AI-Enhanced", desc: "Smart job matching" },
-                { icon: "🔄", label: "Updated Hourly", desc: "Fresh listings daily" },
-                { icon: "💯", label: "100% Free", desc: "No sign-up needed" },
+                { color: "#06b6d4", label: "22+ Countries", desc: "US, UK, EU & more" },
+                { color: "#8b5cf6", label: "AI-Enhanced", desc: "Smart job matching" },
+                { color: "#10b981", label: "Updated Hourly", desc: "Fresh listings daily" },
+                { color: "#f59e0b", label: "100% Free", desc: "No sign-up needed" },
               ].map((item) => (
-                <div key={item.label} className="rounded-2xl bg-slate-50 p-3 text-center">
-                  <p className="text-xl">{item.icon}</p>
-                  <p className="mt-1 text-xs font-bold text-slate-800">{item.label}</p>
-                  <p className="text-xs text-slate-500">{item.desc}</p>
+                <div key={item.label} style={{ borderRadius: "12px", background: "rgba(148,163,184,0.04)", border: "1px solid rgba(148,163,184,0.06)", padding: "0.85rem", textAlign: "center" }}>
+                  <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: item.color, margin: "0 auto 0.5rem", boxShadow: `0 0 12px ${item.color}40` }} />
+                  <p style={{ fontSize: "0.82rem", fontWeight: 800, color: "#f1f5f9" }}>{item.label}</p>
+                  <p style={{ fontSize: "0.72rem", color: "#64748b", marginTop: "0.15rem" }}>{item.desc}</p>
                 </div>
               ))}
             </div>
           </section>
 
           {/* ── SEO: Latest from Blog ── */}
-          <section className="glass-card fade-up rounded-3xl p-6 sm:p-8">
+          <section className="glass-card fade-up" style={{ borderRadius: "1.25rem", padding: "1.5rem 2rem" }}>
             <h2 className="section-title">Remote Work Guides</h2>
-            <p className="mt-2 text-sm text-slate-600 leading-6">
+            <p style={{ marginTop: "0.5rem", fontSize: "0.85rem", color: "#64748b", lineHeight: 1.7 }}>
               Expert tips and career advice for remote professionals.
             </p>
-            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <div style={{ marginTop: "1rem", display: "grid", gap: "0.6rem", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))" }}>
               {[
-                { href: "/blog/best-remote-jobs-2026", title: "15 Best Remote Jobs in 2026", badge: "Career Guide" },
-                { href: "/blog/how-to-get-remote-job-no-experience", title: "Get a Remote Job — No Experience", badge: "Getting Started" },
-                { href: "/blog/highest-paying-remote-jobs", title: "Highest Paying Remote Jobs ($100K+)", badge: "Salary Guide" },
-                { href: "/blog/remote-job-interview-tips", title: "Ace Your Virtual Interview", badge: "Interview Prep" },
+                { href: "/blog/best-remote-jobs-2026", title: "15 Best Remote Jobs in 2026", badge: "Career Guide", color: "#06b6d4" },
+                { href: "/blog/how-to-get-remote-job-no-experience", title: "Get a Remote Job — No Experience", badge: "Getting Started", color: "#10b981" },
+                { href: "/blog/highest-paying-remote-jobs", title: "Highest Paying Remote Jobs ($100K+)", badge: "Salary Guide", color: "#f59e0b" },
+                { href: "/blog/remote-job-interview-tips", title: "Ace Your Virtual Interview", badge: "Interview Prep", color: "#8b5cf6" },
               ].map((post) => (
                 <Link
                   key={post.href}
                   href={post.href}
-                  className="flex items-center gap-3 rounded-2xl bg-slate-50 p-3 transition hover:bg-brand-light"
-                  style={{ textDecoration: "none" }}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.75rem",
+                    padding: "0.85rem",
+                    borderRadius: "12px",
+                    background: "rgba(148,163,184,0.04)",
+                    border: "1px solid rgba(148,163,184,0.06)",
+                    textDecoration: "none",
+                    transition: "all 0.2s",
+                  }}
                 >
-                  <div>
-                    <span className="badge bg-brand/10 text-brand-ink text-[10px]">{post.badge}</span>
-                    <p className="mt-1 text-sm font-bold text-slate-800 leading-snug">{post.title}</p>
+                  <div style={{ width: "4px", height: "32px", borderRadius: "4px", background: post.color, flexShrink: 0 }} />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <span style={{ fontSize: "0.65rem", fontWeight: 700, color: post.color, textTransform: "uppercase", letterSpacing: "0.1em" }}>{post.badge}</span>
+                    <p style={{ marginTop: "0.15rem", fontSize: "0.85rem", fontWeight: 700, color: "#f1f5f9", lineHeight: 1.4 }}>{post.title}</p>
                   </div>
-                  <span className="ml-auto text-brand-ink text-sm">→</span>
+                  <span style={{ color: "#475569", fontSize: "0.85rem", flexShrink: 0 }}>→</span>
                 </Link>
               ))}
             </div>
           </section>
 
-          {/* ── SEO: FAQ (visible on home page for max SERP impact) ── */}
-          <section className="glass-card fade-up rounded-3xl p-6 sm:p-8">
+          {/* ── SEO: FAQ ── */}
+          <section className="glass-card fade-up" style={{ borderRadius: "1.25rem", padding: "1.5rem 2rem" }}>
             <h2 className="section-title">Frequently Asked Questions</h2>
-            <div className="mt-4 space-y-3">
-              <details className="group rounded-2xl bg-slate-50 p-4" open>
-                <summary className="cursor-pointer text-sm font-bold text-slate-800 leading-6 group-open:mb-2">What is a remote job?</summary>
-                <p className="text-sm leading-7 text-slate-600">A remote job (also called work-from-home or WFH) is a position where you work from any location — home, coworking space, or coffee shop — instead of commuting to an office. Remote jobs use digital tools like Slack, Zoom, and email for communication and collaboration.</p>
+            <div style={{ marginTop: "1rem", display: "flex", flexDirection: "column", gap: "0.6rem" }}>
+              <details style={{ borderRadius: "12px", background: "rgba(148,163,184,0.04)", border: "1px solid rgba(148,163,184,0.06)", padding: "1rem" }} open>
+                <summary style={{ cursor: "pointer", fontSize: "0.88rem", fontWeight: 700, color: "#f1f5f9", lineHeight: 1.5 }}>What is a remote job?</summary>
+                <p style={{ marginTop: "0.5rem", fontSize: "0.85rem", lineHeight: 1.8, color: "#94a3b8" }}>A remote job (also called work-from-home or WFH) is a position where you work from any location — home, coworking space, or coffee shop — instead of commuting to an office. Remote jobs use digital tools like Slack, Zoom, and email for communication and collaboration.</p>
               </details>
-              <details className="group rounded-2xl bg-slate-50 p-4">
-                <summary className="cursor-pointer text-sm font-bold text-slate-800 leading-6 group-open:mb-2">How do I find legitimate remote jobs?</summary>
-                <p className="text-sm leading-7 text-slate-600">Use trusted platforms like RemoteJobDesk that aggregate listings from verified sources. Look for company names you recognize, check reviews on Glassdoor, and never pay for a job application. Legitimate remote employers provide clear job descriptions and professional interview processes.</p>
+              <details style={{ borderRadius: "12px", background: "rgba(148,163,184,0.04)", border: "1px solid rgba(148,163,184,0.06)", padding: "1rem" }}>
+                <summary style={{ cursor: "pointer", fontSize: "0.88rem", fontWeight: 700, color: "#f1f5f9", lineHeight: 1.5 }}>How do I find legitimate remote jobs?</summary>
+                <p style={{ marginTop: "0.5rem", fontSize: "0.85rem", lineHeight: 1.8, color: "#94a3b8" }}>Use trusted platforms like RemoteJobDesk that aggregate listings from verified sources. Look for company names you recognize, check reviews on Glassdoor, and never pay for a job application. Legitimate remote employers provide clear job descriptions and professional interview processes.</p>
               </details>
-              <details className="group rounded-2xl bg-slate-50 p-4">
-                <summary className="cursor-pointer text-sm font-bold text-slate-800 leading-6 group-open:mb-2">Which countries have the most remote jobs?</summary>
-                <p className="text-sm leading-7 text-slate-600">The United States has the largest remote job market, followed by the United Kingdom, Germany, France, and the Netherlands. These five countries account for over 80% of all remote job listings in our database.</p>
+              <details style={{ borderRadius: "12px", background: "rgba(148,163,184,0.04)", border: "1px solid rgba(148,163,184,0.06)", padding: "1rem" }}>
+                <summary style={{ cursor: "pointer", fontSize: "0.88rem", fontWeight: 700, color: "#f1f5f9", lineHeight: 1.5 }}>Which countries have the most remote jobs?</summary>
+                <p style={{ marginTop: "0.5rem", fontSize: "0.85rem", lineHeight: 1.8, color: "#94a3b8" }}>The United States has the largest remote job market, followed by the United Kingdom, Germany, France, and the Netherlands. These five countries account for over 80% of all remote job listings in our database.</p>
               </details>
-              <details className="group rounded-2xl bg-slate-50 p-4">
-                <summary className="cursor-pointer text-sm font-bold text-slate-800 leading-6 group-open:mb-2">Are remote jobs available for entry-level candidates?</summary>
-                <p className="text-sm leading-7 text-slate-600">Yes! Many remote positions in customer support, data entry, virtual assistance, content writing, and sales development are open to candidates with no prior experience. Check our guide on getting your first remote job for detailed tips.</p>
+              <details style={{ borderRadius: "12px", background: "rgba(148,163,184,0.04)", border: "1px solid rgba(148,163,184,0.06)", padding: "1rem" }}>
+                <summary style={{ cursor: "pointer", fontSize: "0.88rem", fontWeight: 700, color: "#f1f5f9", lineHeight: 1.5 }}>Are remote jobs available for entry-level candidates?</summary>
+                <p style={{ marginTop: "0.5rem", fontSize: "0.85rem", lineHeight: 1.8, color: "#94a3b8" }}>Yes! Many remote positions in customer support, data entry, virtual assistance, content writing, and sales development are open to candidates with no prior experience. Check our guide on getting your first remote job for detailed tips.</p>
               </details>
             </div>
           </section>

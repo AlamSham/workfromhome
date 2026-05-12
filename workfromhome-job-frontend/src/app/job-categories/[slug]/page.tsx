@@ -161,6 +161,23 @@ export default async function JobCategoryPage({ params, searchParams }: Category
     ],
   };
 
+  // ── CollectionPage JSON-LD ──
+  const collectionPageJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: category.metaTitle,
+    description: category.metaDescription,
+    url: pageUrl,
+    mainEntity: {
+      "@type": "ItemList",
+      itemListElement: jobs.map((job, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        url: `${SITE_URL}/jobs/${job._id}`,
+      })),
+    },
+  };
+
   // ── FAQPage JSON-LD ──
   const faqJsonLd = faq.length > 0 ? {
     "@context": "https://schema.org",
@@ -176,6 +193,7 @@ export default async function JobCategoryPage({ params, searchParams }: Category
     <div className="flex flex-1 flex-col gap-6">
       {/* JSON-LD */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionPageJsonLd) }} />
       {faqJsonLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />}
 
       <SharedJobsFeed
@@ -197,7 +215,7 @@ export default async function JobCategoryPage({ params, searchParams }: Category
         {/* ── Category intro ── */}
         <section className="glass-card fade-up rounded-3xl p-6 sm:p-8">
           <h2 className="section-title">{category.introTitle}</h2>
-          <p className="mt-3 text-sm leading-7 text-slate-600">
+          <p className="mt-3 text-sm leading-7 text-slate-400">
             {category.introBody}
           </p>
         </section>
@@ -242,11 +260,11 @@ export default async function JobCategoryPage({ params, searchParams }: Category
             <h2 className="section-title">Frequently Asked Questions — Remote {category.label} Jobs</h2>
             <div className="mt-4 space-y-4">
               {faq.map((item, i) => (
-                <details key={i} className="group rounded-2xl bg-slate-50 p-4" open={i === 0}>
-                  <summary className="cursor-pointer text-sm font-bold text-slate-800 leading-6 group-open:mb-2">
+                <details key={i} className="group rounded-2xl bg-[rgba(15,23,42,0.6)] border border-[rgba(148,163,184,0.1)] p-4" open={i === 0}>
+                  <summary className="cursor-pointer text-sm font-bold text-slate-200 leading-6 group-open:mb-2 group-open:text-cyan-400 transition-colors">
                     {item.q}
                   </summary>
-                  <p className="text-sm leading-7 text-slate-600">{item.a}</p>
+                  <p className="text-sm leading-7 text-slate-400">{item.a}</p>
                 </details>
               ))}
             </div>
