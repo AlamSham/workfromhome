@@ -379,7 +379,7 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
       <nav className="fade-up flex items-center gap-2 text-sm text-slate-500">
         <Link href="/" className="hover:text-brand-ink transition">Home</Link>
         <span>/</span>
-        <span className="text-slate-800 font-semibold line-clamp-1">{displayTitle}</span>
+        <span className="text-slate-300 font-semibold line-clamp-1">{displayTitle}</span>
       </nav>
 
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
@@ -390,21 +390,21 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
           {/* Header card */}
           <header className="glass-card fade-up rounded-3xl p-6 sm:p-8">
             <div className="mb-4 flex flex-wrap items-center gap-2 text-xs font-semibold">
-              <span className="badge bg-brand/10 text-brand-ink">{job.country || "Global"}</span>
-              <span className="badge bg-slate-900 text-white">{(job.category || "WFH").toUpperCase()}</span>
+              <span className="badge bg-brand/10 text-cyan-400">{job.country || "Global"}</span>
+              <span className="badge bg-slate-900 text-slate-300">{(job.category || "WFH").toUpperCase()}</span>
               {job.sourceLabel && (
-                <Link href={getCompanyPath(job.sourceLabel)} className="badge bg-slate-100 text-slate-600" style={{ textDecoration: "none" }}>
+                <Link href={getCompanyPath(job.sourceLabel)} className="badge bg-slate-900 text-slate-300" style={{ textDecoration: "none" }}>
                   {job.sourceLabel}
                 </Link>
               )}
-              <span className="ml-auto text-slate-400 text-xs">{formatDate(job.publishedAt)}</span>
+              <span className="ml-auto text-slate-500 text-xs">{formatDate(job.publishedAt)}</span>
             </div>
 
             {/* Company logo + title row */}
             <div className="flex items-start gap-4">
               {job.sourceLabel && (
                 <div
-                  className="shrink-0 w-14 h-14 rounded-2xl bg-brand/10 border border-slate-100 flex items-center justify-center overflow-hidden text-sm font-black text-brand-ink"
+                  className="shrink-0 w-14 h-14 rounded-2xl bg-brand/10 border border-slate-800 flex items-center justify-center overflow-hidden text-sm font-black text-cyan-400"
                   style={{
                     backgroundImage: `url(https://logo.clearbit.com/${job.sourceLabel.toLowerCase().replace(/\s+/g, '').replace(/[^a-z0-9.]/g, '')}.com)`,
                     backgroundSize: '70%',
@@ -417,18 +417,18 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
                 </div>
               )}
               <div className="flex-1 min-w-0">
-                <h1 className="font-serif text-2xl font-bold leading-tight text-slate-900 sm:text-3xl">
+                <h1 className="font-serif text-2xl font-bold leading-tight text-slate-100 sm:text-3xl">
                   {displayTitle}
                 </h1>
                 {job.sourceLabel && (
-                  <p className="mt-1 text-sm font-semibold text-brand-ink">
+                  <p className="mt-1 text-sm font-semibold text-cyan-400">
                     at {job.sourceLabel}
                   </p>
                 )}
               </div>
             </div>
 
-            <p className="mt-3 text-sm leading-7 text-slate-600">
+            <p className="mt-3 text-sm leading-7 text-slate-400">
               {job.seo?.metaDescription || job.summary}
             </p>
 
@@ -443,7 +443,7 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
             )}
 
             {/* Apply CTA — Above the fold */}
-            <div className="mt-5 flex flex-wrap items-center gap-3 pt-4 border-t border-slate-100">
+            <div className="mt-5 flex flex-wrap items-center gap-3 pt-4 border-t border-slate-800/60">
               <a
                 href={job.link}
                 target="_blank"
@@ -653,7 +653,7 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
 
           {/* Share */}
           <div className="glass-card rounded-3xl p-6 space-y-3">
-            <h2 className="text-sm font-bold text-slate-700">Share This Job</h2>
+            <h2 className="text-sm font-bold text-slate-200">Share This Job</h2>
             <div className="flex flex-wrap gap-2">
               <a
                 href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(displayTitle)}&url=${encodeURIComponent(pageUrl)}`}

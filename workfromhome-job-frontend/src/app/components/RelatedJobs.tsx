@@ -63,7 +63,7 @@ export default async function RelatedJobs({ currentJobId, country, category }: R
 
   return (
     <section className="mt-8 flex flex-col gap-4 fade-up">
-      <h3 className="text-xl font-bold text-slate-900 border-t border-slate-200 pt-8">
+      <h3 className="text-xl font-bold text-slate-100 border-t border-slate-800/60 pt-8">
         Similar Remote Jobs
       </h3>
       <div className="grid gap-4 sm:grid-cols-2">
@@ -76,7 +76,7 @@ export default async function RelatedJobs({ currentJobId, country, category }: R
             <Link
               key={job._id}
               href={getJobPath(job)}
-              className="group flex flex-col justify-between glass-card p-5 rounded-2xl hover:-translate-y-1 transition-transform border-l-[3px] border-l-transparent hover:border-l-brand"
+              className="group flex flex-col justify-between glass-card p-5 rounded-2xl hover:-translate-y-1 transition-transform border-l-[3px] border-l-transparent hover:border-l-cyan-400"
             >
               <div className="flex gap-3 mb-3">
                 <div
@@ -86,24 +86,24 @@ export default async function RelatedJobs({ currentJobId, country, category }: R
                   {initials}
                 </div>
                 <div>
-                  <h4 className="font-bold text-slate-800 line-clamp-2 leading-tight group-hover:text-brand-ink transition-colors">
+                  <h4 className="font-bold text-slate-200 line-clamp-2 leading-tight group-hover:text-cyan-400 transition-colors">
                     {label}
                   </h4>
-                  <p className="text-xs text-slate-500 mt-1">
+                  <p className="text-xs text-slate-400 mt-1">
                     {job.sourceLabel || "Remote Company"}
                   </p>
                 </div>
               </div>
               <div className="mt-auto flex items-center justify-between">
                 <div className="flex gap-2">
-                  <span className="badge bg-brand/10 text-brand-ink text-[10px] px-2 py-0.5">
+                  <span className="badge bg-brand/10 text-cyan-400 text-[10px] px-2 py-0.5">
                     {job.country || "Global"}
                   </span>
-                  <span className="badge bg-slate-900 text-white text-[10px] px-2 py-0.5">
+                  <span className="badge bg-slate-900 text-slate-300 text-[10px] px-2 py-0.5">
                     {job.category || "WFH"}
                   </span>
                 </div>
-                <span className="text-[11px] font-semibold text-slate-400">
+                <span className="text-[11px] font-semibold text-slate-500">
                   {timeAgo(job.publishedAt)}
                 </span>
               </div>
