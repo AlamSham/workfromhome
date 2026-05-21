@@ -8,7 +8,8 @@
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
     "ingest": "node src/utils/runIngestOnce.js",
-    "digest-alerts": "node src/utils/runAlertDigestsOnce.js"
+    "digest-alerts": "node src/utils/runAlertDigestsOnce.js",
+    "test-indexing": "node src/utils/testGoogleIndexing.js"
   },
   "keywords": [
     "nodejs",

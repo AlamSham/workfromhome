@@ -1,3 +1,5 @@
+const env = require('../config/env');
+
 const ALLOWED_SENIORITY_VALUES = new Set([
   'internship',
   'entry-level',
@@ -90,6 +92,12 @@ function buildJobQueryFilter({
   const normalizedExperience = normalizeExperienceFilter(experience);
   const normalizedMinSalary = normalizeMinSalaryFilter(minSalary);
   const conditions = [];
+
+  // Only return active jobs (published within activeJobDays)
+  const activeLimitDate = new Date(Date.now() - (env.activeJobDays * 24 * 60 * 60 * 1000));
+  conditions.push({
+    publishedAt: { $gte: activeLimitDate }
+  });
 
   if (normalizedCountry) {
     conditions.push({ country: normalizedCountry });

@@ -314,6 +314,9 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
   const job = await getJobById(extractJobId(rawParam));
   if (!job) notFound();
 
+  const ACTIVE_PERIOD_MS = 30 * 24 * 60 * 60 * 1000;
+  const isExpired = job.publishedAt ? (Date.now() - new Date(job.publishedAt).getTime() > ACTIVE_PERIOD_MS) : false;
+
   const canonicalPath = getJobPath(job);
   const canonicalParam = canonicalPath.replace("/jobs/", "");
   if (rawParam !== canonicalParam) {
@@ -323,6 +326,10 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
   const richDescription = await buildRichDescription(job);
   const pageUrl = `${SITE_URL}${canonicalPath}`;
   const displayTitle = job.seo?.title || job.originalTitle;
+
+  const companyLogoUrl = job.sourceLabel 
+    ? `https://logo.clearbit.com/${job.sourceLabel.toLowerCase().replace(/\s+/g, "").replace(/[^a-z0-9.]/g, "")}.com`
+    : undefined;
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -341,6 +348,7 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
       "@type": "Organization",
       name: job.sourceLabel || "Remote Company",
       sameAs: job.link,
+      ...(companyLogoUrl ? { logo: companyLogoUrl } : {}),
     },
     url: pageUrl,
     ...(job.signals?.experienceText ? { experienceRequirements: job.signals.experienceText } : {}),
@@ -381,6 +389,25 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
         <span>/</span>
         <span className="text-slate-300 font-semibold line-clamp-1">{displayTitle}</span>
       </nav>
+
+      {/* Expired Job Alert Banner */}
+      {isExpired && (
+        <div className="fade-up flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-3xl bg-amber-500/10 border border-amber-500/20 text-amber-200">
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">⚠️</span>
+            <div>
+              <p className="font-bold text-sm">This job posting has expired</p>
+              <p className="text-xs text-amber-300/80 mt-0.5">Applications are no longer accepted for this role. Discover active remote roles below.</p>
+            </div>
+          </div>
+          <Link
+            href="/"
+            className="shrink-0 text-xs font-semibold px-4 py-2.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/35 border border-amber-500/30 text-amber-100 transition text-center"
+          >
+            Browse Active Jobs
+          </Link>
+        </div>
+      )}
 
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
 
@@ -443,25 +470,43 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
             )}
 
             {/* Apply CTA — Above the fold */}
-            <div className="mt-5 flex flex-wrap items-center gap-3 pt-4 border-t border-slate-800/60">
-              <a
-                href={job.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-primary"
-                style={{
-                  padding: "0.7rem 2rem",
-                  fontSize: "0.95rem",
-                  borderRadius: "0.875rem",
-                  boxShadow: "0 4px 16px rgba(11,143,117,0.3)",
-                }}
-              >
-                ✨ Apply Now ↗
-              </a>
-              <span className="text-xs text-slate-400 font-medium">
-                Opens employer&apos;s official career page
-              </span>
-            </div>
+            {isExpired ? (
+              <div className="mt-5 flex flex-wrap items-center gap-3 pt-4 border-t border-slate-800/60">
+                <span
+                  className="badge bg-amber-500/10 text-amber-400 border border-amber-500/20 cursor-not-allowed"
+                  style={{
+                    padding: "0.7rem 2rem",
+                    fontSize: "0.95rem",
+                    borderRadius: "0.875rem",
+                  }}
+                >
+                  🚫 Listing Expired
+                </span>
+                <span className="text-xs text-slate-400 font-medium">
+                  This position has been filled or closed by the employer
+                </span>
+              </div>
+            ) : (
+              <div className="mt-5 flex flex-wrap items-center gap-3 pt-4 border-t border-slate-800/60">
+                <a
+                  href={job.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-primary"
+                  style={{
+                    padding: "0.7rem 2rem",
+                    fontSize: "0.95rem",
+                    borderRadius: "0.875rem",
+                    boxShadow: "0 4px 16px rgba(11,143,117,0.3)",
+                  }}
+                >
+                  ✨ Apply Now ↗
+                </a>
+                <span className="text-xs text-slate-400 font-medium">
+                  Opens employer&apos;s official career page
+                </span>
+              </div>
+            )}
 
           </header>
 
@@ -600,19 +645,33 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
               Always verify job details before submitting personal information.
             </p>
             <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem", justifyContent: "center", alignItems: "center" }}>
-              <a
-                href={job.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-primary"
-                style={{
-                  display: "inline-flex",
-                  padding: "0.85rem 2.5rem",
-                  fontSize: "1.05rem",
-                }}
-              >
-                ✨ Apply Now ↗
-              </a>
+              {isExpired ? (
+                <span
+                  className="badge bg-amber-500/10 text-amber-400 border border-amber-500/20 cursor-not-allowed"
+                  style={{
+                    display: "inline-flex",
+                    padding: "0.85rem 2.5rem",
+                    fontSize: "1.05rem",
+                    borderRadius: "0.875rem",
+                  }}
+                >
+                  🚫 Listing Expired
+                </span>
+              ) : (
+                <a
+                  href={job.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-primary"
+                  style={{
+                    display: "inline-flex",
+                    padding: "0.85rem 2.5rem",
+                    fontSize: "1.05rem",
+                  }}
+                >
+                  ✨ Apply Now ↗
+                </a>
+              )}
               <Link
                 href="/"
                 className="btn-outline"
@@ -635,14 +694,22 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
             <p className="text-xs leading-6 text-slate-500">
               Click below to apply on the employer&apos;s official website. Always verify job details before submitting personal info.
             </p>
-            <a
-              href={job.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-primary w-full flex items-center justify-center gap-2 h-11 rounded-2xl text-sm"
-            >
-              Apply Now ↗
-            </a>
+            {isExpired ? (
+              <span
+                className="badge bg-amber-500/10 text-amber-400 border border-amber-500/20 cursor-not-allowed w-full flex items-center justify-center h-11 rounded-2xl text-sm font-semibold"
+              >
+                🚫 Listing Expired
+              </span>
+            ) : (
+              <a
+                href={job.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-primary w-full flex items-center justify-center gap-2 h-11 rounded-2xl text-sm"
+              >
+                Apply Now ↗
+              </a>
+            )}
             <Link
               href="/"
               className="btn-outline w-full flex items-center justify-center h-11 rounded-2xl text-sm"

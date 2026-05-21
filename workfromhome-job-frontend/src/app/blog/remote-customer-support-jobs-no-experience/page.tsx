@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Metadata } from "next";
+import BlogRelatedJobs from "../../components/BlogRelatedJobs";
 
 export const metadata: Metadata = {
   title: "Remote Customer Support Jobs (No Experience Needed) — 2026",
@@ -70,6 +71,8 @@ export default function BlogPost() {
       <p>Your cover letter is your secret weapon. Highlight transferable skills. Did you work in retail? You have customer service experience. Were you a teacher? You know how to explain complex concepts patiently. Frame your past experiences around communication and problem-solving.</p>
     
       </article>
+
+      <BlogRelatedJobs query="support" limit={4} label="Active Remote Customer Support Jobs" />
 
       {/* ── CTA ── */}
       <div className="mt-16 rounded-3xl border border-slate-800 bg-[rgba(15,23,42,0.8)] p-8 text-center shadow-2xl relative overflow-hidden">

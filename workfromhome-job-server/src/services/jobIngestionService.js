@@ -9,6 +9,7 @@ const {
 const { extractJobSignals } = require('../utils/jobSignals');
 const { generateSeoFields } = require('./seoService');
 const { submitToIndexNow } = require('./indexNow');
+const { submitToGoogleIndexing } = require('./googleIndexing');
 const TRUSTED_SOURCES = new Set([
   'remotive-api',
   'arbeitnow-api',
@@ -291,9 +292,10 @@ async function ingestJobs() {
     }
   }
 
-  // Notify search engines about new URLs (Bing, Yandex — instant indexing)
+  // Notify search engines about new URLs (Bing, Yandex, and Google Indexing API)
   if (newlyCreatedJobs.length > 0) {
     submitToIndexNow(newlyCreatedJobs).catch(() => {});
+    submitToGoogleIndexing(newlyCreatedJobs).catch(() => {});
   }
 
   return result;

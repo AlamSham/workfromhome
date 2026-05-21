@@ -50,6 +50,7 @@ const env = {
   arbeitnowPages: Number(process.env.ARBEITNOW_PAGES) || 2,
   jobicyCount: Number(process.env.JOBICY_COUNT) || 100,
   jobTtlDays: Number(process.env.JOB_TTL_DAYS) || 15,
+  activeJobDays: Number(process.env.ACTIVE_JOB_DAYS) || 30,
   aiTimeoutMs: Number(process.env.AI_TIMEOUT_MS) || 15000,
   maxSearchChars: Number(process.env.MAX_SEARCH_CHARS) || 80,
   adminApiKey: process.env.ADMIN_API_KEY || '',

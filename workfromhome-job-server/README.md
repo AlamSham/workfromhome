@@ -167,3 +167,26 @@ One-time alert digest run:
 ```bash
 npm run digest-alerts
 ```
+
+## Google Indexing API Setup
+
+Humne instant indexing ke liye Google Indexing API add kiya hai. Ise activate karne ke liye niche diye gaye steps follow karein:
+
+1. **Google Cloud Console me Project banayein**:
+   - [Google Cloud Console](https://console.cloud.google.com/) par jayein aur new project create karein.
+2. **Indexing API Enable karein**:
+   - API Library me search karein **"Web Search Indexing API"** aur use **Enable** karein.
+3. **Service Account banayein**:
+   - IAM & Admin -> Service Accounts me jayein.
+   - **Create Service Account** par click karein. Ek email address (jaise `indexing-bot@yourproject.iam.gserviceaccount.com`) generate hoga.
+   - Us Service Account ke **Keys** tab me jayein, **Add Key -> Create New Key** select karein, aur **JSON** format download karein.
+4. **Google Search Console me Permission dein**:
+   - Google Search Console property me jayein.
+   - Settings -> Users and Permissions me jayein.
+   - **Add User** par click karein aur Service Account ka email add karein.
+   - Permission level **Owner** select karein (Indexing API ke liye Owner level mandatory hai).
+5. **Environment Variable Set karein**:
+   - Downloaded JSON file ke content ko copy karein.
+   - Server ki `.env` file me **`GOOGLE_SERVICE_ACCOUNT_KEY='<YOUR_STRINGIFIED_JSON_HERE>'`** set karein, ya local path **`GOOGLE_APPLICATION_CREDENTIALS='path/to/credentials.json'`** set karein.
+   - Jab naye jobs ingest honge, toh backend automatically Google ko notify kar dega!
+

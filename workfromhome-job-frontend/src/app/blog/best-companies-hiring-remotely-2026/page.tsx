@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Metadata } from "next";
+import BlogRelatedJobs from "../../components/BlogRelatedJobs";
 
 export const metadata: Metadata = {
   title: "Best Companies Hiring Remotely in 2026",
@@ -69,6 +70,8 @@ export default function BlogPost() {
       <p>These companies receive thousands of applications. To stand out, demonstrate that you are an excellent written communicator. Since async work relies heavily on writing, your cover letter and email correspondence are your first true interview tests.</p>
     
       </article>
+
+      <BlogRelatedJobs query="" limit={4} label="Latest Active Remote Jobs" />
 
       {/* ── CTA ── */}
       <div className="mt-16 rounded-3xl border border-slate-800 bg-[rgba(15,23,42,0.8)] p-8 text-center shadow-2xl relative overflow-hidden">

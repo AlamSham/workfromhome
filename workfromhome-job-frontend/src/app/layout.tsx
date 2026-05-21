@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import Script from "next/script";
 import { Analytics } from "@vercel/analytics/react";
-import { JOB_CATEGORIES, getJobCategoryPath } from "./lib/jobCategories";
+import { JOB_CATEGORIES, getJobCategoryPath, getJobCategoryCountryPath } from "./lib/jobCategories";
 import { SEO_COUNTRIES } from "./lib/seoCountries";
 import { getCompanyPath } from "./lib/companies";
 import "./globals.css";
@@ -92,14 +92,23 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
-  const featuredCategories = JOB_CATEGORIES.slice(0, 6);
+  const featuredCategories = JOB_CATEGORIES;
   const featuredCompanies = [
     "Amazon",
     "NVIDIA",
     "Cloudera",
     "Honeycomb.io",
   ];
-  const featuredCountries = SEO_COUNTRIES.slice(0, 6);
+
+  const trendingSearches = [
+    { label: "Software Jobs in US", path: getJobCategoryCountryPath("software-engineer", "us") },
+    { label: "Customer Support in US", path: getJobCategoryCountryPath("customer-support", "us") },
+    { label: "React Jobs in US", path: getJobCategoryCountryPath("react-developer", "us") },
+    { label: "Software Jobs in UK", path: getJobCategoryCountryPath("software-engineer", "uk") },
+    { label: "Customer Support in UK", path: getJobCategoryCountryPath("customer-support", "uk") },
+    { label: "Marketing Jobs in Germany", path: getJobCategoryCountryPath("marketing", "germany") },
+    { label: "Sales Jobs in France", path: getJobCategoryCountryPath("sales", "france") },
+  ];
 
   const navLinks = [
     { href: "/", label: "Jobs" },
@@ -336,18 +345,36 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               </div>
 
               {/* Countries */}
-              <div>
+              <div style={{ minWidth: "220px" }}>
                 <p style={{ fontSize: "0.7rem", fontWeight: 800, color: "#64748b", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "0.75rem" }}>
-                  Top Countries
+                  Jobs by Country
                 </p>
-                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                  {featuredCountries.map((country) => (
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "0.5rem 0.75rem" }}>
+                  {SEO_COUNTRIES.map((country) => (
                     <Link
                       key={country.slug}
                       href={`/remote-jobs-in-${country.slug}`}
                       style={{ fontSize: "0.82rem", color: "#94a3b8", textDecoration: "none", transition: "color 0.2s" }}
                     >
                       {country.name}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              {/* Trending Searches */}
+              <div>
+                <p style={{ fontSize: "0.7rem", fontWeight: 800, color: "#64748b", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "0.75rem" }}>
+                  Trending Searches
+                </p>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                  {trendingSearches.map((search) => (
+                    <Link
+                      key={search.label}
+                      href={search.path}
+                      style={{ fontSize: "0.82rem", color: "#94a3b8", textDecoration: "none", transition: "color 0.2s" }}
+                    >
+                      {search.label}
                     </Link>
                   ))}
                 </div>
