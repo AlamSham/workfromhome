@@ -3,7 +3,7 @@ import { getJobPath } from "../lib/jobUrls";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://remotejobdesk.com";
 
-export const revalidate = 14400; // 4 hours
+export const revalidate = 3600; // 1 hour - ISR cache
 
 function escapeXml(unsafe: string): string {
   if (!unsafe) return "";
@@ -24,7 +24,7 @@ function escapeXml(unsafe: string): string {
 
 export async function GET() {
   try {
-    const res = await fetch(`${API_BASE_URL}/api/jobs?limit=50`, { 
+    const res = await fetch(`${API_BASE_URL}/api/jobs?page=1&limit=100`, { 
       next: { revalidate: 3600 }
     });
     
@@ -67,7 +67,7 @@ export async function GET() {
 
     return new Response(rssFeed, {
       headers: {
-        "Content-Type": "application/xml",
+        "Content-Type": "application/rss+xml; charset=utf-8",
         "Cache-Control": "s-maxage=3600, stale-while-revalidate",
       },
     });

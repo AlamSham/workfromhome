@@ -20,6 +20,7 @@ interface SeoFields {
   metaDescription?: string;
   keywords?: string[];
   slug?: string;
+  content?: string;
 }
 
 interface JobSignals {
@@ -253,6 +254,7 @@ function buildBaseSalary(signals: JobSignals | undefined) {
 async function buildRichDescription(job: JobDetail): Promise<string> {
   const raw = (job?.rawItem || {}) as RawJobItem;
   const candidates = [
+    job?.seo?.content,
     job?.summary, raw?.description, raw?.content,
     raw?.contentSnippet, raw?.job_description,
   ].map((item) => normalizeText(String(item || ""))).filter(Boolean);

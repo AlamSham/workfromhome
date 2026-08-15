@@ -25,6 +25,22 @@ interface BlogPost {
 
 const BLOG_POSTS: BlogPost[] = [
   {
+    slug: "remote-bookkeeping-jobs-no-experience",
+    title: "Remote Bookkeeping Jobs with No Experience — 2026 Career Guide",
+    excerpt: "Discover entry-level remote bookkeeping opportunities hiring in 2026. Includes salary data ($35K–$65K), software requirements, and fast application steps.",
+    date: "2026-08-15",
+    readTime: "6 min",
+    category: "Career Guide",
+  },
+  {
+    slug: "remote-jobs-hiring-immediately",
+    title: "20+ Remote Jobs Hiring Immediately (Fast Onboarding 2026)",
+    excerpt: "Need a work-from-home job fast? Check out companies hiring immediately for customer support, transcription, data entry, and QA testing roles.",
+    date: "2026-08-15",
+    readTime: "5 min",
+    category: "Fast Hiring",
+  },
+  {
     slug: "remote-customer-support-jobs-no-experience",
     title: "Remote Customer Support Jobs (No Experience Needed) — 2026",
     excerpt: "Looking to start working from home? Remote customer support is the perfect entry point. Discover how to land these roles with zero prior experience in 2026.",

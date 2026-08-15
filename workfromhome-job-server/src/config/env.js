@@ -64,7 +64,12 @@ const env = {
   emailReplyTo: process.env.EMAIL_REPLY_TO || '',
   openaiApiKey: process.env.OPENAI_API_KEY || process.env.NVIDIA_API_KEY || '',
   openaiBaseUrl: process.env.OPENAI_BASE_URL || process.env.NVIDIA_BASE_URL || '',
-  openaiModel: process.env.OPENAI_MODEL || process.env.NVIDIA_MODEL || 'gpt-4.1-mini'
+  openaiModel: process.env.OPENAI_MODEL || process.env.NVIDIA_MODEL || 'gpt-4o-mini',
+  groqApiKey: process.env.GROQ_API_KEY || '',
+  groqApiKey2: process.env.GROQ_API_KEY_2 || process.env.GROQ_API_KEY_SECONDARY || '',
+  groqModel: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
+  geminiApiKey: process.env.GEMINI_API_KEY || '',
+  geminiModel: process.env.GEMINI_MODEL || 'gemini-3.6-flash'
 };
 
 module.exports = env;

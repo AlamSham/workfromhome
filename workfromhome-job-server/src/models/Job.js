@@ -6,7 +6,8 @@ const seoSchema = new mongoose.Schema(
     metaTitle: { type: String, trim: true },
     metaDescription: { type: String, trim: true },
     keywords: [{ type: String, trim: true }],
-    slug: { type: String, trim: true }
+    slug: { type: String, trim: true },
+    content: { type: String, trim: true }
   },
   { _id: false }
 );

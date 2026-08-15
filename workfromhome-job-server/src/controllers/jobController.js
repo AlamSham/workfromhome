@@ -75,7 +75,7 @@ async function listJobs(req, res) {
 
   const [jobs, total] = await Promise.all([
     Job.find(filter)
-      .select('_id source sourceLabel country category originalTitle summary link publishedAt expiresAt createdAt updatedAt seo.title seo.metaTitle seo.metaDescription seo.keywords seo.slug signals.seniority signals.experienceText signals.experienceMinYears signals.experienceMaxYears signals.salaryText signals.salaryCurrency signals.salaryMin signals.salaryMax signals.salaryInterval')
+      .select('_id source sourceLabel country category originalTitle summary link publishedAt expiresAt createdAt updatedAt seo.title seo.metaTitle seo.metaDescription seo.keywords seo.slug seo.content signals.seniority signals.experienceText signals.experienceMinYears signals.experienceMaxYears signals.salaryText signals.salaryCurrency signals.salaryMin signals.salaryMax signals.salaryInterval')
       .sort({ publishedAt: -1, createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit)
