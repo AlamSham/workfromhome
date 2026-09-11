@@ -424,6 +424,16 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             </Script>
           </>
         )}
+        {/* ── Push Notification / Monetization Service Worker ── */}
+        <Script id="register-sw" strategy="afterInteractive">
+          {`
+            if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+              window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js').catch(function() {});
+              });
+            }
+          `}
+        </Script>
         <Analytics />
       </body>
     </html>
