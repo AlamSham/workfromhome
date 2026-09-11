@@ -15,18 +15,27 @@ async function runTest() {
   const GOOGLE_KEY_JSON = process.env.GOOGLE_SERVICE_ACCOUNT_KEY || '';
   const GOOGLE_APP_CREDS = process.env.GOOGLE_APPLICATION_CREDENTIALS || '';
 
-  if (!GOOGLE_KEY_JSON && !GOOGLE_APP_CREDS) {
+  const isOnGcp = !!(
+    process.env.GOOGLE_CLOUD_PROJECT ||
+    process.env.GAE_ENV ||
+    process.env.K_SERVICE ||
+    process.env.GCP_PROJECT ||
+    process.env.IS_GCP
+  );
+
+  if (!GOOGLE_KEY_JSON && !GOOGLE_APP_CREDS && !isOnGcp) {
     console.error('❌ Error: No Google credentials found in environment variables.');
-    console.log('\nPlease add one of the following to your .env file:');
+    console.log('\nIf running locally, please add one of the following to your .env file:');
     console.log('1. GOOGLE_SERVICE_ACCOUNT_KEY=\'{"type": "service_account", ...}\'');
-    console.log('   (Paste the entire content of the downloaded JSON key file as a single line)');
     console.log('OR');
-    console.log('2. GOOGLE_APPLICATION_CREDENTIALS="/absolute/path/to/your/service-account-key.json"');
+    console.log('2. Set IS_GCP=true or GOOGLE_CLOUD_PROJECT if testing on a GCP Cloud instance.');
     console.log('===================================================');
     process.exit(1);
   }
 
-  if (GOOGLE_KEY_JSON) {
+  if (isOnGcp && !GOOGLE_KEY_JSON && !GOOGLE_APP_CREDS) {
+    console.log('☁️ Detected Google Cloud Platform (GCP) environment. Using GCP Metadata Server token!');
+  } else if (GOOGLE_KEY_JSON) {
     console.log('✅ Found GOOGLE_SERVICE_ACCOUNT_KEY in .env');
     try {
       const parsed = JSON.parse(GOOGLE_KEY_JSON);

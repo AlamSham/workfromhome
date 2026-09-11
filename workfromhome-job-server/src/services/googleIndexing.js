@@ -20,7 +20,13 @@ if (GOOGLE_KEY_JSON) {
 }
 
 const hasCredentials = !!credentials;
-const isOnGcp = !!(process.env.GOOGLE_CLOUD_PROJECT || process.env.GAE_ENV || process.env.K_SERVICE);
+const isOnGcp = !!(
+  process.env.GOOGLE_CLOUD_PROJECT ||
+  process.env.GAE_ENV ||
+  process.env.K_SERVICE ||
+  process.env.GCP_PROJECT ||
+  process.env.IS_GCP
+);
 
 async function getAccessToken() {
   // 1. Try local JSON credentials first

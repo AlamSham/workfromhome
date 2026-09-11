@@ -11,7 +11,9 @@
     "digest-alerts": "node src/utils/runAlertDigestsOnce.js",
     "test-indexing": "node src/utils/testGoogleIndexing.js",
     "backfill": "node src/utils/optimizeExistingJobsSeo.js",
-    "optimize-titles": "node src/utils/optimizeExistingTitles.js"
+    "optimize-titles": "node src/utils/optimizeExistingTitles.js",
+    "index-blogs": "node src/utils/indexAllBlogs.js",
+    "index-existing": "node src/utils/indexExistingJobs.js"
   },
   "keywords": [
     "nodejs",
