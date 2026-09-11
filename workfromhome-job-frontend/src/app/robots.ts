@@ -12,6 +12,8 @@ export default function robots(): MetadataRoute.Robots {
         allow: [
           "/",
           "/jobs/",
+          "/blog",
+          "/blog/",
           "/remote-jobs-in-*",
           "/remote-*-jobs",
           "/remote-jobs-at-*",
@@ -37,6 +39,8 @@ export default function robots(): MetadataRoute.Robots {
         allow: [
           "/",
           "/jobs/",
+          "/blog",
+          "/blog/",
           "/remote-jobs-in-*",
           "/remote-*-jobs",
           "/remote-jobs-at-*",
