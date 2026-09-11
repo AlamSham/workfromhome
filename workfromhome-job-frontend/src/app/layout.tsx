@@ -434,6 +434,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             }
           `}
         </Script>
+        {/* ── Monetag MultiTag All-in-One ── */}
+        <Script
+          src="https://quge5.com/88/tag.min.js"
+          data-zone="278943"
+          strategy="afterInteractive"
+        />
         <Analytics />
       </body>
     </html>
