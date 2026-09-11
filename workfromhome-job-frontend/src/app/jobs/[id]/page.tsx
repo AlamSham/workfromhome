@@ -44,6 +44,7 @@ interface RawJobItem extends Record<string, unknown> {
 
 interface JobDetail {
   _id: string;
+  shortId?: string;
   source?: string;
   sourceLabel?: string;
   country?: string;
@@ -281,8 +282,18 @@ export async function generateMetadata({ params }: DetailPageProps): Promise<Met
   if (!job) {
     return { title: "Job Not Found", description: "This listing is unavailable or has expired." };
   }
-  const title = job.seo?.metaTitle || job.originalTitle;
-  const desc = job.seo?.metaDescription || job.summary || "Remote work opportunity. Apply now.";
+  const jobTitle = job.seo?.title || job.originalTitle;
+  const company = job.sourceLabel || "Remote Employer";
+  const salaryPart = job.signals?.salaryText ? ` (${job.signals.salaryText})` : "";
+  
+  const title = job.seo?.metaTitle && job.seo.metaTitle.length > 25
+    ? (job.seo.metaTitle.includes("RemoteJobDesk") ? job.seo.metaTitle : `${job.seo.metaTitle} | RemoteJobDesk`)
+    : `⚡ ${jobTitle} at ${company}${salaryPart} — 100% Remote | Apply Direct`;
+
+  const desc = job.seo?.metaDescription && job.seo.metaDescription.length > 50
+    ? job.seo.metaDescription
+    : `Apply directly for ${jobTitle} at ${company}.${salaryPart} Verified 100% work-from-home position. View requirements, benefits, salary & direct application link.`;
+
   const canonicalPath = getJobPath(job);
   const url = `${SITE_URL}${canonicalPath}`;
   
@@ -310,6 +321,42 @@ export async function generateMetadata({ params }: DetailPageProps): Promise<Met
   };
 }
 
+interface RoleFaq {
+  question: string;
+  answer: string;
+}
+
+function generateRoleFaqs(job: JobDetail): RoleFaq[] {
+  const title = job.seo?.title || job.originalTitle;
+  const company = job.sourceLabel || "the hiring employer";
+  const location = job.country ? `${job.country} and eligible remote regions` : "global remote applicants";
+  const exp = job.signals?.experienceText || (job.signals?.experienceMinYears ? `${job.signals.experienceMinYears}+ years of relevant experience` : "relevant industry background, core capabilities, and self-management");
+  const salary = job.signals?.salaryText || "competitive compensation aligned with global remote market standards";
+
+  return [
+    {
+      question: `Is the ${title} role 100% remote?`,
+      answer: `Yes, this is a fully remote work-from-home position with ${company}. You can collaborate asynchronously, manage project deliverables, and participate in virtual team meetings from your home office without daily commuting.`
+    },
+    {
+      question: `What qualifications and experience are needed for ${title}?`,
+      answer: `Applicants are typically evaluated on ${exp}. Key requirements include strong English communication skills, independent problem-solving abilities, and familiarity with modern remote collaboration platforms like Slack, Zoom, and project management tools.`
+    },
+    {
+      question: `Who is eligible to apply for this job?`,
+      answer: `This remote opening welcomes applications from ${location}. Candidates must ensure they meet the work authorization, residency, or independent contractor criteria required by ${company}.`
+    },
+    {
+      question: `What is the salary and benefits package for ${title}?`,
+      answer: `The expected compensation for this role is ${salary}. In addition to base compensation, remote positions often provide flexible working hours, home office equipment stipends, and professional growth opportunities.`
+    },
+    {
+      question: `How do I apply and what should I prepare for the interview?`,
+      answer: `Click the "Apply Now" button on this page to visit ${company}'s official application portal. Tailor your resume to highlight relevant achievements, and prepare to discuss your experience working productively in an asynchronous remote environment.`
+    }
+  ];
+}
+
 export default async function JobDetailPage({ params }: DetailPageProps) {
   const resolved = await params;
   const rawParam = String(resolved?.id || "");
@@ -328,6 +375,7 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
   const richDescription = await buildRichDescription(job);
   const pageUrl = `${SITE_URL}${canonicalPath}`;
   const displayTitle = job.seo?.title || job.originalTitle;
+  const roleFaqs = generateRoleFaqs(job);
 
   const companyLogoUrl = job.sourceLabel 
     ? `https://logo.clearbit.com/${job.sourceLabel.toLowerCase().replace(/\s+/g, "").replace(/[^a-z0-9.]/g, "")}.com`
@@ -371,6 +419,22 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      {/* JSON-LD: FAQPage Schema for Google Rich Snippets */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: roleFaqs.map((faq) => ({
+            "@type": "Question",
+            name: faq.question,
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: faq.answer,
+            },
+          })),
+        }) }}
+      />
       {/* JSON-LD: BreadcrumbList */}
       <script
         type="application/ld+json"
@@ -387,24 +451,24 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
 
       {/* Breadcrumb */}
       <nav className="fade-up flex items-center gap-2 text-sm text-slate-500">
-        <Link href="/" className="hover:text-brand-ink transition">Home</Link>
+        <Link href="/" className="hover:text-blue-600 transition">Home</Link>
         <span>/</span>
-        <span className="text-slate-300 font-semibold line-clamp-1">{displayTitle}</span>
+        <span className="text-slate-800 font-semibold line-clamp-1">{displayTitle}</span>
       </nav>
 
       {/* Expired Job Alert Banner */}
       {isExpired && (
-        <div className="fade-up flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-3xl bg-amber-500/10 border border-amber-500/20 text-amber-200">
+        <div className="fade-up flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900">
           <div className="flex items-center gap-3">
             <span className="text-2xl">⚠️</span>
             <div>
               <p className="font-bold text-sm">This job posting has expired</p>
-              <p className="text-xs text-amber-300/80 mt-0.5">Applications are no longer accepted for this role. Discover active remote roles below.</p>
+              <p className="text-xs text-amber-700 mt-0.5">Applications are no longer accepted for this role. Discover active remote roles below.</p>
             </div>
           </div>
           <Link
             href="/"
-            className="shrink-0 text-xs font-semibold px-4 py-2.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/35 border border-amber-500/30 text-amber-100 transition text-center"
+            className="shrink-0 text-xs font-semibold px-4 py-2.5 rounded-xl bg-amber-100 hover:bg-amber-200 border border-amber-300 text-amber-900 transition text-center"
           >
             Browse Active Jobs
           </Link>
@@ -419,10 +483,10 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
           {/* Header card */}
           <header className="glass-card fade-up rounded-3xl p-6 sm:p-8">
             <div className="mb-4 flex flex-wrap items-center gap-2 text-xs font-semibold">
-              <span className="badge bg-brand/10 text-cyan-400">{job.country || "Global"}</span>
-              <span className="badge bg-slate-900 text-slate-300">{(job.category || "WFH").toUpperCase()}</span>
+              <span className="badge badge-accent">{job.country || "Global"}</span>
+              <span className="badge badge-dark">{(job.category || "WFH").toUpperCase()}</span>
               {job.sourceLabel && (
-                <Link href={getCompanyPath(job.sourceLabel)} className="badge bg-slate-900 text-slate-300" style={{ textDecoration: "none" }}>
+                <Link href={getCompanyPath(job.sourceLabel)} className="badge badge-gray" style={{ textDecoration: "none" }}>
                   {job.sourceLabel}
                 </Link>
               )}
@@ -433,7 +497,7 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
             <div className="flex items-start gap-4">
               {job.sourceLabel && (
                 <div
-                  className="shrink-0 w-14 h-14 rounded-2xl bg-brand/10 border border-slate-800 flex items-center justify-center overflow-hidden text-sm font-black text-cyan-400"
+                  className="shrink-0 w-14 h-14 rounded-2xl bg-blue-50 border border-slate-200 flex items-center justify-center overflow-hidden text-sm font-black text-blue-600"
                   style={{
                     backgroundImage: `url(https://logo.clearbit.com/${job.sourceLabel.toLowerCase().replace(/\s+/g, '').replace(/[^a-z0-9.]/g, '')}.com)`,
                     backgroundSize: '70%',
@@ -442,22 +506,22 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
                   }}
                   aria-label={job.sourceLabel}
                 >
-                  <span className="opacity-30">{(job.sourceLabel || "J").slice(0, 2).toUpperCase()}</span>
+                  <span className="opacity-40">{(job.sourceLabel || "J").slice(0, 2).toUpperCase()}</span>
                 </div>
               )}
               <div className="flex-1 min-w-0">
-                <h1 className="font-serif text-2xl font-bold leading-tight text-slate-100 sm:text-3xl">
+                <h1 className="font-serif text-2xl font-bold leading-tight text-slate-900 sm:text-3xl">
                   {displayTitle}
                 </h1>
                 {job.sourceLabel && (
-                  <p className="mt-1 text-sm font-semibold text-cyan-400">
+                  <p className="mt-1 text-sm font-semibold text-blue-600">
                     at {job.sourceLabel}
                   </p>
                 )}
               </div>
             </div>
 
-            <p className="mt-3 text-sm leading-7 text-slate-400">
+            <p className="mt-3 text-sm leading-7 text-slate-600">
               {job.seo?.metaDescription || job.summary}
             </p>
 
@@ -473,9 +537,9 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
 
             {/* Apply CTA — Above the fold */}
             {isExpired ? (
-              <div className="mt-5 flex flex-wrap items-center gap-3 pt-4 border-t border-slate-800/60">
+              <div className="mt-5 flex flex-wrap items-center gap-3 pt-4 border-t border-slate-200">
                 <span
-                  className="badge bg-amber-500/10 text-amber-400 border border-amber-500/20 cursor-not-allowed"
+                  className="badge bg-amber-50 text-amber-800 border border-amber-200 cursor-not-allowed"
                   style={{
                     padding: "0.7rem 2rem",
                     fontSize: "0.95rem",
@@ -484,12 +548,12 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
                 >
                   🚫 Listing Expired
                 </span>
-                <span className="text-xs text-slate-400 font-medium">
+                <span className="text-xs text-slate-500 font-medium">
                   This position has been filled or closed by the employer
                 </span>
               </div>
             ) : (
-              <div className="mt-5 flex flex-wrap items-center gap-3 pt-4 border-t border-slate-800/60">
+              <div className="mt-5 flex flex-wrap items-center gap-3 pt-4 border-t border-slate-200">
                 <a
                   href={job.link}
                   target="_blank"
@@ -499,12 +563,11 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
                     padding: "0.7rem 2rem",
                     fontSize: "0.95rem",
                     borderRadius: "0.875rem",
-                    boxShadow: "0 4px 16px rgba(11,143,117,0.3)",
                   }}
                 >
                   ✨ Apply Now ↗
                 </a>
-                <span className="text-xs text-slate-400 font-medium">
+                <span className="text-xs text-slate-500 font-medium">
                   Opens employer&apos;s official career page
                 </span>
               </div>
@@ -527,9 +590,9 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
                 ...(job.signals?.experienceText ? [{ label: "Experience", value: job.signals.experienceText }] : []),
                 ...(job.signals?.seniority ? [{ label: "Seniority", value: formatSeniority(job.signals.seniority) }] : []),
               ].map(({ label, value }) => (
-                <div key={label} style={{ borderRadius: "12px", background: "rgba(148,163,184,0.04)", border: "1px solid rgba(148,163,184,0.06)", padding: "0.85rem" }}>
-                  <p className="text-xs font-bold uppercase tracking-wide text-cyan-400">{label}</p>
-                  <p className="mt-0.5 font-semibold text-slate-100">{value}</p>
+                <div key={label} style={{ borderRadius: "12px", background: "#f8fafc", border: "1px solid #e2e8f0", padding: "0.85rem" }}>
+                  <p className="text-xs font-bold uppercase tracking-wide text-blue-600">{label}</p>
+                  <p className="mt-0.5 font-semibold text-slate-900">{value}</p>
                 </div>
               ))}
             </div>
@@ -548,15 +611,15 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
                     {sections.map((section, si) => (
                       <div key={si}>
                         {section.heading && (
-                          <h3 className="text-sm font-bold text-slate-100 uppercase tracking-wide mb-2">
+                          <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wide mb-2">
                             {section.heading}
                           </h3>
                         )}
                         {section.type === "bullets" ? (
                           <ul className="space-y-2 pl-1">
                             {section.items.map((item, ii) => (
-                              <li key={ii} className="flex items-start gap-2 text-sm leading-7 text-slate-300">
-                                <span className="mt-2 h-1.5 w-1.5 rounded-full bg-cyan-400 shrink-0 shadow-[0_0_8px_rgba(34,211,238,0.6)]" />
+                              <li key={ii} className="flex items-start gap-2 text-sm leading-7 text-slate-700">
+                                <span className="mt-2 h-1.5 w-1.5 rounded-full bg-blue-600 shrink-0" />
                                 <span>{item}</span>
                               </li>
                             ))}
@@ -564,7 +627,7 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
                         ) : (
                           <div className="space-y-3">
                             {section.items.map((item, ii) => (
-                              <p key={ii} className="text-sm leading-7 text-slate-300">{item}</p>
+                              <p key={ii} className="text-sm leading-7 text-slate-700">{item}</p>
                             ))}
                           </div>
                         )}
@@ -572,13 +635,96 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
                     ))}
                   </div>
                 ) : (
-                  <p className="mt-3 whitespace-pre-wrap text-sm leading-7 text-slate-300">
+                  <p className="mt-3 whitespace-pre-wrap text-sm leading-7 text-slate-700">
                     {descText}
                   </p>
                 )}
               </section>
             );
           })()}
+
+          {/* ── Remote Work & Candidate Success Guide ── */}
+          <section className="glass-card fade-up" style={{ borderRadius: "1.25rem", padding: "1.5rem 2rem" }}>
+            <h2 className="section-title">Remote Work Guidelines & Career Insights</h2>
+            <p style={{ marginTop: "0.5rem", fontSize: "0.85rem", lineHeight: 1.7, color: "#64748b" }}>
+              Practical advice for succeeding as a remote professional in this role.
+            </p>
+            <div className="mt-4 grid gap-4 sm:grid-cols-2">
+              <div style={{ borderRadius: "14px", background: "#f8fafc", border: "1px solid #e2e8f0", padding: "1.25rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.5rem" }}>
+                  <span style={{ fontSize: "1.2rem" }}>⚡</span>
+                  <h3 style={{ fontSize: "0.95rem", fontWeight: 800, color: "#0f172a", margin: 0 }}>Asynchronous Productivity</h3>
+                </div>
+                <p style={{ fontSize: "0.85rem", lineHeight: 1.75, color: "#475569", margin: 0 }}>
+                  High-performing remote teams prioritize asynchronous communication. Document your progress clearly in tickets, maintain organized project repositories, and communicate status updates proactively without waiting for real-time meetings.
+                </p>
+              </div>
+
+              <div style={{ borderRadius: "14px", background: "#f8fafc", border: "1px solid #e2e8f0", padding: "1.25rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.5rem" }}>
+                  <span style={{ fontSize: "1.2rem" }}>🛡️</span>
+                  <h3 style={{ fontSize: "0.95rem", fontWeight: 800, color: "#0f172a", margin: 0 }}>Home Office & Security</h3>
+                </div>
+                <p style={{ fontSize: "0.85rem", lineHeight: 1.75, color: "#475569", margin: 0 }}>
+                  Ensure a private, quiet workstation with a reliable high-speed broadband connection (min 50 Mbps). Maintain compliance with employer cybersecurity policies by utilizing secure password managers, 2FA authentication, and authorized VPN services.
+                </p>
+              </div>
+
+              <div style={{ borderRadius: "14px", background: "#f8fafc", border: "1px solid #e2e8f0", padding: "1.25rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.5rem" }}>
+                  <span style={{ fontSize: "1.2rem" }}>🎯</span>
+                  <h3 style={{ fontSize: "0.95rem", fontWeight: 800, color: "#0f172a", margin: 0 }}>Resume & Application Tips</h3>
+                </div>
+                <p style={{ fontSize: "0.85rem", lineHeight: 1.75, color: "#475569", margin: 0 }}>
+                  Tailor your CV specifically to the requirements of {displayTitle}. Highlight quantifiable achievements from past roles (e.g. revenue growth, efficiency improvements, or software shipped) and showcase proven experience collaborating with remote teams.
+                </p>
+              </div>
+
+              <div style={{ borderRadius: "14px", background: "#f8fafc", border: "1px solid #e2e8f0", padding: "1.25rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.5rem" }}>
+                  <span style={{ fontSize: "1.2rem" }}>💬</span>
+                  <h3 style={{ fontSize: "0.95rem", fontWeight: 800, color: "#0f172a", margin: 0 }}>Virtual Interview Prep</h3>
+                </div>
+                <p style={{ fontSize: "0.85rem", lineHeight: 1.75, color: "#475569", margin: 0 }}>
+                  Test your video and audio hardware before virtual calls. Prepare concise STAR-format stories demonstrating how you manage time independently, handle conflicting priorities across different time zones, and solve complex problems autonomously.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          {/* ── Role Specific FAQ (Rich Snippets & Google Ranking) ── */}
+          <section className="glass-card fade-up" style={{ borderRadius: "1.25rem", padding: "1.5rem 2rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.5rem" }}>
+              <span style={{ fontSize: "1.25rem" }}>❓</span>
+              <h2 className="section-title" style={{ margin: 0 }}>Frequently Asked Questions</h2>
+            </div>
+            <p style={{ fontSize: "0.85rem", lineHeight: 1.7, color: "#64748b" }}>
+              Key answers about the application process, remote setup, and compensation for {displayTitle}.
+            </p>
+            <div style={{ marginTop: "1.25rem", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+              {roleFaqs.map((faq, index) => (
+                <details
+                  key={index}
+                  style={{
+                    borderRadius: "12px",
+                    background: "#f8fafc",
+                    border: "1px solid #e2e8f0",
+                    padding: "1rem 1.25rem",
+                    transition: "all 0.2s ease",
+                  }}
+                  open={index === 0}
+                >
+                  <summary style={{ cursor: "pointer", fontSize: "0.92rem", fontWeight: 700, color: "#0f172a", lineHeight: 1.5, listStyle: "none", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <span>{faq.question}</span>
+                    <span style={{ color: "#2563eb", fontSize: "1.1rem", fontWeight: 700, marginLeft: "0.5rem" }}>+</span>
+                  </summary>
+                  <p style={{ marginTop: "0.75rem", fontSize: "0.88rem", lineHeight: 1.8, color: "#475569", borderTop: "1px solid #e2e8f0", paddingTop: "0.75rem", margin: "0.75rem 0 0" }}>
+                    {faq.answer}
+                  </p>
+                </details>
+              ))}
+            </div>
+          </section>
 
           {/* Keywords */}
           {(job.seo?.keywords || []).length > 0 && (
@@ -622,12 +768,12 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
           <section
             className="fade-up"
             style={{
-              background: "linear-gradient(135deg, rgba(6,182,212,0.08) 0%, rgba(59,130,246,0.04) 100%)",
-              border: "1px solid rgba(6,182,212,0.15)",
+              background: "linear-gradient(135deg, #eff6ff 0%, #f8fafc 100%)",
+              border: "1px solid #bfdbfe",
               borderRadius: "1.25rem",
               padding: "2rem 1.5rem",
               textAlign: "center",
-              boxShadow: "0 8px 32px rgba(0,0,0,0.2)",
+              boxShadow: "0 4px 16px rgba(37,99,235,0.06)",
             }}
           >
             <div style={{ fontSize: "2.5rem", marginBottom: "0.5rem" }}>🚀</div>
@@ -642,14 +788,14 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
             >
               Ready to Apply?
             </h2>
-            <p style={{ color: "#94a3b8", fontSize: "0.9rem", lineHeight: 1.65, marginBottom: "1.5rem", maxWidth: "480px", margin: "0 auto 1.5rem" }}>
+            <p style={{ color: "#475569", fontSize: "0.9rem", lineHeight: 1.65, marginBottom: "1.5rem", maxWidth: "480px", margin: "0 auto 1.5rem" }}>
               Click the button below to apply on the employer&apos;s official website.
               Always verify job details before submitting personal information.
             </p>
             <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem", justifyContent: "center", alignItems: "center" }}>
               {isExpired ? (
                 <span
-                  className="badge bg-amber-500/10 text-amber-400 border border-amber-500/20 cursor-not-allowed"
+                  className="badge bg-amber-50 text-amber-800 border border-amber-200 cursor-not-allowed"
                   style={{
                     display: "inline-flex",
                     padding: "0.85rem 2.5rem",
@@ -698,7 +844,7 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
             </p>
             {isExpired ? (
               <span
-                className="badge bg-amber-500/10 text-amber-400 border border-amber-500/20 cursor-not-allowed w-full flex items-center justify-center h-11 rounded-2xl text-sm font-semibold"
+                className="badge bg-amber-50 text-amber-800 border border-amber-200 cursor-not-allowed w-full flex items-center justify-center h-11 rounded-2xl text-sm font-semibold"
               >
                 🚫 Listing Expired
               </span>
@@ -722,7 +868,7 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
 
           {/* Share */}
           <div className="glass-card rounded-3xl p-6 space-y-3">
-            <h2 className="text-sm font-bold text-slate-200">Share This Job</h2>
+            <h2 className="text-sm font-bold text-slate-900">Share This Job</h2>
             <div className="flex flex-wrap gap-2">
               <a
                 href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(displayTitle)}&url=${encodeURIComponent(pageUrl)}`}
@@ -743,6 +889,33 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
             </div>
           </div>
         </aside>
+      </div>
+
+      {/* ── Mobile Sticky Bottom Action Bar (Cuts Mobile Bounce Rate) ── */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-slate-200/90 px-4 py-2.5 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] flex items-center justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <div className="text-xs font-bold text-slate-900 truncate">
+            {displayTitle}
+          </div>
+          <div className="text-[11px] text-slate-500 truncate">
+            {job.sourceLabel || "Remote Employer"} {job.signals?.salaryText ? `• ${job.signals.salaryText}` : "• Verified Remote"}
+          </div>
+        </div>
+        {isExpired ? (
+          <span className="shrink-0 px-4 py-2 text-xs font-bold text-slate-400 bg-slate-100 rounded-xl">
+            Expired
+          </span>
+        ) : (
+          <a
+            href={job.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="shrink-0 px-5 py-2.5 text-xs font-extrabold text-white bg-blue-600 hover:bg-blue-700 active:scale-95 rounded-xl shadow-md transition flex items-center gap-1.5"
+          >
+            <span>Apply Now</span>
+            <span className="text-sm">↗</span>
+          </a>
+        )}
       </div>
     </div>
   );

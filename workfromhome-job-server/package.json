@@ -9,7 +9,9 @@
     "start": "node src/server.js",
     "ingest": "node src/utils/runIngestOnce.js",
     "digest-alerts": "node src/utils/runAlertDigestsOnce.js",
-    "test-indexing": "node src/utils/testGoogleIndexing.js"
+    "test-indexing": "node src/utils/testGoogleIndexing.js",
+    "backfill": "node src/utils/optimizeExistingJobsSeo.js",
+    "optimize-titles": "node src/utils/optimizeExistingTitles.js"
   },
   "keywords": [
     "nodejs",

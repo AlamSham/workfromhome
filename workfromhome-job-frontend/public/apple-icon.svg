@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" fill="none">
+  <defs>
+    <linearGradient id="appleBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563eb" />
+      <stop offset="50%" stop-color="#1d4ed8" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+    <linearGradient id="appleBrand" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="100%" stop-color="#f1f5f9" />
+    </linearGradient>
+    <linearGradient id="appleAccent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#818cf8" />
+    </linearGradient>
+  </defs>
+
+  <rect width="180" height="180" rx="40" fill="url(#appleBg)" />
+  <rect x="2" y="2" width="176" height="176" rx="38" stroke="rgba(255,255,255,0.2)" stroke-width="4" fill="none" />
+
+  <g transform="translate(26, 26) scale(2)">
+    <!-- Left Pillar -->
+    <rect x="16" y="15" width="7" height="34" rx="3.5" fill="url(#appleBrand)" />
+
+    <!-- Top Rounded Loop -->
+    <path d="M19 15H33C39.0751 15 44 19.4772 44 25C44 30.5228 39.0751 35 33 35H19V15Z" fill="url(#appleBrand)" />
+    <path d="M23 21H32C34.7614 21 37 22.7909 37 25C37 27.2091 34.7614 29 32 29H23V21Z" fill="#1d4ed8" />
+
+    <!-- Dynamic Kick / Upward Desk Leg -->
+    <path d="M30 32L42.8 47.4C43.5 48.3 44.8 49 46 49H47C48.6 49 49.6 47.2 48.6 45.9L36.8 32H30Z" fill="url(#appleAccent)" />
+
+    <!-- Glowing Live Remote Status Indicator Dot -->
+    <circle cx="48" cy="16" r="4.5" fill="#10b981" stroke="#ffffff" stroke-width="1.5" />
+    <circle cx="48" cy="16" r="2" fill="#ffffff" />
+  </g>
+</svg>

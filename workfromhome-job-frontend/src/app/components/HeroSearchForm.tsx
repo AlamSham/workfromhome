@@ -82,15 +82,15 @@ export default function HeroSearchForm({ search, country }: { search: string, co
           }
         }
         .hero-search-input:focus {
-          border-color: #06b6d4 !important;
-          box-shadow: 0 0 0 3px rgba(6,182,212,0.12), 0 0 20px rgba(6,182,212,0.08) !important;
+          border-color: #2563eb !important;
+          box-shadow: 0 0 0 3px rgba(37,99,235,0.15) !important;
         }
         .hero-search-select:focus {
-          border-color: #06b6d4 !important;
-          box-shadow: 0 0 0 3px rgba(6,182,212,0.12) !important;
+          border-color: #2563eb !important;
+          box-shadow: 0 0 0 3px rgba(37,99,235,0.15) !important;
         }
         .hero-search-btn:hover {
-          box-shadow: 0 4px 24px rgba(6,182,212,0.4) !important;
+          box-shadow: 0 4px 18px rgba(37,99,235,0.35) !important;
           transform: translateY(-1px);
         }
       `}</style>
@@ -103,12 +103,12 @@ export default function HeroSearchForm({ search, country }: { search: string, co
           style={{
             height: "48px",
             borderRadius: "12px",
-            border: "1px solid rgba(148,163,184,0.1)",
-            background: "rgba(15,23,42,0.6)",
+            border: "1px solid #cbd5e1",
+            background: "#ffffff",
             padding: "0 1rem",
             fontSize: "0.88rem",
             outline: "none",
-            color: "#f1f5f9",
+            color: "#0f172a",
             transition: "all 0.2s",
           }}
         />
@@ -124,12 +124,12 @@ export default function HeroSearchForm({ search, country }: { search: string, co
           style={{
             height: "48px",
             borderRadius: "12px",
-            border: "1px solid rgba(148,163,184,0.1)",
-            background: "rgba(15,23,42,0.6)",
+            border: "1px solid #cbd5e1",
+            background: "#ffffff",
             padding: "0 0.875rem",
             fontSize: "0.85rem",
             outline: "none",
-            color: "#94a3b8",
+            color: "#334155",
             cursor: "pointer",
             minWidth: "140px",
             transition: "all 0.2s",
@@ -154,7 +154,7 @@ export default function HeroSearchForm({ search, country }: { search: string, co
           style={{
             height: "48px",
             borderRadius: "12px",
-            background: "linear-gradient(135deg, #06b6d4, #3b82f6)",
+            background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
             color: "#fff",
             padding: "0 1.75rem",
             fontSize: "0.88rem",
@@ -162,13 +162,59 @@ export default function HeroSearchForm({ search, country }: { search: string, co
             border: "none",
             cursor: "pointer",
             whiteSpace: "nowrap",
-            boxShadow: "0 2px 16px rgba(6,182,212,0.3)",
+            boxShadow: "0 2px 10px rgba(37,99,235,0.25)",
             transition: "all 0.2s",
           }}
         >
           Find Jobs
         </button>
       </form>
+
+      {/* ── High-Converting Quick Trending Filters (Reduces Bounce Rate) ── */}
+      <div style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "0.85rem", flexWrap: "wrap" }}>
+        <span style={{ fontSize: "0.72rem", fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", marginRight: "2px" }}>
+          Trending:
+        </span>
+        {[
+          { label: "🔥 Hiring Fast", query: "immediately" },
+          { label: "🌱 Entry Level", query: "entry level" },
+          { label: "🎧 Customer Support", query: "support" },
+          { label: "💻 Software Eng", query: "developer" },
+          { label: "📊 Data Entry", query: "data entry" },
+          { label: "💰 High Pay ($100k+)", query: "senior" },
+        ].map((tag) => (
+          <button
+            key={tag.label}
+            type="button"
+            onClick={() => {
+              window.location.href = buildDestination(tag.query, country);
+            }}
+            style={{
+              background: "#f8fafc",
+              border: "1px solid #e2e8f0",
+              borderRadius: "9999px",
+              padding: "3px 10px",
+              fontSize: "0.72rem",
+              fontWeight: 600,
+              color: "#334155",
+              cursor: "pointer",
+              transition: "all 0.15s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = "#2563eb";
+              e.currentTarget.style.color = "#2563eb";
+              e.currentTarget.style.background = "#eff6ff";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = "#e2e8f0";
+              e.currentTarget.style.color = "#334155";
+              e.currentTarget.style.background = "#f8fafc";
+            }}
+          >
+            {tag.label}
+          </button>
+        ))}
+      </div>
     </>
   );
 }

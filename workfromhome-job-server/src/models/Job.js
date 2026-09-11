@@ -39,6 +39,7 @@ const jobSchema = new mongoose.Schema(
     link: { type: String, required: true, unique: true, index: true },
     publishedAt: { type: Date },
     expiresAt: { type: Date, index: true },
+    shortId: { type: String, trim: true, index: true },
     seo: seoSchema,
     signals: signalsSchema,
     rawItem: { type: Object }
@@ -46,8 +47,16 @@ const jobSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+jobSchema.pre('save', function (next) {
+  if (!this.shortId && this._id) {
+    this.shortId = this._id.toString().slice(-6);
+  }
+  next();
+});
+
 // MongoDB TTL cleanup: document auto-deletes once expiresAt is reached.
 jobSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
+jobSchema.index({ shortId: 1 });
 jobSchema.index({ 'signals.seniority': 1, publishedAt: -1 });
 jobSchema.index({ 'signals.experienceMinYears': 1, publishedAt: -1 });
 jobSchema.index({ 'signals.salaryMax': 1, publishedAt: -1 });

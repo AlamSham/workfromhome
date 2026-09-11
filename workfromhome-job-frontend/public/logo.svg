@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 64" fill="none">
+  <defs>
+    <linearGradient id="logoBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563eb" />
+      <stop offset="50%" stop-color="#1d4ed8" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+    <linearGradient id="logoBrand" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="100%" stop-color="#e0e7ff" />
+    </linearGradient>
+    <linearGradient id="logoAccent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#818cf8" />
+    </linearGradient>
+    <filter id="logoShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#1e40af" flood-opacity="0.3" />
+    </filter>
+  </defs>
+
+  <!-- Icon Mark (48x48) -->
+  <g transform="translate(4, 8)">
+    <rect width="48" height="48" rx="12" fill="url(#logoBg)" filter="url(#logoShadow)" />
+    <rect x="0.75" y="0.75" width="46.5" height="46.5" rx="11.25" stroke="rgba(255,255,255,0.2)" stroke-width="1" fill="none" />
+
+    <g transform="translate(-2, -2) scale(0.8)">
+      <rect x="16" y="15" width="7" height="34" rx="3.5" fill="url(#logoBrand)" />
+      <path d="M19 15H33C39.0751 15 44 19.4772 44 25C44 30.5228 39.0751 35 33 35H19V15Z" fill="url(#logoBrand)" />
+      <path d="M23 21H32C34.7614 21 37 22.7909 37 25C37 27.2091 34.7614 29 32 29H23V21Z" fill="#1d4ed8" />
+      <path d="M30 32L42.8 47.4C43.5 48.3 44.8 49 46 49H47C48.6 49 49.6 47.2 48.6 45.9L36.8 32H30Z" fill="url(#logoAccent)" />
+      <circle cx="48" cy="16" r="4.5" fill="#10b981" stroke="#ffffff" stroke-width="1.5" />
+      <circle cx="48" cy="16" r="2" fill="#ffffff" />
+    </g>
+  </g>
+
+  <!-- Typography -->
+  <text x="64" y="34" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="22" font-weight="800" fill="#0f172a" letter-spacing="-0.5">
+    Remote<tspan fill="#2563eb">Job</tspan><tspan fill="#0f172a">Desk</tspan>
+  </text>
+  <text x="64" y="48" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="9" font-weight="700" fill="#64748b" letter-spacing="1.5">
+    GLOBAL REMOTE CAREERS
+  </text>
+</svg>

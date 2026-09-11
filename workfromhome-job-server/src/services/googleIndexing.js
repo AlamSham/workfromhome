@@ -120,8 +120,20 @@ async function submitToGoogleIndexing(newJobs) {
     
     const SITE_URL = env.siteUrl || 'https://remotejobdesk.com';
     const urls = newJobs.map((job) => {
-      const slug = job.seo?.slug || slugify(job.originalTitle || 'remote-job');
-      return `${SITE_URL}/jobs/${slug}-${job._id}`;
+      const cleanTitle = String(job.seo?.title || job.originalTitle || 'remote-job')
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+      const company = String(job.sourceLabel || '')
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+      const idStr = String(job._id || '');
+      const shortId = idStr.slice(-6) || idStr;
+      const slug = company ? `${cleanTitle}-${company}-${shortId}` : `${cleanTitle}-${shortId}`;
+      return `${SITE_URL}/jobs/${slug}`;
     });
 
     const extraUrls = [

@@ -75,7 +75,7 @@ async function listJobs(req, res) {
 
   const [jobs, total] = await Promise.all([
     Job.find(filter)
-      .select('_id source sourceLabel country category originalTitle summary link publishedAt expiresAt createdAt updatedAt seo.title seo.metaTitle seo.metaDescription seo.keywords seo.slug seo.content signals.seniority signals.experienceText signals.experienceMinYears signals.experienceMaxYears signals.salaryText signals.salaryCurrency signals.salaryMin signals.salaryMax signals.salaryInterval')
+      .select('_id shortId source sourceLabel country category originalTitle summary link publishedAt expiresAt createdAt updatedAt seo.title seo.metaTitle seo.metaDescription seo.keywords seo.slug seo.content signals.seniority signals.experienceText signals.experienceMinYears signals.experienceMaxYears signals.salaryText signals.salaryCurrency signals.salaryMin signals.salaryMax signals.salaryInterval')
       .sort({ publishedAt: -1, createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit)
@@ -265,7 +265,26 @@ async function listCompanyCountryCombos(req, res) {
 }
 
 async function getJobById(req, res) {
-  const job = await Job.findById(req.params.id).lean();
+  const rawId = String(req.params.id || '').trim();
+  let job = null;
+
+  // 1. Full 24-character ObjectId lookup
+  if (/^[a-f0-9]{24}$/i.test(rawId)) {
+    job = await Job.findById(rawId).lean();
+  }
+
+  // 2. Short 6-character ID lookup (e.g. at the end of the URL slug)
+  if (!job) {
+    const shortMatch = rawId.match(/([a-f0-9]{6})$/i);
+    if (shortMatch) {
+      job = await Job.findOne({ shortId: shortMatch[1].toLowerCase() }).lean();
+    }
+  }
+
+  // 3. SEO Slug lookup
+  if (!job) {
+    job = await Job.findOne({ 'seo.slug': rawId }).lean();
+  }
 
   if (!job) {
     return res.status(404).json({

@@ -163,9 +163,8 @@ export default function SharedJobsFeed({
           padding: "clamp(1.5rem, 5vw, 3rem) clamp(1.25rem, 4vw, 2.5rem)",
           position: "relative",
           overflow: "hidden",
-          borderImage: "linear-gradient(135deg, rgba(6,182,212,0.2), rgba(139,92,246,0.15), rgba(59,130,246,0.1)) 1",
-          borderImageSlice: 1,
-          border: "1px solid",
+          border: "1px solid #e2e8f0",
+          background: "#ffffff",
         }}
       >
         <div className="hero-orb-1" />
@@ -179,18 +178,18 @@ export default function SharedJobsFeed({
                 display: "inline-flex",
                 alignItems: "center",
                 gap: "6px",
-                background: "rgba(6,182,212,0.1)",
-                color: "#22d3ee",
+                background: "#eff6ff",
+                color: "#1d4ed8",
                 borderRadius: "8px",
                 padding: "5px 14px",
                 fontSize: "0.68rem",
                 fontWeight: 800,
                 letterSpacing: "0.14em",
                 textTransform: "uppercase",
-                border: "1px solid rgba(6,182,212,0.12)",
+                border: "1px solid #dbeafe",
               }}
             >
-              <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#06b6d4", animation: "pulse-glow 2s ease infinite", boxShadow: "0 0 8px rgba(6,182,212,0.5)" }} />
+              <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#2563eb", animation: "pulse-glow 2s ease infinite", boxShadow: "0 0 8px rgba(37,99,235,0.4)" }} />
               {heroBadgeText || "Remote Job Discovery Platform"}
             </span>
           </div>
@@ -210,7 +209,7 @@ export default function SharedJobsFeed({
             {displayHeroTitle}
           </h1>
 
-          <p style={{ color: "#94a3b8", maxWidth: "560px", lineHeight: 1.7, marginBottom: "1.5rem", fontSize: "clamp(0.88rem, 2.5vw, 1rem)" }}>
+          <p style={{ color: "#475569", maxWidth: "560px", lineHeight: 1.7, marginBottom: "1.5rem", fontSize: "clamp(0.88rem, 2.5vw, 1rem)" }}>
             {displayHeroDescription}
           </p>
 
@@ -219,15 +218,15 @@ export default function SharedJobsFeed({
           {/* Stats */}
           <div style={{ display: "flex", flexWrap: "wrap", gap: "1.25rem", marginTop: "1.25rem" }}>
             {[
-              { value: totalJobs.toLocaleString(), label: "Active Jobs", color: "#06b6d4" },
-              { value: "22+", label: "Countries", color: "#8b5cf6" },
-              { value: "Daily", label: "Updated", color: "#10b981" },
-              { value: "100%", label: "Free Access", color: "#f59e0b" },
+              { value: totalJobs.toLocaleString(), label: "Active Jobs", color: "#2563eb" },
+              { value: "22+", label: "Countries", color: "#7c3aed" },
+              { value: "Daily", label: "Updated", color: "#059669" },
+              { value: "100%", label: "Free Access", color: "#d97706" },
             ].map(({ value, label, color }) => (
               <div key={label} style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                 <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: color, boxShadow: `0 0 10px ${color}40` }} />
                 <div>
-                  <span style={{ fontSize: "0.95rem", fontWeight: 800, color: "#f1f5f9" }}>{value}</span>
+                  <span style={{ fontSize: "0.95rem", fontWeight: 800, color: "#0f172a" }}>{value}</span>
                   <span style={{ fontSize: "0.72rem", color: "#64748b", marginLeft: "0.3rem", fontWeight: 600 }}>{label}</span>
                 </div>
               </div>
@@ -248,11 +247,11 @@ export default function SharedJobsFeed({
             fontWeight: 700,
             textDecoration: "none",
             flexShrink: 0,
-            background: !country ? "linear-gradient(135deg, #06b6d4, #3b82f6)" : "transparent",
-            color: !country ? "#fff" : "#94a3b8",
-            border: `1px solid ${!country ? "transparent" : "rgba(148,163,184,0.1)"}`,
+            background: !country ? "linear-gradient(135deg, #2563eb, #1d4ed8)" : "#ffffff",
+            color: !country ? "#fff" : "#475569",
+            border: `1px solid ${!country ? "transparent" : "#e2e8f0"}`,
             transition: "all 0.2s",
-            boxShadow: !country ? "0 2px 12px rgba(6,182,212,0.2)" : "none",
+            boxShadow: !country ? "0 2px 8px rgba(37,99,235,0.25)" : "0 1px 2px rgba(0,0,0,0.03)",
           }}
         >
           All
@@ -269,11 +268,11 @@ export default function SharedJobsFeed({
               fontWeight: 700,
               textDecoration: "none",
               flexShrink: 0,
-              background: country === item ? "linear-gradient(135deg, #06b6d4, #3b82f6)" : "transparent",
-              color: country === item ? "#fff" : "#94a3b8",
-              border: `1px solid ${country === item ? "transparent" : "rgba(148,163,184,0.08)"}`,
+              background: country === item ? "linear-gradient(135deg, #2563eb, #1d4ed8)" : "#ffffff",
+              color: country === item ? "#fff" : "#475569",
+              border: `1px solid ${country === item ? "transparent" : "#e2e8f0"}`,
               transition: "all 0.2s",
-              boxShadow: country === item ? "0 2px 12px rgba(6,182,212,0.2)" : "none",
+              boxShadow: country === item ? "0 2px 8px rgba(37,99,235,0.25)" : "0 1px 2px rgba(0,0,0,0.03)",
             }}
           >
             {COUNTRY_LABELS[item] || item}
@@ -318,12 +317,12 @@ export default function SharedJobsFeed({
       {!error && (
         <div className="fade-up" style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "0.5rem", flexWrap: "wrap" }}>
           <p style={{ fontSize: "0.82rem", color: "#64748b", fontWeight: 600, margin: 0 }}>
-            Showing <strong style={{ color: "#f1f5f9" }}>{jobs.length}</strong> of{" "}
-            <strong style={{ color: "#f1f5f9" }}>{totalJobs.toLocaleString()}</strong> jobs
-            {country && <> in <strong style={{ color: "#22d3ee" }}>{COUNTRY_LABELS[country] || country}</strong></>}
-            {search && <> for <strong style={{ color: "#22d3ee" }}>&quot;{search}&quot;</strong></>}
+            Showing <strong style={{ color: "#0f172a" }}>{jobs.length}</strong> of{" "}
+            <strong style={{ color: "#0f172a" }}>{totalJobs.toLocaleString()}</strong> jobs
+            {country && <> in <strong style={{ color: "#2563eb" }}>{COUNTRY_LABELS[country] || country}</strong></>}
+            {search && <> for <strong style={{ color: "#2563eb" }}>&quot;{search}&quot;</strong></>}
           </p>
-          <p style={{ fontSize: "0.75rem", color: "#475569", margin: 0, whiteSpace: "nowrap" }}>
+          <p style={{ fontSize: "0.75rem", color: "#64748b", margin: 0, whiteSpace: "nowrap" }}>
             Page {currentPage} of {totalPages}
           </p>
         </div>
@@ -334,7 +333,7 @@ export default function SharedJobsFeed({
         {jobs.length === 0 ? (
           <div className="glass-card fade-up" style={{ padding: "3.5rem", textAlign: "center" }}>
             <p style={{ fontSize: "3rem", margin: 0 }}>🔍</p>
-            <h2 style={{ margin: "0.75rem 0 0.5rem", fontSize: "1.25rem", fontWeight: 800, color: "#f1f5f9" }}>No jobs found</h2>
+            <h2 style={{ margin: "0.75rem 0 0.5rem", fontSize: "1.25rem", fontWeight: 800, color: "#0f172a" }}>No jobs found</h2>
             <p style={{ color: "#64748b", fontSize: "0.9rem", marginBottom: "1.5rem" }}>Try adjusting your search or country filter.</p>
             <Link href="/" className="btn-primary" style={{ display: "inline-flex" }}>Clear Filters</Link>
           </div>
@@ -356,77 +355,118 @@ export default function SharedJobsFeed({
                   <div
                     style={{
                       flexShrink: 0,
-                      width: "44px",
-                      height: "44px",
-                      borderRadius: "12px",
-                      background: `${bgColor}15`,
+                      width: "48px",
+                      height: "48px",
+                      borderRadius: "14px",
+                      background: `linear-gradient(135deg, ${bgColor}18, ${bgColor}32)`,
                       color: bgColor,
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      fontSize: "0.82rem",
+                      fontSize: "0.88rem",
                       fontWeight: 900,
-                      border: `1px solid ${bgColor}20`,
-                      backgroundImage: job.sourceLabel
-                        ? `url(https://logo.clearbit.com/${job.sourceLabel.toLowerCase().replace(/\s+/g, '').replace(/[^a-z0-9.]/g, '')}.com)`
-                        : "none",
-                      backgroundSize: "60%",
-                      backgroundPosition: "center",
-                      backgroundRepeat: "no-repeat",
+                      border: `1.5px solid ${bgColor}35`,
+                      boxShadow: `0 2px 8px ${bgColor}15`,
                     }}
                   >
-                    <span style={{ opacity: 0.4 }}>{initials}</span>
+                    <span>{initials}</span>
                   </div>
 
                   <div style={{ flex: 1, minWidth: 0 }}>
                     {/* Badges row */}
                     <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", alignItems: "center", marginBottom: "0.5rem" }}>
                       <span className="badge badge-accent">{COUNTRY_LABELS[job.country || ""] || job.country || "Global"}</span>
-                      <span className="badge badge-dark">{(job.category || "WFH").toUpperCase()}</span>
+                      <span className="badge badge-dark">🏠 100% Remote</span>
                       {job.sourceLabel && (
-                        <Link href={getCompanyPath(job.sourceLabel)} className="badge badge-gray" style={{ textDecoration: "none" }}>
-                          {job.sourceLabel}
+                        <Link href={getCompanyPath(job.sourceLabel)} className="badge badge-gray" style={{ textDecoration: "none", fontWeight: 700 }}>
+                          🏢 {job.sourceLabel}
                         </Link>
                       )}
-                      <span style={{ marginLeft: "auto", fontSize: "0.72rem", color: "#475569", fontWeight: 600, whiteSpace: "nowrap" }}>
-                        {timeAgo(job.publishedAt)}
-                      </span>
+                      <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "6px" }}>
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontSize: "0.72rem", color: "#059669", fontWeight: 700, background: "#ecfdf5", padding: "2px 7px", borderRadius: "6px", border: "1px solid #a7f3d0" }}>
+                          <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#10b981", boxShadow: "0 0 6px #10b981" }} />
+                          Actively Hiring
+                        </span>
+                        <span style={{ fontSize: "0.72rem", color: "#64748b", fontWeight: 600, whiteSpace: "nowrap" }}>
+                          {timeAgo(job.publishedAt)}
+                        </span>
+                      </div>
                     </div>
 
                     {/* Title */}
                     <Link
                       href={getJobPath(job)}
-                      style={{ display: "block", fontSize: "1rem", fontWeight: 800, color: "#f1f5f9", textDecoration: "none", lineHeight: 1.4, transition: "color 0.2s" }}
+                      className="job-title-link"
+                      style={{
+                        display: "block",
+                        fontSize: "1.08rem",
+                        fontWeight: 800,
+                        color: "#0f172a",
+                        textDecoration: "none",
+                        lineHeight: 1.35,
+                        letterSpacing: "-0.015em",
+                        transition: "color 0.18s ease",
+                      }}
                     >
                       {label}
                     </Link>
 
                     {/* Description */}
-                    {desc && <p style={{ marginTop: "0.35rem", fontSize: "0.83rem", color: "#64748b", lineHeight: 1.65 }}>{desc}</p>}
-
-                    {/* Signal pills */}
-                    {signalPills.length > 0 && (
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginTop: "0.6rem" }}>
-                        {signalPills.map((pill) => (
-                          <span key={pill} className="badge badge-gray" style={{ fontWeight: 600 }}>
-                            {pill}
-                          </span>
-                        ))}
-                      </div>
+                    {desc && (
+                      <p style={{ marginTop: "0.4rem", fontSize: "0.84rem", color: "#475569", lineHeight: 1.65, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                        {desc}
+                      </p>
                     )}
 
-                    {/* Keywords */}
-                    {(job.seo?.keywords || []).length > 0 && (
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: "5px", marginTop: "0.55rem" }}>
-                        {(job.seo.keywords || []).slice(0, 5).map((kw: string) => (
-                          <span key={kw} className="tag-pill">#{kw}</span>
-                        ))}
-                      </div>
-                    )}
+                    {/* Highlights & Signal pills */}
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginTop: "0.65rem", alignItems: "center" }}>
+                      {job.signals?.salaryText && (
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", background: "#f0fdf4", color: "#15803d", border: "1px solid #bbf7d0", borderRadius: "8px", padding: "3px 9px", fontSize: "0.74rem", fontWeight: 700 }}>
+                          💰 {job.signals.salaryText}
+                        </span>
+                      )}
+                      {job.signals?.experienceText && (
+                        <span className="badge badge-gray" style={{ fontWeight: 600 }}>
+                          ⏱️ {job.signals.experienceText}
+                        </span>
+                      )}
+                      {job.signals?.seniority && (
+                        <span className="badge badge-gray" style={{ fontWeight: 600 }}>
+                          🎯 {formatSeniority(job.signals.seniority)}
+                        </span>
+                      )}
+                      {(job.seo?.keywords || []).slice(0, 4).map((kw: string) => (
+                        <span key={kw} className="tag-pill" style={{ fontSize: "0.7rem", color: "#64748b" }}>
+                          #{kw}
+                        </span>
+                      ))}
+                    </div>
 
-                    {/* CTA */}
-                    <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.8rem", flexWrap: "wrap" }}>
-                      <Link href={getJobPath(job)} className="btn-primary" style={{ fontSize: "0.78rem", padding: "0.45rem 1rem" }}>View Details →</Link>
+                    {/* High-Converting Action Bar */}
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        gap: "1rem",
+                        marginTop: "1rem",
+                        paddingTop: "0.85rem",
+                        borderTop: "1px solid #f1f5f9",
+                        flexWrap: "wrap",
+                      }}
+                    >
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", fontSize: "0.76rem", color: "#64748b" }}>
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
+                          ⚡ <strong>Direct Apply</strong>
+                        </span>
+                        <span>•</span>
+                        <span>🛡️ Verified Remote Employer</span>
+                      </div>
+
+                      <Link href={getJobPath(job)} className="btn-job-cta">
+                        <span>View Job & Apply</span>
+                        <span className="cta-arrow" style={{ fontSize: "1.05rem", fontWeight: 900 }}>→</span>
+                      </Link>
                     </div>
                   </div>
                 </div>
@@ -448,8 +488,8 @@ export default function SharedJobsFeed({
             ← Previous
           </Link>
           <p style={{ fontSize: "0.82rem", color: "#64748b" }}>
-            Page <strong style={{ color: "#f1f5f9" }}>{currentPage}</strong> of{" "}
-            <strong style={{ color: "#f1f5f9" }}>{totalPages}</strong>
+            Page <strong style={{ color: "#0f172a" }}>{currentPage}</strong> of{" "}
+            <strong style={{ color: "#0f172a" }}>{totalPages}</strong>
           </p>
           <Link
             href={buildPaginationHref(baseUrl, effectivePaginationSearch, Math.min(totalPages, currentPage + 1), filters)}

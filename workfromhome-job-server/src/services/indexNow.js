@@ -16,11 +16,28 @@ const INDEXNOW_API_KEY = process.env.INDEXNOW_API_KEY || '';
 const SITE_URL = env.siteUrl || 'https://remotejobdesk.com';
 const INDEXNOW_ENDPOINT = 'https://api.indexnow.org/indexnow';
 
+function slugifyText(text) {
+  return String(text || '')
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+function getJobCanonicalUrl(job, siteUrl) {
+  const cleanTitle = slugifyText(job.seo?.title || job.originalTitle || 'remote-job');
+  const company = slugifyText(job.sourceLabel || '');
+  const idStr = String(job._id || '');
+  const shortId = idStr.slice(-6) || idStr;
+  const slug = company ? `${cleanTitle}-${company}-${shortId}` : `${cleanTitle}-${shortId}`;
+  return `${siteUrl}/jobs/${slug}`;
+}
+
 /**
  * Submits a batch of URLs to IndexNow for instant indexing.
  * Called after each job ingestion run with newly added job URLs.
  *
- * @param {Array<{_id: string, seo?: {slug?: string}, originalTitle?: string}>} newJobs
+ * @param {Array<{_id: string, seo?: {slug?: string}, originalTitle?: string, sourceLabel?: string}>} newJobs
  */
 async function submitToIndexNow(newJobs) {
   if (!INDEXNOW_API_KEY) {
@@ -32,11 +49,8 @@ async function submitToIndexNow(newJobs) {
   }
 
   try {
-    // Build URL list from new jobs
-    const urls = newJobs.map((job) => {
-      const slug = job.seo?.slug || slugify(job.originalTitle || 'remote-job');
-      return `${SITE_URL}/jobs/${slug}-${job._id}`;
-    });
+    // Build clean canonical URL list from new jobs
+    const urls = newJobs.map((job) => getJobCanonicalUrl(job, SITE_URL));
 
     // Also include the homepage and country pages to refresh their content
     const extraUrls = [

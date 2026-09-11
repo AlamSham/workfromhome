@@ -112,20 +112,20 @@ export default function JobSearchToolbar({
             <p className="text-[0.72rem] font-extrabold uppercase tracking-[0.18em] text-slate-500">
               Refine This Search
             </p>
-            <h2 className="mt-2 text-lg font-bold text-slate-100">
+            <h2 className="mt-2 text-lg font-bold text-slate-900">
               Filter by salary, experience, and seniority
             </h2>
-            <p className="mt-1 text-sm leading-6 text-slate-400">
+            <p className="mt-1 text-sm leading-6 text-slate-600">
               Narrow this page to higher-intent jobs, then save the search so you can come back to the same criteria faster.
             </p>
 
             <div className="mt-4 grid gap-3 sm:grid-cols-3">
-              <label className="flex flex-col gap-1 text-sm font-semibold text-slate-300">
+              <label className="flex flex-col gap-1 text-sm font-semibold text-slate-700">
                 Seniority
                 <select
                   value={filters.seniority}
                   onChange={(event) => setFilters((current) => ({ ...current, seniority: event.target.value }))}
-                  className="rounded-xl border border-slate-700 bg-slate-800/50 px-3 py-3 text-sm font-medium text-slate-200 outline-none transition focus:border-brand focus:ring-1 focus:ring-brand"
+                  className="rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm font-medium text-slate-900 outline-none transition focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
                 >
                   {SENIORITY_OPTIONS.map((option) => (
                     <option key={option.value || "all"} value={option.value}>
@@ -135,12 +135,12 @@ export default function JobSearchToolbar({
                 </select>
               </label>
 
-              <label className="flex flex-col gap-1 text-sm font-semibold text-slate-300">
+              <label className="flex flex-col gap-1 text-sm font-semibold text-slate-700">
                 Experience
                 <select
                   value={filters.experience}
                   onChange={(event) => setFilters((current) => ({ ...current, experience: event.target.value }))}
-                  className="rounded-xl border border-slate-700 bg-slate-800/50 px-3 py-3 text-sm font-medium text-slate-200 outline-none transition focus:border-brand focus:ring-1 focus:ring-brand"
+                  className="rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm font-medium text-slate-900 outline-none transition focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
                 >
                   {EXPERIENCE_OPTIONS.map((option) => (
                     <option key={option.value || "all"} value={option.value}>
@@ -150,12 +150,12 @@ export default function JobSearchToolbar({
                 </select>
               </label>
 
-              <label className="flex flex-col gap-1 text-sm font-semibold text-slate-300">
+              <label className="flex flex-col gap-1 text-sm font-semibold text-slate-700">
                 Minimum salary
                 <select
                   value={filters.minSalary}
                   onChange={(event) => setFilters((current) => ({ ...current, minSalary: event.target.value }))}
-                  className="rounded-xl border border-slate-700 bg-slate-800/50 px-3 py-3 text-sm font-medium text-slate-200 outline-none transition focus:border-brand focus:ring-1 focus:ring-brand"
+                  className="rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm font-medium text-slate-900 outline-none transition focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
                 >
                   {MIN_SALARY_OPTIONS.map((option) => (
                     <option key={option.value || "all"} value={option.value}>
@@ -179,14 +179,14 @@ export default function JobSearchToolbar({
           </div>
 
           <div className="w-full lg:max-w-sm">
-            <div className="rounded-2xl border border-slate-800 bg-slate-800/30 p-4 sm:p-5">
-              <p className="text-[0.72rem] font-extrabold uppercase tracking-[0.18em] text-cyan-400">
+            <div className="rounded-2xl border border-blue-100 bg-blue-50/50 p-4 sm:p-5">
+              <p className="text-[0.72rem] font-extrabold uppercase tracking-[0.18em] text-blue-600">
                 Save Search Alert
               </p>
-              <h3 className="mt-2 text-base font-bold text-slate-100">
+              <h3 className="mt-2 text-base font-bold text-slate-900">
                 Save jobs like these
               </h3>
-              <p className="mt-1 text-sm leading-6 text-slate-400">
+              <p className="mt-1 text-sm leading-6 text-slate-600">
                 {alertLabel}
               </p>
 
@@ -198,13 +198,13 @@ export default function JobSearchToolbar({
                   onChange={(event) => setEmail(event.target.value)}
                   placeholder="Enter your email"
                   disabled={status === "loading"}
-                  className="rounded-xl border border-slate-700 bg-slate-900/50 px-3 py-3 text-sm text-slate-200 outline-none transition focus:border-brand focus:ring-1 focus:ring-brand disabled:opacity-60"
+                  className="rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-600 focus:ring-1 focus:ring-blue-600 disabled:opacity-60"
                 />
                 <select
                   value={frequency}
                   onChange={(event) => setFrequency(event.target.value)}
                   disabled={status === "loading"}
-                  className="rounded-xl border border-slate-700 bg-slate-900/50 px-3 py-3 text-sm font-medium text-slate-200 outline-none transition focus:border-brand focus:ring-1 focus:ring-brand disabled:opacity-60"
+                  className="rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm font-medium text-slate-900 outline-none transition focus:border-blue-600 focus:ring-1 focus:ring-blue-600 disabled:opacity-60"
                 >
                   <option value="daily">Daily alert</option>
                   <option value="weekly">Weekly digest</option>

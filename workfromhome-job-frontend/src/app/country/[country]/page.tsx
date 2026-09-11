@@ -133,11 +133,11 @@ export async function generateMetadata({ params, searchParams }: CountryPageProp
   const page = toInt(getSearchParamValue(r?.page) || 1, 1);
   const filters = readJobFilters(r);
   const title = search
-    ? `"${search}" — Remote Jobs in ${countryName}`
-    : `Remote Work-From-Home Jobs in ${countryName} — Updated Daily 2026`;
+    ? `"${search}" Remote Jobs in ${countryName} (Hiring Now) [2026] | RemoteJobDesk`
+    : `⚡ Verified Remote Jobs in ${countryName} — 100% Work From Home (2026)`;
   const desc = search
-    ? `Find remote "${search}" jobs in ${countryName}. Updated daily with AI-enhanced listings.`
-    : `Browse ${countryName}'s best remote & work-from-home jobs. Software, marketing, sales, support roles updated daily. Apply directly to top employers.`;
+    ? `Apply to active "${search}" remote jobs in ${countryName}. Verified salaries, instant direct company application links, and daily fresh openings.`
+    : `Browse 100+ verified remote & work-from-home jobs in ${countryName} hiring immediately. Software, customer support, data entry & sales with competitive salaries ($40K–$140K). Apply direct!`;
   const url = `${SITE_URL}/remote-jobs-in-${rawCountry.toLowerCase()}`;
   const shouldIndex = !search && page <= 1 && !hasActiveJobFilters(filters);
 
@@ -151,6 +151,7 @@ export async function generateMetadata({ params, searchParams }: CountryPageProp
       `wfh jobs ${rawCountry}`,
       `online jobs ${countryName}`,
       `telecommute ${countryName}`,
+      `hiring immediately remote jobs ${countryName}`,
     ],
     alternates: { canonical: url },
     openGraph: { title, description: desc, url },

@@ -1,6 +1,5 @@
 const { fetchCandidateJobs } = require('../services/jobSourceService');
 const { generateSeoFields } = require('../services/seoService');
-const getOpenAIClient = require('../config/openai');
 const env = require('../config/env');
 
 (async () => {
@@ -11,7 +10,6 @@ const env = require('../config/env');
   console.log(`\n1. Checking AI Providers Configuration:`);
   console.log(`   - Groq API Key: ${env.groqApiKey ? 'YES (' + env.groqApiKey.substring(0, 10) + '...)' : 'NO (Add GROQ_API_KEY in .env for FREE AI)'} [Model: ${env.groqModel}]`);
   console.log(`   - Gemini API Key: ${env.geminiApiKey ? 'YES (' + env.geminiApiKey.substring(0, 10) + '...)' : 'NO (Add GEMINI_API_KEY in .env for FREE AI)'} [Model: ${env.geminiModel}]`);
-  console.log(`   - OpenAI API Key: ${env.openaiApiKey ? 'YES (' + env.openaiApiKey.substring(0, 10) + '...)' : 'NO'} [Model: ${env.openaiModel}]`);
 
 
   console.log('\n2. Scraping/Fetching candidate jobs from APIs & Google RSS...');
@@ -38,7 +36,7 @@ const env = require('../config/env');
   console.log(`   - Link: ${sampleJob.link}`);
   console.log(`   - Raw Summary Snippet: ${sampleJob.summary.slice(0, 150)}...`);
 
-  console.log('\n4. Sending job to OpenAI for AI SEO Enrichment...');
+  console.log('\n4. Sending job to AI (Groq / Gemini) for SEO Enrichment...');
   const aiStartTime = Date.now();
   const seoFields = await generateSeoFields(sampleJob);
   const aiDuration = ((Date.now() - aiStartTime) / 1000).toFixed(2);
@@ -53,7 +51,7 @@ const env = require('../config/env');
   if (seoFields.metaTitle && seoFields.metaDescription && seoFields.keywords) {
     console.log('✅ TEST RESULT: AI SEO Scraping & Enrichment is working SUCCESSFULLY!');
   } else {
-    console.log('⚠️ TEST RESULT: Fallback SEO was returned. Please verify OpenAI API Key validity.');
+    console.log('⚠️ TEST RESULT: Fallback SEO was returned. Please verify Groq / Gemini API Key validity.');
   }
   console.log('----------------------------------------------------\n');
   process.exit(0);

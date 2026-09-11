@@ -7,6 +7,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { JOB_CATEGORIES, getJobCategoryPath, getJobCategoryCountryPath } from "./lib/jobCategories";
 import { SEO_COUNTRIES } from "./lib/seoCountries";
 import { getCompanyPath } from "./lib/companies";
+import BrandLogo from "./components/BrandLogo";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -22,8 +23,8 @@ const playfair = Playfair_Display({
 
 export const metadata: Metadata = {
   title: {
-    default: "RemoteJobDesk — Work From Home Jobs in US & Europe | Updated Daily",
-    template: "%s | RemoteJobDesk",
+    default: "RemoteJobDesk — 1,000+ Verified Remote Jobs in US & Europe (2026)",
+    template: "%s",
   },
   description:
     "Find 1000+ fresh remote and work-from-home jobs across the US, UK, Germany, and 20+ countries. AI-enhanced listings updated daily. Software, marketing, design, customer support & more.",
@@ -86,6 +87,16 @@ export const metadata: Metadata = {
     title: "RemoteJobDesk — Work From Home Jobs",
     description: "Fresh remote jobs updated daily for US, UK & Europe. 20+ countries covered.",
   },
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/icon.svg", type: "image/svg+xml" },
+    ],
+    apple: [
+      { url: "/apple-icon.svg", type: "image/svg+xml" },
+    ],
+    shortcut: ["/favicon.svg"],
+  },
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL || "https://remotejobdesk.com"
   ),
@@ -129,10 +140,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             position: "sticky",
             top: 0,
             zIndex: 50,
-            borderBottom: "1px solid rgba(148,163,184,0.06)",
-            background: "rgba(6,10,20,0.85)",
-            backdropFilter: "blur(20px) saturate(1.5)",
-            WebkitBackdropFilter: "blur(20px) saturate(1.5)",
+            borderBottom: "1px solid #e2e8f0",
+            background: "rgba(255, 255, 255, 0.92)",
+            backdropFilter: "blur(16px)",
+            WebkitBackdropFilter: "blur(16px)",
           }}
         >
           <div
@@ -152,39 +163,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: "0.5rem",
                 textDecoration: "none",
                 flexShrink: 0,
               }}
             >
-              <span
-                style={{
-                  display: "flex",
-                  width: "34px",
-                  height: "34px",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  borderRadius: "10px",
-                  background: "linear-gradient(135deg, #06b6d4, #3b82f6)",
-                  color: "#fff",
-                  fontSize: "0.8rem",
-                  fontWeight: 900,
-                  boxShadow: "0 2px 12px rgba(6,182,212,0.3)",
-                }}
-              >
-                R
-              </span>
-              <span
-                style={{
-                  fontFamily: "var(--font-playfair), Georgia, serif",
-                  fontSize: "1.15rem",
-                  fontWeight: 700,
-                  color: "#f1f5f9",
-                  letterSpacing: "-0.01em",
-                }}
-              >
-                Remote<span style={{ color: "#06b6d4" }}>Job</span>Desk
-              </span>
+              <BrandLogo size="md" />
             </Link>
 
             {/* Nav Links */}
@@ -203,7 +186,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                     padding: "0.4rem 0.85rem",
                     fontSize: "0.82rem",
                     fontWeight: 600,
-                    color: "#94a3b8",
+                    color: "#475569",
                     textDecoration: "none",
                     borderRadius: "0.5rem",
                     transition: "color 0.2s, background 0.2s",
@@ -224,10 +207,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                   fontSize: "0.8rem",
                   fontWeight: 700,
                   color: "#fff",
-                  background: "linear-gradient(135deg, #06b6d4, #3b82f6)",
+                  background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
                   borderRadius: "0.6rem",
                   textDecoration: "none",
-                  boxShadow: "0 2px 12px rgba(6,182,212,0.25)",
+                  boxShadow: "0 2px 8px rgba(37,99,235,0.25)",
                   transition: "all 0.2s",
                   whiteSpace: "nowrap",
                 }}
@@ -245,8 +228,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <footer
           style={{
             marginTop: "auto",
-            borderTop: "1px solid rgba(148,163,184,0.06)",
-            background: "rgba(6,10,20,0.9)",
+            borderTop: "1px solid #e2e8f0",
+            background: "#ffffff",
           }}
         >
           <div
@@ -266,26 +249,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             >
               {/* Brand */}
               <div>
-                <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", marginBottom: "0.75rem" }}>
-                  <span
-                    style={{
-                      display: "flex",
-                      width: "28px",
-                      height: "28px",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      borderRadius: "8px",
-                      background: "linear-gradient(135deg, #06b6d4, #3b82f6)",
-                      color: "#fff",
-                      fontSize: "0.65rem",
-                      fontWeight: 900,
-                    }}
-                  >
-                    R
-                  </span>
-                  <span style={{ fontFamily: "var(--font-playfair), Georgia, serif", fontWeight: 700, color: "#f1f5f9" }}>
-                    Remote<span style={{ color: "#06b6d4" }}>Job</span>Desk
-                  </span>
+                <div style={{ marginBottom: "0.75rem" }}>
+                  <BrandLogo size="sm" showTagline={true} />
                 </div>
                 <p style={{ fontSize: "0.78rem", color: "#64748b", lineHeight: 1.7 }}>
                   AI-powered remote job discovery across 22+ countries. Updated daily.
@@ -294,23 +259,23 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
               {/* Quick Links */}
               <div>
-                <p style={{ fontSize: "0.7rem", fontWeight: 800, color: "#64748b", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "0.75rem" }}>
+                <p style={{ fontSize: "0.7rem", fontWeight: 800, color: "#0f172a", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "0.75rem" }}>
                   Quick Links
                 </p>
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                  <Link href="/" style={{ fontSize: "0.82rem", color: "#94a3b8", textDecoration: "none", transition: "color 0.2s" }}>Home</Link>
-                  <Link href="/about" style={{ fontSize: "0.82rem", color: "#94a3b8", textDecoration: "none", transition: "color 0.2s" }}>About</Link>
-                  <Link href="/contact" style={{ fontSize: "0.82rem", color: "#94a3b8", textDecoration: "none", transition: "color 0.2s" }}>Contact</Link>
-                  <Link href="/blog" style={{ fontSize: "0.82rem", color: "#94a3b8", textDecoration: "none", transition: "color 0.2s" }}>Blog</Link>
-                  <Link href="/editorial-policy" style={{ fontSize: "0.82rem", color: "#94a3b8", textDecoration: "none", transition: "color 0.2s" }}>Editorial Policy</Link>
-                  <Link href="/how-we-source-jobs" style={{ fontSize: "0.82rem", color: "#94a3b8", textDecoration: "none", transition: "color 0.2s" }}>How We Source Jobs</Link>
-                  <Link href="/privacy" style={{ fontSize: "0.82rem", color: "#94a3b8", textDecoration: "none", transition: "color 0.2s" }}>Privacy Policy</Link>
+                  <Link href="/" style={{ fontSize: "0.82rem", color: "#475569", textDecoration: "none", transition: "color 0.2s" }}>Home</Link>
+                  <Link href="/about" style={{ fontSize: "0.82rem", color: "#475569", textDecoration: "none", transition: "color 0.2s" }}>About</Link>
+                  <Link href="/contact" style={{ fontSize: "0.82rem", color: "#475569", textDecoration: "none", transition: "color 0.2s" }}>Contact</Link>
+                  <Link href="/blog" style={{ fontSize: "0.82rem", color: "#475569", textDecoration: "none", transition: "color 0.2s" }}>Blog</Link>
+                  <Link href="/editorial-policy" style={{ fontSize: "0.82rem", color: "#475569", textDecoration: "none", transition: "color 0.2s" }}>Editorial Policy</Link>
+                  <Link href="/how-we-source-jobs" style={{ fontSize: "0.82rem", color: "#475569", textDecoration: "none", transition: "color 0.2s" }}>How We Source Jobs</Link>
+                  <Link href="/privacy" style={{ fontSize: "0.82rem", color: "#475569", textDecoration: "none", transition: "color 0.2s" }}>Privacy Policy</Link>
                 </div>
               </div>
 
               {/* Categories */}
               <div>
-                <p style={{ fontSize: "0.7rem", fontWeight: 800, color: "#64748b", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "0.75rem" }}>
+                <p style={{ fontSize: "0.7rem", fontWeight: 800, color: "#0f172a", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "0.75rem" }}>
                   Popular Categories
                 </p>
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
@@ -318,7 +283,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                     <Link
                       key={category.slug}
                       href={getJobCategoryPath(category.slug)}
-                      style={{ fontSize: "0.82rem", color: "#94a3b8", textDecoration: "none", transition: "color 0.2s" }}
+                      style={{ fontSize: "0.82rem", color: "#475569", textDecoration: "none", transition: "color 0.2s" }}
                     >
                       {category.label}
                     </Link>
@@ -328,7 +293,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
               {/* Companies */}
               <div>
-                <p style={{ fontSize: "0.7rem", fontWeight: 800, color: "#64748b", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "0.75rem" }}>
+                <p style={{ fontSize: "0.7rem", fontWeight: 800, color: "#0f172a", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "0.75rem" }}>
                   Top Companies
                 </p>
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
@@ -336,7 +301,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                     <Link
                       key={company}
                       href={getCompanyPath(company)}
-                      style={{ fontSize: "0.82rem", color: "#94a3b8", textDecoration: "none", transition: "color 0.2s" }}
+                      style={{ fontSize: "0.82rem", color: "#475569", textDecoration: "none", transition: "color 0.2s" }}
                     >
                       {company}
                     </Link>
@@ -346,7 +311,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
               {/* Countries */}
               <div style={{ minWidth: "220px" }}>
-                <p style={{ fontSize: "0.7rem", fontWeight: 800, color: "#64748b", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "0.75rem" }}>
+                <p style={{ fontSize: "0.7rem", fontWeight: 800, color: "#0f172a", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "0.75rem" }}>
                   Jobs by Country
                 </p>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "0.5rem 0.75rem" }}>
@@ -354,7 +319,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                     <Link
                       key={country.slug}
                       href={`/remote-jobs-in-${country.slug}`}
-                      style={{ fontSize: "0.82rem", color: "#94a3b8", textDecoration: "none", transition: "color 0.2s" }}
+                      style={{ fontSize: "0.82rem", color: "#475569", textDecoration: "none", transition: "color 0.2s" }}
                     >
                       {country.name}
                     </Link>
@@ -364,7 +329,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
               {/* Trending Searches */}
               <div>
-                <p style={{ fontSize: "0.7rem", fontWeight: 800, color: "#64748b", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "0.75rem" }}>
+                <p style={{ fontSize: "0.7rem", fontWeight: 800, color: "#0f172a", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "0.75rem" }}>
                   Trending Searches
                 </p>
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
@@ -372,7 +337,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                     <Link
                       key={search.label}
                       href={search.path}
-                      style={{ fontSize: "0.82rem", color: "#94a3b8", textDecoration: "none", transition: "color 0.2s" }}
+                      style={{ fontSize: "0.82rem", color: "#475569", textDecoration: "none", transition: "color 0.2s" }}
                     >
                       {search.label}
                     </Link>
@@ -386,7 +351,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               style={{
                 marginTop: "2.5rem",
                 paddingTop: "1.5rem",
-                borderTop: "1px solid rgba(148,163,184,0.06)",
+                borderTop: "1px solid #e2e8f0",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
@@ -394,12 +359,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                 gap: "0.75rem",
               }}
             >
-              <p style={{ fontSize: "0.72rem", color: "#475569" }}>
+              <p style={{ fontSize: "0.75rem", color: "#64748b" }}>
                 © {new Date().getFullYear()} RemoteJobDesk. All rights reserved. Job listings are aggregated from public sources.
               </p>
               <div style={{ display: "flex", gap: "1rem" }}>
-                <Link href="/rss.xml" style={{ fontSize: "0.72rem", color: "#475569", textDecoration: "none" }}>RSS Feed</Link>
-                <Link href="/sitemap.xml" style={{ fontSize: "0.72rem", color: "#475569", textDecoration: "none" }}>Sitemap</Link>
+                <Link href="/rss.xml" style={{ fontSize: "0.75rem", color: "#64748b", textDecoration: "none" }}>RSS Feed</Link>
+                <Link href="/sitemap.xml" style={{ fontSize: "0.75rem", color: "#64748b", textDecoration: "none" }}>Sitemap</Link>
               </div>
             </div>
           </div>

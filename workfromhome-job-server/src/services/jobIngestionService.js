@@ -256,7 +256,9 @@ async function ingestJobs() {
     const seo = await generateSeoFields({
       title: item.title,
       summary: item.summary,
-      link: item.link
+      link: item.link,
+      sourceLabel: item.sourceLabel,
+      country: item.country
     });
     const signals = extractJobSignals({
       title: item.title,

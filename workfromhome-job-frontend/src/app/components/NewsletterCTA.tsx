@@ -71,12 +71,12 @@ export default function NewsletterCTA({
 
   return (
     <section className="fade-up mb-6 mt-10 w-full">
-      <div className="relative overflow-hidden rounded-3xl bg-[rgba(15,23,42,0.8)] px-6 py-10 text-center shadow-2xl sm:px-10 md:p-14 border border-slate-800">
-        <div className="absolute -right-24 -top-24 h-64 w-64 rounded-full bg-cyan-500 opacity-10 blur-3xl mix-blend-screen" />
-        <div className="absolute -bottom-24 -left-24 h-64 w-64 rounded-full bg-blue-500 opacity-10 blur-3xl mix-blend-screen" />
+      <div className="relative overflow-hidden rounded-3xl bg-white px-6 py-10 text-center shadow-sm sm:px-10 md:p-14 border border-slate-200">
+        <div className="absolute -right-24 -top-24 h-64 w-64 rounded-full bg-blue-500 opacity-5 blur-3xl" />
+        <div className="absolute -bottom-24 -left-24 h-64 w-64 rounded-full bg-indigo-500 opacity-5 blur-3xl" />
 
         <div className="relative z-10 mx-auto max-w-xl">
-          <h2 className="font-serif text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl">
+          <h2 className="font-serif text-3xl font-bold leading-tight tracking-tight text-slate-900 sm:text-4xl">
             {title.includes("remote job alert") ? (
               <>
                 Save this <span className="gradient-text">remote job alert</span>.
@@ -85,7 +85,7 @@ export default function NewsletterCTA({
               title
             )}
           </h2>
-          <p className="mt-4 text-sm leading-6 text-slate-300 sm:text-base">
+          <p className="mt-4 text-sm leading-6 text-slate-600 sm:text-base">
             {description}
           </p>
 
@@ -97,7 +97,7 @@ export default function NewsletterCTA({
               onChange={(event) => setEmail(event.target.value)}
               disabled={status === "loading" || status === "success"}
               placeholder="Enter your email address"
-              className="flex-1 rounded-xl border border-slate-700 bg-slate-900/50 px-4 py-3.5 text-sm text-white placeholder-slate-500 backdrop-blur-sm transition-all focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 disabled:opacity-50"
+              className="flex-1 rounded-xl border border-slate-300 bg-slate-50 px-4 py-3.5 text-sm text-slate-900 placeholder-slate-400 transition-all focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600 disabled:opacity-50"
             />
             <button
               type="submit"
@@ -108,11 +108,11 @@ export default function NewsletterCTA({
             </button>
           </form>
 
-          <p className="mt-4 text-xs text-slate-400">
+          <p className="mt-4 text-xs text-slate-500">
             Search alerts are stored with your current page context so you can track similar jobs over time.
           </p>
           {message && (
-            <p className={`mt-3 text-sm font-semibold ${status === "error" ? "text-rose-300" : "text-emerald-300"}`}>
+            <p className={`mt-3 text-sm font-semibold ${status === "error" ? "text-rose-600" : "text-emerald-600"}`}>
               {message}
             </p>
           )}
