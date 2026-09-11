@@ -13,7 +13,8 @@
     "backfill": "node src/utils/optimizeExistingJobsSeo.js",
     "optimize-titles": "node src/utils/optimizeExistingTitles.js",
     "index-blogs": "node src/utils/indexAllBlogs.js",
-    "index-existing": "node src/utils/indexExistingJobs.js"
+    "index-existing": "node src/utils/indexExistingJobs.js",
+    "rebalance-countries": "node src/utils/rebalanceJobCountries.js"
   },
   "keywords": [
     "nodejs",

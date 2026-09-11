@@ -3,52 +3,53 @@ const https = require('https');
 const { fetchWorkFromHomeJobs, isLikelyWorkFromHome } = require('./rssService');
 
 const COUNTRY_HINTS = {
-  UK: ['united kingdom', 'great britain', 'england', 'scotland', 'wales', 'northern ireland', 'uk', 'gb'],
-  DE: ['germany', 'deutschland'],
-  FR: ['france'],
-  NL: ['netherlands', 'holland'],
-  IE: ['ireland'],
-  ES: ['spain'],
-  IT: ['italy'],
-  SE: ['sweden'],
-  CH: ['switzerland'],
-  NO: ['norway'],
-  DK: ['denmark'],
-  FI: ['finland'],
-  AT: ['austria'],
-  BE: ['belgium'],
-  PT: ['portugal'],
-  PL: ['poland'],
-  CZ: ['czech republic', 'czechia'],
-  HU: ['hungary'],
-  RO: ['romania'],
-  GR: ['greece'],
-  IN: ['india'],
-  US: ['united states of america', 'united states', 'u.s.', 'u.s', 'usa', 'us-only', 'us only']
+  DE: ['germany', 'deutschland', 'berlin', 'munich', 'frankfurt', 'hamburg', 'cologne', 'stuttgart', 'dusseldorf', 'de'],
+  FR: ['france', 'paris', 'lyon', 'marseille', 'toulouse', 'bordeaux', 'nantes', 'lille', 'fr'],
+  IE: ['ireland', 'dublin', 'cork', 'galway', 'limerick', 'irish', 'ie'],
+  ES: ['spain', 'espana', 'madrid', 'barcelona', 'valencia', 'seville', 'malaga', 'bilbao', 'es'],
+  NL: ['netherlands', 'holland', 'amsterdam', 'rotterdam', 'utrecht', 'the hague', 'eindhoven', 'nl'],
+  IT: ['italy', 'italia', 'rome', 'milan', 'turin', 'florence', 'naples', 'bologna', 'it'],
+  PT: ['portugal', 'lisbon', 'porto', 'faro', 'braga', 'coimbra', 'pt'],
+  PL: ['poland', 'polska', 'warsaw', 'krakow', 'wroclaw', 'gdansk', 'poznan', 'pl'],
+  SE: ['sweden', 'sverige', 'stockholm', 'gothenburg', 'malmo', 'se'],
+  CH: ['switzerland', 'schweiz', 'zurich', 'geneva', 'basel', 'bern', 'lausanne', 'ch'],
+  AT: ['austria', 'osterreich', 'vienna', 'salzburg', 'graz', 'innsbruck', 'at'],
+  BE: ['belgium', 'belgique', 'brussels', 'antwerp', 'ghent', 'liege', 'be'],
+  NO: ['norway', 'norge', 'oslo', 'bergen', 'trondheim', 'stavanger', 'no'],
+  DK: ['denmark', 'danmark', 'copenhagen', 'aarhus', 'odense', 'dk'],
+  FI: ['finland', 'suomi', 'helsinki', 'espoo', 'tampere', 'fi'],
+  GR: ['greece', 'hellas', 'athens', 'thessaloniki', 'gr'],
+  CZ: ['czech republic', 'czechia', 'cesko', 'prague', 'brno', 'cz'],
+  RO: ['romania', 'bucharest', 'cluj', 'timisoara', 'iasi', 'ro'],
+  HU: ['hungary', 'magyarorszag', 'budapest', 'debrecen', 'hu'],
+  UK: ['united kingdom', 'great britain', 'england', 'scotland', 'wales', 'northern ireland', 'london', 'manchester', 'birmingham', 'uk', 'gb'],
+  IN: ['india', 'bangalore', 'bengaluru', 'mumbai', 'delhi', 'hyderabad', 'pune', 'chennai', 'in'],
+  US: ['united states of america', 'united states', 'u.s.', 'u.s', 'usa', 'us-only', 'us only', 'new york', 'california', 'san francisco', 'austin', 'seattle']
 };
 
-const EUROPE_COUNTRY_PRIORITY = [
-  'UK',
-  'DE',
-  'FR',
-  'NL',
-  'IE',
-  'ES',
-  'IT',
-  'SE',
-  'CH',
-  'NO',
-  'DK',
-  'FI',
-  'AT',
-  'BE',
-  'PT',
-  'PL',
-  'CZ',
-  'HU',
-  'RO',
-  'GR'
+const EUROPE_COUNTRIES = [
+  'DE', 'FR', 'IE', 'ES', 'NL', 'IT', 'PT', 'PL', 'SE', 'CH', 'AT', 'BE', 'NO', 'DK', 'FI', 'CZ', 'RO', 'HU', 'GR', 'UK'
 ];
+
+let euRotationIndex = 0;
+let globalRotationIndex = 0;
+
+function getNextEuCountry(allowedCountries = []) {
+  const allowed = (allowedCountries && allowedCountries.length)
+    ? EUROPE_COUNTRIES.filter(c => allowedCountries.includes(c))
+    : EUROPE_COUNTRIES;
+  if (!allowed.length) return 'DE';
+  const pick = allowed[euRotationIndex % allowed.length];
+  euRotationIndex++;
+  return pick;
+}
+
+function getNextGlobalCountry(allowedCountries = []) {
+  const list = (allowedCountries && allowedCountries.length) ? allowedCountries : ['US', 'DE', 'UK', 'FR', 'IE', 'ES', 'NL', 'IT', 'PT'];
+  const pick = list[globalRotationIndex % list.length];
+  globalRotationIndex++;
+  return pick;
+}
 
 function sanitizeText(value = '') {
   return String(value)
@@ -125,7 +126,7 @@ function detectCountryFromText(value = '', allowedCountries = []) {
   }
 
   if (/(europe|european union|eu\b|emea|eea|schengen)/i.test(text)) {
-    return pickPreferredCountry(EUROPE_COUNTRY_PRIORITY, allowedCountries);
+    return getNextEuCountry(allowedCountries);
   }
 
   if (/(americas|north america|united states only|usa only|us only|latam|latin america)/i.test(text)) {
@@ -260,7 +261,7 @@ async function fetchRemotiveJobs(targetCountries) {
 
     const detectedCountry =
       detectCountryFromText(`${locationText} ${summary} ${title}`, targetCountries) ||
-      (isGlobalRemoteText(locationText) ? fallbackCountry : '');
+      (isGlobalRemoteText(locationText) ? getNextGlobalCountry(targetCountries) : '');
 
     if (!shouldKeepCountry(detectedCountry, targetCountries)) {
       continue;
@@ -327,7 +328,7 @@ async function fetchArbeitnowJobs(targetCountries) {
 
       const detectedCountry =
         detectCountryFromText(`${locationText} ${summary} ${title}`, targetCountries) ||
-        (isGlobalRemoteText(locationText) ? fallbackCountry : '');
+        (isGlobalRemoteText(locationText) ? getNextGlobalCountry(targetCountries) : getNextEuCountry(targetCountries));
 
       if (!shouldKeepCountry(detectedCountry, targetCountries)) {
         continue;
@@ -385,7 +386,7 @@ async function fetchJobicyJobs(targetCountries) {
 
     const detectedCountry =
       detectCountryFromText(`${geo} ${summary} ${title}`, targetCountries) ||
-      (isGlobalRemoteText(geo) ? fallbackCountry : '');
+      (isGlobalRemoteText(geo) ? getNextGlobalCountry(targetCountries) : getNextGlobalCountry(targetCountries));
 
     if (!shouldKeepCountry(detectedCountry, targetCountries)) {
       continue;
@@ -441,7 +442,7 @@ async function fetchRemoteOkJobs(targetCountries) {
 
     const detectedCountry =
       detectCountryFromText(`${locationText} ${tagsText} ${summary} ${title}`, targetCountries) ||
-      (isGlobalRemoteText(locationText) || locationText.toLowerCase() === 'remote' ? fallbackCountry : '');
+      (isGlobalRemoteText(locationText) || locationText.toLowerCase() === 'remote' ? getNextGlobalCountry(targetCountries) : '');
 
     if (!shouldKeepCountry(detectedCountry, targetCountries)) {
       continue;
