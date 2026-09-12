@@ -10,6 +10,7 @@ const { extractJobSignals } = require('../utils/jobSignals');
 const { generateSeoFields } = require('./seoService');
 const { submitToIndexNow } = require('./indexNow');
 const { submitToGoogleIndexing } = require('./googleIndexing');
+const { postJobToLinkedIn } = require('./linkedinService');
 const TRUSTED_SOURCES = new Set([
   'remotive-api',
   'arbeitnow-api',
@@ -300,6 +301,12 @@ async function ingestJobs() {
   if (newlyCreatedJobs.length > 0) {
     submitToIndexNow(newlyCreatedJobs).catch(() => {});
     submitToGoogleIndexing(newlyCreatedJobs).catch(() => {});
+
+    // Auto-post the top job (prioritize Singapore or top featured) to LinkedIn
+    const bestJobToPost = newlyCreatedJobs.find((j) => j.country === 'SG') || newlyCreatedJobs[0];
+    if (bestJobToPost) {
+      postJobToLinkedIn(bestJobToPost).catch((e) => console.log('[LinkedIn] Auto-post skipped/failed:', e.message));
+    }
   }
 
   return result;

@@ -5,7 +5,7 @@ import { JOB_CATEGORIES, getJobCategoryPath, getJobCategoryCountryPath } from ".
 import { getSeoCountryByCode } from "../lib/seoCountries";
 
 const COUNTRY_OPTIONS = [
-  "US","UK","DE","FR","NL","IE","ES","IT",
+  "US","SG","UK","DE","FR","NL","IE","ES","IT",
   "SE","CH","NO","DK","FI","AT","BE","PT",
   "PL","CZ","HU","RO","GR","IN",
 ] as const;

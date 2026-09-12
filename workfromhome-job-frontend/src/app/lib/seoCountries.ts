@@ -27,9 +27,10 @@ export const SEO_COUNTRIES: SeoCountryDefinition[] = [
   { code: "RO", slug: "romania", name: "Romania" },
   { code: "GR", slug: "greece", name: "Greece" },
   { code: "IN", slug: "india", name: "India" },
+  { code: "SG", slug: "singapore", name: "Singapore" },
 ];
 
-export const FEATURED_COMBO_COUNTRY_CODES = ["US", "UK", "DE", "FR", "NL", "IE", "ES", "IT"] as const;
+export const FEATURED_COMBO_COUNTRY_CODES = ["US", "SG", "UK", "DE", "FR", "NL", "IE", "ES", "IT"] as const;
 
 export function getSeoCountryByCode(code: string): SeoCountryDefinition | undefined {
   return SEO_COUNTRIES.find((country) => country.code === String(code || "").trim().toUpperCase());

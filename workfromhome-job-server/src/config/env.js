@@ -23,7 +23,7 @@ const env = {
   cronSchedule: process.env.CRON_SCHEDULE || '0 */2 * * *',
   cronTimezone: process.env.CRON_TIMEZONE || 'Asia/Kolkata',
   targetCountries: (
-    process.env.TARGET_COUNTRIES || 'US,UK,DE,FR,NL,IE,ES,IT,SE,CH,NO,DK,FI,AT,BE,PT,PL,CZ,HU,RO,GR'
+    process.env.TARGET_COUNTRIES || 'US,UK,DE,FR,NL,IE,ES,IT,SE,CH,NO,DK,FI,AT,BE,PT,PL,CZ,HU,RO,GR,SG'
   )
     .split(',')
     .map((country) => country.trim().toUpperCase())
@@ -58,6 +58,11 @@ const env = {
   maxSearchChars: Number(process.env.MAX_SEARCH_CHARS) || 80,
   adminApiKey: process.env.ADMIN_API_KEY || '',
   siteUrl: process.env.SITE_URL || process.env.NEXT_PUBLIC_SITE_URL || 'https://remotejobdesk.com',
+  linkedinClientId: process.env.LINKEDIN_CLIENT_ID || '779xhjc5p3el0k',
+  linkedinClientSecret: process.env.LINKEDIN_CLIENT_SECRET || '',
+  linkedinOrgId: process.env.LINKEDIN_ORG_ID || '145003971',
+  linkedinRedirectUri: process.env.LINKEDIN_REDIRECT_URI || 'https://workfromhome-git-61255565662.us-east4.run.app/api/admin/linkedin/callback',
+  linkedinAutoPostEnabled: parseBoolean(process.env.LINKEDIN_AUTO_POST_ENABLED, true),
   alertDigestEnabled: parseBoolean(process.env.ALERT_DIGEST_ENABLED, true),
   alertDigestCronSchedule: process.env.ALERT_DIGEST_CRON_SCHEDULE || '15 * * * *',
   alertDigestBatchSize: Number(process.env.ALERT_DIGEST_BATCH_SIZE) || 25,

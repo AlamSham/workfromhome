@@ -95,6 +95,17 @@ const COUNTRY_SEO_CONTENT: Record<string, {
       { q: "What's the remote work culture like in Germany?", a: "German companies tend to offer structured remote work with clear work-life boundaries. Many provide home office stipends and follow regulated working hours." },
     ],
   },
+  SG: {
+    fullName: "Singapore",
+    intro: "Singapore is Asia's premier technology and fintech hub, connecting world-class talent with international remote and distributed work opportunities. Major global tech giants, high-growth startups, and APAC headquarters offer remote roles paying competitive salaries in USD and SGD.",
+    whyRemote: "Working remotely from Singapore allows professionals to access high-paying US, European, and APAC tech roles without relocating. Singapore's world-class digital infrastructure, strategic timezone, and strong English fluency make it an ideal base for high-earning remote careers.",
+    topRoles: ["Full Stack Engineer", "DevOps Engineer", "Cloud Architect", "Fintech Developer", "AI / ML Engineer", "Product Manager", "Data Scientist"],
+    faq: [
+      { q: "Can Singapore residents work remotely for overseas US and European companies?", a: "Yes! Many global remote companies hire Singapore-based engineers and specialists either as direct independent contractors or through Employer of Record (EOR) services like Remote.com, Deel, and Oyster." },
+      { q: "What are the typical salaries for remote tech jobs in Singapore?", a: "Remote tech jobs accessible to Singapore talent typically pay between $80,000 to $180,000+ USD (approx. SGD 105,000 - SGD 240,000+), especially in software engineering, cloud architecture, and data science." },
+      { q: "How often are fresh remote jobs in Singapore added?", a: "We aggregate and verify remote tech opportunities hourly from top global sources including Himalayas, Jobicy, RemoteOK, and company direct career portals." }
+    ],
+  },
 };
 
 // Generate SEO content for countries without specific content

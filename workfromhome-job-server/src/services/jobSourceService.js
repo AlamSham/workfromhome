@@ -31,6 +31,7 @@ const COUNTRY_HINTS = {
   HU: ['hungary', 'magyarorszag', 'budapest', 'debrecen', 'hu'],
   UK: ['united kingdom', 'great britain', 'england', 'scotland', 'wales', 'northern ireland', 'london', 'manchester', 'birmingham', 'uk', 'gb'],
   IN: ['india', 'bangalore', 'bengaluru', 'mumbai', 'delhi', 'hyderabad', 'pune', 'chennai', 'in'],
+  SG: ['singapore', 'singaporean', 'sg', 'changi', 'jurong', 'tampines', 'woodlands', 'central region', 'apac', 'asia-pacific', 'southeast asia'],
   US: ['united states of america', 'united states', 'u.s.', 'u.s', 'usa', 'us-only', 'us only', 'new york', 'california', 'san francisco', 'austin', 'seattle']
 };
 
@@ -52,7 +53,7 @@ function getNextEuCountry(allowedCountries = []) {
 }
 
 function getNextGlobalCountry(allowedCountries = []) {
-  const list = (allowedCountries && allowedCountries.length) ? allowedCountries : ['US', 'DE', 'UK', 'FR', 'IE', 'ES', 'NL', 'IT', 'PT'];
+  const list = (allowedCountries && allowedCountries.length) ? allowedCountries : ['US', 'SG', 'DE', 'UK', 'FR', 'IE', 'ES', 'NL', 'IT', 'PT'];
   const pick = list[globalRotationIndex % list.length];
   globalRotationIndex++;
   return pick;

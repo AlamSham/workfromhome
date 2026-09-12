@@ -19,7 +19,7 @@ export const COUNTRY_LABELS: Record<string, string> = {
   SE:"🇸🇪 SE", CH:"🇨🇭 CH", NO:"🇳🇴 NO", DK:"🇩🇰 DK",
   FI:"🇫🇮 FI", AT:"🇦🇹 AT", BE:"🇧🇪 BE", PT:"🇵🇹 PT",
   PL:"🇵🇱 PL", CZ:"🇨🇿 CZ", HU:"🇭🇺 HU", RO:"🇷🇴 RO",
-  GR:"🇬🇷 GR", IN:"🇮🇳 IN",
+  GR:"🇬🇷 GR", IN:"🇮🇳 IN", SG:"🇸🇬 SG",
 };
 
 export interface JobListItem {

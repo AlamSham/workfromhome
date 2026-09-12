@@ -29,7 +29,8 @@ const COUNTRY_RSS_CONFIG = {
   HU: { gl: 'HU', hl: 'hu-HU', ceid: 'HU:hu', queryName: 'hungary' },
   RO: { gl: 'RO', hl: 'ro-RO', ceid: 'RO:ro', queryName: 'romania' },
   GR: { gl: 'GR', hl: 'el-GR', ceid: 'GR:el', queryName: 'greece' },
-  IN: { gl: 'IN', hl: 'en-IN', ceid: 'IN:en', queryName: 'india' }
+  IN: { gl: 'IN', hl: 'en-IN', ceid: 'IN:en', queryName: 'india' },
+  SG: { gl: 'SG', hl: 'en-SG', ceid: 'SG:en', queryName: 'singapore' }
 };
 
 const NEWS_SOURCE_BLOCKLIST = new Set(
