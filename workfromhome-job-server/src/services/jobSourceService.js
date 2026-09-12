@@ -1,6 +1,13 @@
 const env = require('../config/env');
 const https = require('https');
+const Parser = require('rss-parser');
 const { fetchWorkFromHomeJobs, isLikelyWorkFromHome } = require('./rssService');
+
+const rssParser = new Parser({
+  headers: {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36'
+  }
+});
 
 const COUNTRY_HINTS = {
   DE: ['germany', 'deutschland', 'berlin', 'munich', 'frankfurt', 'hamburg', 'cologne', 'stuttgart', 'dusseldorf', 'de'],
@@ -176,7 +183,8 @@ function fetchJson(url, timeoutMs, redirectCount = 0) {
       url,
       {
         headers: {
-          Accept: 'application/json'
+          Accept: 'application/json',
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36'
         }
       },
       (res) => {
@@ -466,6 +474,125 @@ async function fetchRemoteOkJobs(targetCountries) {
   return normalized;
 }
 
+async function fetchHimalayasJobs(targetCountries) {
+  if (!env.ingestEnableHimalayas) {
+    return [];
+  }
+
+  let payload;
+  try {
+    const url = `${env.himalayasApiUrl}?limit=50`;
+    payload = await fetchJson(url, env.sourceFetchTimeoutMs);
+  } catch (error) {
+    console.error('[Sources] Himalayas fetch failed:', error.message);
+    return [];
+  }
+
+  const jobs = Array.isArray(payload?.jobs) ? payload.jobs : [];
+  const normalized = [];
+
+  for (const job of jobs) {
+    const title = sanitizeText(job.title || '');
+    const company = sanitizeText(job.companyName || 'Remote Tech');
+    const summary = sanitizeText(job.excerpt || job.description || '');
+    const link = String(job.applicationLink || job.guid || '').trim();
+
+    if (!title || !link || !summary) {
+      continue;
+    }
+
+    const locRestrictions = Array.isArray(job.locationRestrictions) ? job.locationRestrictions.join(' ') : '';
+    const detectedCountry =
+      detectCountryFromText(`${locRestrictions} ${summary} ${title}`, targetCountries) ||
+      getNextGlobalCountry(targetCountries);
+
+    if (!shouldKeepCountry(detectedCountry, targetCountries)) {
+      continue;
+    }
+
+    const publishedAt = job.pubDate ? new Date(job.pubDate * 1000) : new Date();
+    normalized.push({
+      source: 'himalayas-api',
+      sourceLabel: company,
+      country: detectedCountry,
+      category: 'wfh',
+      isRemote: true,
+      title,
+      summary,
+      link,
+      publishedAt: publishedAt.toISOString(),
+      rawItem: job
+    });
+  }
+
+  return normalized;
+}
+
+const WWR_FEEDS = [
+  'https://weworkremotely.com/categories/remote-programming-jobs.rss',
+  'https://weworkremotely.com/categories/remote-devops-sysadmin-jobs.rss'
+];
+
+async function fetchWwrJobs(targetCountries) {
+  if (!env.ingestEnableWwr) {
+    return [];
+  }
+
+  const normalized = [];
+
+  for (const feedUrl of WWR_FEEDS) {
+    try {
+      const feed = await rssParser.parseURL(feedUrl);
+      const items = Array.isArray(feed?.items) ? feed.items : [];
+
+      for (const item of items) {
+        let title = sanitizeText(item.title || '');
+        let company = 'WeWorkRemotely';
+
+        if (title.includes(':')) {
+          const parts = title.split(':');
+          company = sanitizeText(parts[0]);
+          title = sanitizeText(parts.slice(1).join(':'));
+        }
+
+        const summary = sanitizeText(item.contentSnippet || item.content || item.description || '');
+        const link = String(item.link || item.guid || '').trim();
+
+        if (!title || !link || !summary) {
+          continue;
+        }
+
+        const regionText = sanitizeText(item.region || '');
+        const detectedCountry =
+          detectCountryFromText(`${regionText} ${summary} ${title}`, targetCountries) ||
+          (isGlobalRemoteText(regionText) || !regionText ? getNextGlobalCountry(targetCountries) : '');
+
+        if (!shouldKeepCountry(detectedCountry, targetCountries)) {
+          continue;
+        }
+
+        const publishedAt = parseDate(item.isoDate || item.pubDate) || new Date();
+        normalized.push({
+          source: 'wwr-rss',
+          sourceLabel: company,
+          country: detectedCountry,
+          category: 'wfh',
+          isRemote: true,
+          title,
+          summary,
+          link,
+          publishedAt: publishedAt.toISOString(),
+          rawItem: item
+        });
+      }
+    } catch (error) {
+      console.error('[Sources] WWR fetch failed for', feedUrl, error.message);
+    }
+  }
+
+  return normalized;
+}
+
 function dedupeByLink(items) {
   const seenLinks = new Set();
   const deduped = [];
@@ -485,15 +612,19 @@ function dedupeByLink(items) {
 async function fetchCandidateJobs() {
   const targetCountries = env.targetCountries && env.targetCountries.length ? env.targetCountries : ['US'];
 
-  const [rssJobs, remotiveJobs, arbeitnowJobs, jobicyJobs, remoteokJobs] = await Promise.all([
+  const [rssJobs, remotiveJobs, arbeitnowJobs, jobicyJobs, remoteokJobs, himalayasJobs, wwrJobs] = await Promise.all([
     env.ingestEnableGoogleRss ? fetchWorkFromHomeJobs() : Promise.resolve([]),
     fetchRemotiveJobs(targetCountries),
     fetchArbeitnowJobs(targetCountries),
     fetchJobicyJobs(targetCountries),
-    fetchRemoteOkJobs(targetCountries)
+    fetchRemoteOkJobs(targetCountries),
+    fetchHimalayasJobs(targetCountries),
+    fetchWwrJobs(targetCountries)
   ]);
 
   const merged = dedupeByLink([
+    ...himalayasJobs,
+    ...wwrJobs,
     ...remotiveJobs,
     ...jobicyJobs,
     ...arbeitnowJobs,
@@ -509,6 +640,8 @@ async function fetchCandidateJobs() {
       arbeitnow: arbeitnowJobs.length,
       jobicy: jobicyJobs.length,
       remoteok: remoteokJobs.length,
+      himalayas: himalayasJobs.length,
+      wwr: wwrJobs.length,
       mergedUnique: merged.length
     }
   };

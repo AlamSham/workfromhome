@@ -14,7 +14,9 @@ const TRUSTED_SOURCES = new Set([
   'remotive-api',
   'arbeitnow-api',
   'jobicy-api',
-  'remoteok-api'
+  'remoteok-api',
+  'himalayas-api',
+  'wwr-rss'
 ]);
 
 function normalizeTitle(value = '') {

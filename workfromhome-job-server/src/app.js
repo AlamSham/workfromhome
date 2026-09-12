@@ -31,6 +31,14 @@ if (env.nodeEnv !== 'test') {
   app.use(morgan('dev'));
 }
 
+app.get(['/', '/health'], (req, res) => {
+  res.json({
+    success: true,
+    message: 'Server is healthy',
+    now: new Date().toISOString()
+  });
+});
+
 app.use('/api', routes);
 app.use(notFound);
 app.use(errorHandler);
