@@ -101,11 +101,11 @@ export default async function Home({ searchParams }: HomeProps) {
         filters={filters}
       />
       {!search && (
-        <div className="mx-auto flex w-full max-w-[1120px] flex-col gap-6 px-4 pb-10">
+        <div className="mx-auto flex w-full max-w-[1120px] min-w-0 flex-col gap-4 sm:gap-6 px-3 sm:px-4 pb-10">
           <PopularCompanies />
 
           {/* ── SEO: Browse by Country ── */}
-          <section className="glass-card fade-up" style={{ borderRadius: "1.25rem", padding: "1.5rem 2rem" }}>
+          <section className="glass-card fade-up p-4 sm:p-6 md:p-8">
             <h2 className="section-title">Browse Remote Jobs by Country</h2>
             <p style={{ marginTop: "0.5rem", fontSize: "0.85rem", color: "#64748b", lineHeight: 1.7 }}>
               Find work-from-home opportunities in {SEO_COUNTRIES.length}+ countries across North America and Europe.
@@ -124,7 +124,7 @@ export default async function Home({ searchParams }: HomeProps) {
           </section>
 
           {/* ── SEO: Browse by Category ── */}
-          <section className="glass-card fade-up" style={{ borderRadius: "1.25rem", padding: "1.5rem 2rem" }}>
+          <section className="glass-card fade-up p-4 sm:p-6 md:p-8">
             <h2 className="section-title">Browse Remote Jobs by Category</h2>
             <p style={{ marginTop: "0.5rem", fontSize: "0.85rem", color: "#64748b", lineHeight: 1.7 }}>
               Explore remote positions across the most popular job categories — from software engineering to customer support.
@@ -143,7 +143,7 @@ export default async function Home({ searchParams }: HomeProps) {
           </section>
 
           {/* ── SEO: What is RemoteJobDesk ── */}
-          <section className="glass-card fade-up" style={{ borderRadius: "1.25rem", padding: "1.5rem 2rem" }}>
+          <section className="glass-card fade-up p-4 sm:p-6 md:p-8">
             <h2 className="section-title">What is RemoteJobDesk?</h2>
             <p style={{ marginTop: "0.75rem", fontSize: "0.88rem", lineHeight: 1.8, color: "#475569" }}>
               RemoteJobDesk is a free job discovery platform that aggregates the best remote and work-from-home 
@@ -151,7 +151,7 @@ export default async function Home({ searchParams }: HomeProps) {
               Our AI-powered system collects listings from dozens of trusted sources — job boards, company career 
               pages, and RSS feeds — and enhances them with smart metadata to help you find the perfect role faster.
             </p>
-            <div style={{ marginTop: "1rem", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: "0.75rem" }}>
+            <div style={{ marginTop: "1rem", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: "0.75rem" }}>
               {[
                 { color: "#2563eb", label: "22+ Countries", desc: "US, UK, EU & more" },
                 { color: "#7c3aed", label: "AI-Enhanced", desc: "Smart job matching" },
@@ -168,12 +168,12 @@ export default async function Home({ searchParams }: HomeProps) {
           </section>
 
           {/* ── SEO: Latest from Blog ── */}
-          <section className="glass-card fade-up" style={{ borderRadius: "1.25rem", padding: "1.5rem 2rem" }}>
+          <section className="glass-card fade-up p-4 sm:p-6 md:p-8">
             <h2 className="section-title">Remote Work Guides</h2>
             <p style={{ marginTop: "0.5rem", fontSize: "0.85rem", color: "#64748b", lineHeight: 1.7 }}>
               Expert tips and career advice for remote professionals.
             </p>
-            <div style={{ marginTop: "1rem", display: "grid", gap: "0.6rem", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))" }}>
+            <div style={{ marginTop: "1rem", display: "grid", gap: "0.6rem", gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))" }}>
               {[
                 { href: "/blog/best-remote-jobs-2026", title: "15 Best Remote Jobs in 2026", badge: "Career Guide", color: "#2563eb" },
                 { href: "/blog/how-to-get-remote-job-no-experience", title: "Get a Remote Job — No Experience", badge: "Getting Started", color: "#059669" },

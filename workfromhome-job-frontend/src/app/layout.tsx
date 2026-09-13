@@ -133,12 +133,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           rel="stylesheet"
         />
       </head>
-      <body className="flex min-h-full flex-col">
+      <body className="flex min-h-full flex-col w-full max-w-full overflow-x-hidden">
         {/* ── Navbar ── */}
         <Navbar />
 
         {/* ── Main Content ── */}
-        <main className="flex flex-1 flex-col">{children}</main>
+        <main className="flex flex-1 flex-col w-full max-w-full min-w-0 overflow-x-hidden">{children}</main>
 
         {/* ── Footer ── */}
         <footer

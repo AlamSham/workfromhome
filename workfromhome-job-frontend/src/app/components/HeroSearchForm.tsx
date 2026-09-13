@@ -55,45 +55,6 @@ export default function HeroSearchForm({ search, country }: { search: string, co
 
   return (
     <>
-      <style>{`
-        .hero-search-form {
-          display: flex;
-          flex-direction: column;
-          gap: 0.625rem;
-        }
-        .hero-search-form input,
-        .hero-search-form select {
-          width: 100%;
-        }
-        .hero-search-form button {
-          width: 100%;
-        }
-        @media (min-width: 600px) {
-          .hero-search-form {
-            display: grid;
-            grid-template-columns: 1fr auto auto;
-            align-items: center;
-            gap: 0.75rem;
-          }
-          .hero-search-form input,
-          .hero-search-form select,
-          .hero-search-form button {
-            width: auto;
-          }
-        }
-        .hero-search-input:focus {
-          border-color: #2563eb !important;
-          box-shadow: 0 0 0 3px rgba(37,99,235,0.15) !important;
-        }
-        .hero-search-select:focus {
-          border-color: #2563eb !important;
-          box-shadow: 0 0 0 3px rgba(37,99,235,0.15) !important;
-        }
-        .hero-search-btn:hover {
-          box-shadow: 0 4px 18px rgba(37,99,235,0.35) !important;
-          transform: translateY(-1px);
-        }
-      `}</style>
       <form action="/" method="GET" className="hero-search-form">
         <input
           name="search"
@@ -110,6 +71,7 @@ export default function HeroSearchForm({ search, country }: { search: string, co
             outline: "none",
             color: "#0f172a",
             transition: "all 0.2s",
+            boxSizing: "border-box",
           }}
         />
         <select
@@ -131,8 +93,8 @@ export default function HeroSearchForm({ search, country }: { search: string, co
             outline: "none",
             color: "#334155",
             cursor: "pointer",
-            minWidth: "140px",
             transition: "all 0.2s",
+            boxSizing: "border-box",
           }}
         >
           <option value="">🌏 All Countries</option>
@@ -155,7 +117,7 @@ export default function HeroSearchForm({ search, country }: { search: string, co
             height: "48px",
             borderRadius: "12px",
             background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
-            color: "#fff",
+            color: "#ffffff",
             padding: "0 1.75rem",
             fontSize: "0.88rem",
             fontWeight: 700,
@@ -164,14 +126,18 @@ export default function HeroSearchForm({ search, country }: { search: string, co
             whiteSpace: "nowrap",
             boxShadow: "0 2px 10px rgba(37,99,235,0.25)",
             transition: "all 0.2s",
+            boxSizing: "border-box",
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
-          Find Jobs
+          <span style={{ color: "#ffffff" }}>Find Jobs</span>
         </button>
       </form>
 
       {/* ── High-Converting Quick Trending Filters (Reduces Bounce Rate) ── */}
-      <div style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "0.85rem", flexWrap: "wrap" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "0.85rem", flexWrap: "wrap", width: "100%", minWidth: 0 }}>
         <span style={{ fontSize: "0.72rem", fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", marginRight: "2px" }}>
           Trending:
         </span>

@@ -105,8 +105,8 @@ export default function JobSearchToolbar({
   }
 
   return (
-    <section className="fade-up">
-      <div className="glass-card rounded-3xl p-5 sm:p-6">
+    <section className="fade-up w-full min-w-0">
+      <div className="glass-card rounded-2xl sm:rounded-3xl p-4 sm:p-6 w-full min-w-0">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div className="flex-1">
             <p className="text-[0.72rem] font-extrabold uppercase tracking-[0.18em] text-slate-500">
