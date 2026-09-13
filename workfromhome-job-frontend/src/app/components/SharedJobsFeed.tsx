@@ -350,20 +350,20 @@ export default function SharedJobsFeed({
             ].filter(Boolean);
             return (
               <article key={job._id} className="job-card fade-up">
-                <div style={{ display: "flex", gap: "1rem", alignItems: "flex-start", position: "relative", zIndex: 1 }}>
+                <div style={{ display: "flex", gap: "0.85rem", alignItems: "flex-start", position: "relative", zIndex: 1 }}>
                   {/* Company avatar */}
                   <div
                     style={{
                       flexShrink: 0,
-                      width: "48px",
-                      height: "48px",
-                      borderRadius: "14px",
+                      width: "42px",
+                      height: "42px",
+                      borderRadius: "12px",
                       background: `linear-gradient(135deg, ${bgColor}18, ${bgColor}32)`,
                       color: bgColor,
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      fontSize: "0.88rem",
+                      fontSize: "0.82rem",
                       fontWeight: 900,
                       border: `1.5px solid ${bgColor}35`,
                       boxShadow: `0 2px 8px ${bgColor}15`,
@@ -374,7 +374,7 @@ export default function SharedJobsFeed({
 
                   <div style={{ flex: 1, minWidth: 0 }}>
                     {/* Badges row */}
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", alignItems: "center", marginBottom: "0.5rem" }}>
+                    <div className="flex flex-wrap items-center gap-1.5 mb-2">
                       <span className="badge badge-accent">{COUNTRY_LABELS[job.country || ""] || job.country || "Global"}</span>
                       <span className="badge badge-dark">🏠 100% Remote</span>
                       {job.sourceLabel && (
@@ -382,7 +382,7 @@ export default function SharedJobsFeed({
                           🏢 {job.sourceLabel}
                         </Link>
                       )}
-                      <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "6px" }}>
+                      <div className="flex items-center gap-1.5 sm:ml-auto">
                         <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontSize: "0.72rem", color: "#059669", fontWeight: 700, background: "#ecfdf5", padding: "2px 7px", borderRadius: "6px", border: "1px solid #a7f3d0" }}>
                           <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#10b981", boxShadow: "0 0 6px #10b981" }} />
                           Actively Hiring
@@ -396,10 +396,10 @@ export default function SharedJobsFeed({
                     {/* Title */}
                     <Link
                       href={getJobPath(job)}
-                      className="job-title-link"
+                      className="job-title-link break-words [overflow-wrap:anywhere]"
                       style={{
                         display: "block",
-                        fontSize: "1.08rem",
+                        fontSize: "1.05rem",
                         fontWeight: 800,
                         color: "#0f172a",
                         textDecoration: "none",
@@ -443,27 +443,16 @@ export default function SharedJobsFeed({
                     </div>
 
                     {/* High-Converting Action Bar */}
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        gap: "1rem",
-                        marginTop: "1rem",
-                        paddingTop: "0.85rem",
-                        borderTop: "1px solid #f1f5f9",
-                        flexWrap: "wrap",
-                      }}
-                    >
-                      <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", fontSize: "0.76rem", color: "#64748b" }}>
+                    <div className="mt-4 pt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                      <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500">
                         <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
-                          ⚡ <strong>Direct Apply</strong>
+                          ⚡ <strong className="text-slate-700">Direct Apply</strong>
                         </span>
                         <span>•</span>
                         <span>🛡️ Verified Remote Employer</span>
                       </div>
 
-                      <Link href={getJobPath(job)} className="btn-job-cta">
+                      <Link href={getJobPath(job)} className="btn-job-cta w-full sm:w-auto justify-center text-center">
                         <span>View Job & Apply</span>
                         <span className="cta-arrow" style={{ fontSize: "1.05rem", fontWeight: 900 }}>→</span>
                       </Link>

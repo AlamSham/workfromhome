@@ -1,4 +1,3 @@
-import { Manrope, Playfair_Display } from "next/font/google";
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import Link from "next/link";
@@ -10,17 +9,6 @@ import { getCompanyPath } from "./lib/companies";
 import BrandLogo from "./components/BrandLogo";
 import Navbar from "./components/Navbar";
 import "./globals.css";
-
-const manrope = Manrope({
-  variable: "--font-manrope",
-  subsets: ["latin"],
-});
-
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
-  subsets: ["latin"],
-  preload: false,
-});
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -136,10 +124,15 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   ];
 
   return (
-    <html
-      lang="en"
-      className={`${manrope.variable} ${playfair.variable} h-full antialiased`}
-    >
+    <html lang="en" className="h-full antialiased">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800;900&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body className="flex min-h-full flex-col">
         {/* ── Navbar ── */}
         <Navbar />
