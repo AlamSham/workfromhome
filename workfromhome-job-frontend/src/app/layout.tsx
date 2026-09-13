@@ -1,5 +1,5 @@
 import { Manrope, Playfair_Display } from "next/font/google";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import Link from "next/link";
 import Script from "next/script";
@@ -8,6 +8,7 @@ import { JOB_CATEGORIES, getJobCategoryPath, getJobCategoryCountryPath } from ".
 import { SEO_COUNTRIES } from "./lib/seoCountries";
 import { getCompanyPath } from "./lib/companies";
 import BrandLogo from "./components/BrandLogo";
+import Navbar from "./components/Navbar";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -20,6 +21,12 @@ const playfair = Playfair_Display({
   subsets: ["latin"],
   preload: false,
 });
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+};
 
 export const metadata: Metadata = {
   title: {
@@ -135,91 +142,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     >
       <body className="flex min-h-full flex-col">
         {/* ── Navbar ── */}
-        <nav
-          style={{
-            position: "sticky",
-            top: 0,
-            zIndex: 50,
-            borderBottom: "1px solid #e2e8f0",
-            background: "rgba(255, 255, 255, 0.92)",
-            backdropFilter: "blur(16px)",
-            WebkitBackdropFilter: "blur(16px)",
-          }}
-        >
-          <div
-            style={{
-              maxWidth: "1200px",
-              margin: "0 auto",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              padding: "0.75rem 1.25rem",
-              gap: "1rem",
-            }}
-          >
-            {/* Logo */}
-            <Link
-              href="/"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                textDecoration: "none",
-                flexShrink: 0,
-              }}
-            >
-              <BrandLogo size="md" />
-            </Link>
-
-            {/* Nav Links */}
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "0.25rem",
-              }}
-            >
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  style={{
-                    padding: "0.4rem 0.85rem",
-                    fontSize: "0.82rem",
-                    fontWeight: 600,
-                    color: "#475569",
-                    textDecoration: "none",
-                    borderRadius: "0.5rem",
-                    transition: "color 0.2s, background 0.2s",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  {link.label}
-                </Link>
-              ))}
-              <Link
-                href="/remote-jobs-in-us"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "0.3rem",
-                  marginLeft: "0.5rem",
-                  padding: "0.45rem 1rem",
-                  fontSize: "0.8rem",
-                  fontWeight: 700,
-                  color: "#fff",
-                  background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
-                  borderRadius: "0.6rem",
-                  textDecoration: "none",
-                  boxShadow: "0 2px 8px rgba(37,99,235,0.25)",
-                  transition: "all 0.2s",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                🇺🇸 US Jobs
-              </Link>
-            </div>
-          </div>
-        </nav>
+        <Navbar />
 
         {/* ── Main Content ── */}
         <main className="flex flex-1 flex-col">{children}</main>
@@ -240,13 +163,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             }}
           >
             {/* Top row: 4 columns */}
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-                gap: "2rem",
-              }}
-            >
+            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
               {/* Brand */}
               <div>
                 <div style={{ marginBottom: "0.75rem" }}>
@@ -310,7 +227,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               </div>
 
               {/* Countries */}
-              <div style={{ minWidth: "220px" }}>
+              <div>
                 <p style={{ fontSize: "0.7rem", fontWeight: 800, color: "#0f172a", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "0.75rem" }}>
                   Jobs by Country
                 </p>

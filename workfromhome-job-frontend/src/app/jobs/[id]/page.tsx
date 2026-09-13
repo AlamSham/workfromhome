@@ -510,7 +510,7 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
                 </div>
               )}
               <div className="flex-1 min-w-0">
-                <h1 className="font-serif text-2xl font-bold leading-tight text-slate-900 sm:text-3xl">
+                <h1 className="font-serif text-2xl font-bold leading-tight text-slate-900 sm:text-3xl break-words [overflow-wrap:anywhere]">
                   {displayTitle}
                 </h1>
                 {job.sourceLabel && (
@@ -576,7 +576,7 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
           </header>
 
           {/* Overview */}
-          <section className="glass-card fade-up" style={{ borderRadius: "1.25rem", padding: "1.5rem 2rem" }}>
+          <section className="glass-card fade-up rounded-2xl p-5 sm:p-8">
             <h2 className="section-title">Job Overview</h2>
             <div className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
               {[
@@ -604,7 +604,7 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
             const sections = formatJobDescription(descText);
             
             return (
-              <section className="glass-card fade-up" style={{ borderRadius: "1.25rem", padding: "1.5rem 2rem" }}>
+              <section className="glass-card fade-up rounded-2xl p-5 sm:p-8">
                 <h2 className="section-title">Job Description</h2>
                 {sections.length > 0 ? (
                   <div className="mt-4 space-y-5">
@@ -644,7 +644,7 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
           })()}
 
           {/* ── Remote Work & Candidate Success Guide ── */}
-          <section className="glass-card fade-up" style={{ borderRadius: "1.25rem", padding: "1.5rem 2rem" }}>
+          <section className="glass-card fade-up rounded-2xl p-5 sm:p-8">
             <h2 className="section-title">Remote Work Guidelines & Career Insights</h2>
             <p style={{ marginTop: "0.5rem", fontSize: "0.85rem", lineHeight: 1.7, color: "#64748b" }}>
               Practical advice for succeeding as a remote professional in this role.
@@ -693,7 +693,7 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
           </section>
 
           {/* ── Role Specific FAQ (Rich Snippets & Google Ranking) ── */}
-          <section className="glass-card fade-up" style={{ borderRadius: "1.25rem", padding: "1.5rem 2rem" }}>
+          <section className="glass-card fade-up rounded-2xl p-5 sm:p-8">
             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.5rem" }}>
               <span style={{ fontSize: "1.25rem" }}>❓</span>
               <h2 className="section-title" style={{ margin: 0 }}>Frequently Asked Questions</h2>
