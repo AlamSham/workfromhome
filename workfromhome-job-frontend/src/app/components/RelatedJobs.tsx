@@ -111,8 +111,13 @@ export default async function RelatedJobs({ currentJobId, country, category }: R
           );
         })}
       </div>
-      <div className="text-center mt-4">
-        <Link href="/" className="btn-outline inline-flex">
+      <div className="flex flex-wrap gap-2 justify-center mt-4">
+        {country && (
+          <Link href={`/remote-jobs-in-${country.toLowerCase()}`} className="btn-outline inline-flex" style={{ fontSize: "0.82rem" }}>
+            More remote jobs in {country} →
+          </Link>
+        )}
+        <Link href="/" className="btn-outline inline-flex" style={{ fontSize: "0.82rem" }}>
           View all remote jobs →
         </Link>
       </div>

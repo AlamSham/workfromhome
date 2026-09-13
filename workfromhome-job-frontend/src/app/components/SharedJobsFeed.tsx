@@ -374,7 +374,18 @@ export default function SharedJobsFeed({
                   <div style={{ flex: 1, minWidth: 0, width: "100%" }}>
                     {/* Badges row */}
                     <div className="flex flex-wrap items-center gap-1.5 mb-2 w-full min-w-0">
-                      <span className="badge badge-accent">{COUNTRY_LABELS[job.country || ""] || job.country || "Global"}</span>
+                      {job.country ? (
+                        <Link
+                          href={`/remote-jobs-in-${job.country.toLowerCase()}`}
+                          className="badge badge-accent hover:opacity-85 transition"
+                          style={{ textDecoration: "none" }}
+                          title={`Browse remote jobs in ${COUNTRY_LABELS[job.country] || job.country}`}
+                        >
+                          {COUNTRY_LABELS[job.country] || job.country}
+                        </Link>
+                      ) : (
+                        <span className="badge badge-accent">🌍 Global</span>
+                      )}
                       <span className="badge badge-dark">🏠 100% Remote</span>
                       {job.sourceLabel && (
                         <Link href={getCompanyPath(job.sourceLabel)} className="badge badge-gray truncate max-w-[150px] sm:max-w-xs" style={{ textDecoration: "none", fontWeight: 700 }}>
@@ -435,9 +446,14 @@ export default function SharedJobsFeed({
                         </span>
                       )}
                       {(job.seo?.keywords || []).slice(0, 4).map((kw: string) => (
-                        <span key={kw} className="tag-pill" style={{ fontSize: "0.7rem", color: "#64748b" }}>
+                        <Link
+                          key={kw}
+                          href={`/?search=${encodeURIComponent(kw)}`}
+                          className="tag-pill hover:text-blue-600 hover:border-blue-300 transition"
+                          style={{ fontSize: "0.7rem", color: "#64748b", textDecoration: "none" }}
+                        >
                           #{kw}
-                        </span>
+                        </Link>
                       ))}
                     </div>
 

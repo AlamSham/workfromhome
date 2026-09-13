@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { JOB_CATEGORIES, getJobCategoryPath } from "../lib/jobCategories";
+import { SEO_COUNTRIES } from "../lib/seoCountries";
 
 export const metadata: Metadata = {
   title: "Remote Work Blog — Guides, Tips & Career Advice | RemoteJobDesk",
@@ -344,19 +346,30 @@ export default function BlogPage() {
         <p style={{ marginTop: "0.4rem", fontSize: "0.86rem", color: "#64748b", margin: 0 }}>
           Done reading? Jump straight into verified remote job listings updated hourly.
         </p>
-        <div style={{ marginTop: "1rem", display: "flex", flexWrap: "wrap", gap: "0.6rem" }}>
-          <Link href="/" className="btn-primary" style={{ fontSize: "0.82rem", padding: "0.55rem 1.25rem" }}>
+        <div style={{ marginTop: "1rem", display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+          <Link href="/" className="btn-primary" style={{ fontSize: "0.82rem", padding: "0.55rem 1.25rem", textDecoration: "none" }}>
             Browse All Jobs →
           </Link>
-          <Link href="/remote-jobs-in-us" className="btn-outline" style={{ fontSize: "0.82rem", padding: "0.55rem 1.15rem" }}>
-            🇺🇸 US Jobs
-          </Link>
-          <Link href="/remote-jobs-in-uk" className="btn-outline" style={{ fontSize: "0.82rem", padding: "0.55rem 1.15rem" }}>
-            🇬🇧 UK Jobs
-          </Link>
-          <Link href="/remote-software-engineer-jobs" className="btn-outline" style={{ fontSize: "0.82rem", padding: "0.55rem 1.15rem" }}>
-            💻 Software Jobs
-          </Link>
+          {JOB_CATEGORIES.map((cat) => (
+            <Link
+              key={cat.slug}
+              href={getJobCategoryPath(cat.slug)}
+              className="btn-outline"
+              style={{ fontSize: "0.82rem", padding: "0.55rem 1.15rem", textDecoration: "none" }}
+            >
+              {cat.label} Jobs
+            </Link>
+          ))}
+          {SEO_COUNTRIES.slice(0, 8).map((c) => (
+            <Link
+              key={c.code}
+              href={`/remote-jobs-in-${c.code.toLowerCase()}`}
+              className="btn-outline"
+              style={{ fontSize: "0.82rem", padding: "0.55rem 1.15rem", textDecoration: "none" }}
+            >
+              Remote Jobs in {c.name}
+            </Link>
+          ))}
         </div>
       </section>
     </div>

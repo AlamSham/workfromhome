@@ -10,8 +10,8 @@ import {
   readJobFilters,
   SearchParamValue,
 } from "../../lib/jobFilters";
-import { JOB_CATEGORIES, getJobCategoryCountryPath } from "../../lib/jobCategories";
-import { getSeoCountryByCode, SEO_COUNTRIES } from "../../lib/seoCountries";
+import { JOB_CATEGORIES, getJobCategoryCountryPath, getJobCategoryPath } from "../../lib/jobCategories";
+import { getSeoCountryByCode, getSeoCountryBySlug, SEO_COUNTRIES } from "../../lib/seoCountries";
 
 export const revalidate = 21600; // 6 hours — reduces CPU by 3x vs 2hr
 export const dynamicParams = true; // allow non-pre-built country codes
@@ -29,6 +29,19 @@ function toInt(v: unknown, fallback = 1): number {
   const p = Number(v);
   if (!Number.isFinite(p)) return fallback;
   return Math.max(1, Math.floor(p));
+}
+
+function getRolePath(role: string, countrySlug?: string, countryCode?: string): string {
+  const r = role.toLowerCase();
+  for (const cat of JOB_CATEGORIES) {
+    if (r.includes(cat.query) || cat.label.toLowerCase().includes(r)) {
+      if (countrySlug) {
+        return getJobCategoryCountryPath(cat.slug, countrySlug);
+      }
+      return getJobCategoryPath(cat.slug);
+    }
+  }
+  return `/remote-jobs-in-${(countryCode || "us").toLowerCase()}?search=${encodeURIComponent(role)}`;
 }
 
 const fetchJobs = cache(async ({ page, search, country, filters }: { page: number; search: string; country: string; filters: ReturnType<typeof readJobFilters> }) => {
@@ -131,12 +144,12 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params, searchParams }: CountryPageProps): Promise<Metadata> {
   const resolvedParams = await params;
-  const rawCountry = (resolvedParams?.country || "").toUpperCase();
-  if (!COUNTRY_LABELS[rawCountry]) {
+  const param = (resolvedParams?.country || "").trim().toLowerCase();
+  const seoCountry = getSeoCountryBySlug(param) || getSeoCountryByCode(param.toUpperCase());
+  if (!seoCountry && !COUNTRY_LABELS[param.toUpperCase()]) {
     return { title: "Not Found", description: "Country not found." };
   }
-
-  const seoCountry = getSeoCountryByCode(rawCountry);
+  const rawCountry = (seoCountry?.code || param).toUpperCase();
   const countryName = seoCountry?.name || COUNTRY_LABELS[rawCountry] || rawCountry;
 
   const r = await searchParams;
@@ -172,11 +185,13 @@ export async function generateMetadata({ params, searchParams }: CountryPageProp
 
 export default async function CountryPage({ params, searchParams }: CountryPageProps) {
   const resolvedParams = await params;
-  const rawCountry = (resolvedParams?.country || "").toUpperCase();
+  const param = (resolvedParams?.country || "").trim().toLowerCase();
+  const seoCountry = getSeoCountryBySlug(param) || getSeoCountryByCode(param.toUpperCase());
   
-  if (!COUNTRY_LABELS[rawCountry]) {
+  if (!seoCountry && !COUNTRY_LABELS[param.toUpperCase()]) {
     notFound();
   }
+  const rawCountry = (seoCountry?.code || param).toUpperCase();
 
   const r = await searchParams;
   const search = getSearchParamValue(r?.search).trim();
@@ -184,7 +199,6 @@ export default async function CountryPage({ params, searchParams }: CountryPageP
   const filters = readJobFilters(r);
 
   const { jobs, pagination, error } = await fetchJobs({ page, search, country: rawCountry, filters });
-  const seoCountry = getSeoCountryByCode(rawCountry);
   const countryName = seoCountry?.name || COUNTRY_LABELS[rawCountry] || rawCountry;
   const seoContent = getCountrySeoContent(rawCountry);
 
@@ -262,7 +276,14 @@ export default async function CountryPage({ params, searchParams }: CountryPageP
               <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500">Top Remote Roles</h3>
               <div className="mt-3 flex flex-wrap gap-2">
                 {seoContent.topRoles.map((role) => (
-                  <span key={role} className="tag-pill">{role}</span>
+                  <Link
+                    key={role}
+                    href={getRolePath(role, seoCountry?.slug, rawCountry)}
+                    className="tag-pill hover:text-blue-600 hover:border-blue-300 transition"
+                    style={{ textDecoration: "none" }}
+                  >
+                    {role} →
+                  </Link>
                 ))}
               </div>
             </div>
@@ -273,11 +294,12 @@ export default async function CountryPage({ params, searchParams }: CountryPageP
             <section className="glass-card fade-up rounded-3xl p-6 sm:p-8">
               <h2 className="section-title">Browse Remote Jobs by Category in {countryName}</h2>
               <div className="mt-4 flex flex-wrap gap-2">
-                {JOB_CATEGORIES.slice(0, 8).map((category) => (
+                {JOB_CATEGORIES.map((category) => (
                   <Link
                     key={category.slug}
                     href={getJobCategoryCountryPath(category.slug, seoCountry.slug)}
                     className="tag-pill"
+                    style={{ textDecoration: "none" }}
                   >
                     {category.label} in {countryName}
                   </Link>

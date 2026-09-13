@@ -4,8 +4,20 @@ import type { Metadata } from "next";
 import { cache } from "react";
 import RelatedJobs from "../../components/RelatedJobs";
 import NewsletterCTA from "../../components/NewsletterCTA";
+import { COUNTRY_LABELS } from "../../components/SharedJobsFeed";
 import { getCompanyPath } from "../../lib/companies";
+import {
+  JOB_CATEGORIES,
+  JobCategoryDefinition,
+  getJobCategoryCountryPath,
+  getJobCategoryPath,
+} from "../../lib/jobCategories";
 import { extractJobId, getJobPath } from "../../lib/jobUrls";
+import {
+  SEO_COUNTRIES,
+  getSeoCountryByCode,
+  getSeoCountryBySlug,
+} from "../../lib/seoCountries";
 
 export const revalidate = 28800; // 8 hours — job detail rarely changes
 
@@ -66,6 +78,23 @@ interface WordPressPost {
 
 interface DetailPageProps {
   params: Promise<{ id?: string }>;
+}
+
+function findJobCategory(categoryStr?: string, titleStr?: string): JobCategoryDefinition | undefined {
+  const cat = String(categoryStr || "").toLowerCase().trim();
+  const title = String(titleStr || "").toLowerCase().trim();
+
+  for (const c of JOB_CATEGORIES) {
+    if (c.slug === cat || c.label.toLowerCase() === cat || (cat && cat.includes(c.query))) {
+      return c;
+    }
+  }
+  for (const c of JOB_CATEGORIES) {
+    if (title.includes(c.query)) {
+      return c;
+    }
+  }
+  return undefined;
 }
 
 function formatDate(value: string | undefined): string {
@@ -411,6 +440,43 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
     job.signals?.seniority ? `Level: ${formatSeniority(job.signals.seniority)}` : "",
   ].filter(Boolean);
 
+  // SEO & Internal Linking Resolution
+  const matchedCountry = job.country ? (getSeoCountryByCode(job.country) || getSeoCountryBySlug(job.country)) : undefined;
+  const countryCode = (matchedCountry?.code || job.country || "").toLowerCase();
+  const countryName = matchedCountry?.name || (job.country && COUNTRY_LABELS[job.country.toUpperCase()]?.replace(/^[^\s]+\s/, "")) || job.country || "";
+  const countryHref = countryCode ? `/remote-jobs-in-${countryCode}` : "";
+
+  const matchedCategory = findJobCategory(job.category, displayTitle || job.originalTitle);
+  const categoryHref = matchedCategory ? getJobCategoryPath(matchedCategory.slug) : undefined;
+
+  // Dynamic 4-step Schema BreadcrumbList
+  const breadcrumbSchemaItems = [
+    { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+  ];
+  let breadcrumbPos = 2;
+  if (countryHref && countryName) {
+    breadcrumbSchemaItems.push({
+      "@type": "ListItem",
+      position: breadcrumbPos++,
+      name: `Remote Jobs in ${countryName}`,
+      item: `${SITE_URL}${countryHref}`,
+    });
+  }
+  if (categoryHref && matchedCategory) {
+    breadcrumbSchemaItems.push({
+      "@type": "ListItem",
+      position: breadcrumbPos++,
+      name: `Remote ${matchedCategory.label} Jobs`,
+      item: `${SITE_URL}${categoryHref}`,
+    });
+  }
+  breadcrumbSchemaItems.push({
+    "@type": "ListItem",
+    position: breadcrumbPos++,
+    name: displayTitle,
+    item: pageUrl,
+  });
+
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-4 py-8 sm:px-6 lg:px-10">
 
@@ -441,19 +507,31 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "BreadcrumbList",
-          itemListElement: [
-            { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
-            ...(job.country ? [{ "@type": "ListItem", position: 2, name: `Remote Jobs in ${job.country}`, item: `${SITE_URL}/remote-jobs-in-${(job.country || "us").toLowerCase()}` }] : []),
-            { "@type": "ListItem", position: job.country ? 3 : 2, name: displayTitle, item: pageUrl },
-          ],
+          itemListElement: breadcrumbSchemaItems,
         }) }}
       />
 
-      {/* Breadcrumb */}
-      <nav className="fade-up flex items-center gap-2 text-sm text-slate-500">
-        <Link href="/" className="hover:text-blue-600 transition">Home</Link>
-        <span>/</span>
-        <span className="text-slate-800 font-semibold line-clamp-1">{displayTitle}</span>
+      {/* Breadcrumb Navigation */}
+      <nav aria-label="Breadcrumb" className="fade-up flex flex-wrap items-center gap-1.5 text-xs sm:text-sm text-slate-500">
+        <Link href="/" className="hover:text-blue-600 transition font-medium">Home</Link>
+        {countryHref && countryName && (
+          <>
+            <span className="text-slate-300">/</span>
+            <Link href={countryHref} className="hover:text-blue-600 transition font-medium">
+              Jobs in {countryName}
+            </Link>
+          </>
+        )}
+        {categoryHref && matchedCategory && (
+          <>
+            <span className="text-slate-300">/</span>
+            <Link href={categoryHref} className="hover:text-blue-600 transition font-medium">
+              {matchedCategory.label}
+            </Link>
+          </>
+        )}
+        <span className="text-slate-300">/</span>
+        <span className="text-slate-800 font-semibold line-clamp-1 max-w-[200px] sm:max-w-md">{displayTitle}</span>
       </nav>
 
       {/* Expired Job Alert Banner */}
@@ -483,11 +561,33 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
           {/* Header card */}
           <header className="glass-card fade-up rounded-3xl p-6 sm:p-8">
             <div className="mb-4 flex flex-wrap items-center gap-2 text-xs font-semibold">
-              <span className="badge badge-accent">{job.country || "Global"}</span>
-              <span className="badge badge-dark">{(job.category || "WFH").toUpperCase()}</span>
+              {countryHref ? (
+                <Link
+                  href={countryHref}
+                  className="badge badge-accent hover:opacity-85 transition"
+                  style={{ textDecoration: "none" }}
+                  title={`Browse all remote jobs in ${countryName}`}
+                >
+                  📍 {countryName || job.country}
+                </Link>
+              ) : (
+                <span className="badge badge-accent">📍 Global</span>
+              )}
+              {categoryHref && matchedCategory ? (
+                <Link
+                  href={categoryHref}
+                  className="badge badge-dark hover:opacity-85 transition"
+                  style={{ textDecoration: "none" }}
+                  title={`Browse all remote ${matchedCategory.label} jobs`}
+                >
+                  💼 {matchedCategory.label.toUpperCase()}
+                </Link>
+              ) : (
+                <span className="badge badge-dark">💼 {(job.category || "REMOTE").toUpperCase()}</span>
+              )}
               {job.sourceLabel && (
-                <Link href={getCompanyPath(job.sourceLabel)} className="badge badge-gray" style={{ textDecoration: "none" }}>
-                  {job.sourceLabel}
+                <Link href={getCompanyPath(job.sourceLabel)} className="badge badge-gray hover:text-blue-600 transition" style={{ textDecoration: "none" }}>
+                  🏢 {job.sourceLabel}
                 </Link>
               )}
               <span className="ml-auto text-slate-500 text-xs">{formatDate(job.publishedAt)}</span>
@@ -732,12 +832,15 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
               <h2 className="section-title">Related Skills & Keywords</h2>
               <div className="mt-4 flex flex-wrap gap-2">
                 {(job.seo?.keywords || []).map((kw) => (
-                  <span
+                  <Link
                     key={kw}
-                    className="tag-pill"
+                    href={`/?search=${encodeURIComponent(kw)}`}
+                    className="tag-pill hover:text-blue-600 hover:border-blue-300 transition"
+                    style={{ textDecoration: "none" }}
+                    title={`Search remote jobs requiring ${kw}`}
                   >
                     #{kw}
-                  </span>
+                  </Link>
                 ))}
               </div>
             </section>
@@ -749,6 +852,93 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
             country={job.country}
             category={job.category}
           />
+
+          {/* ── Internal Linking Taxonomy Silo ── */}
+          <section className="glass-card fade-up rounded-2xl p-5 sm:p-7" style={{ border: "1px solid #e2e8f0" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.25rem" }}>
+              <span style={{ fontSize: "1.2rem" }}>🌐</span>
+              <h3 className="section-title" style={{ margin: 0, fontSize: "1.1rem" }}>
+                Explore More Remote Opportunities
+              </h3>
+            </div>
+            <p style={{ fontSize: "0.82rem", color: "#64748b", margin: "0.25rem 0 1rem", lineHeight: 1.6 }}>
+              Discover verified work-from-home positions by role, category, and regional hiring markets.
+            </p>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+              {/* 1. Related Category & Combo */}
+              {matchedCategory && matchedCountry && (
+                <div style={{ background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: "12px", padding: "0.85rem 1rem" }}>
+                  <p style={{ fontSize: "0.75rem", fontWeight: 800, color: "#166534", margin: "0 0 0.5rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                    🎯 Targeted Link for this Role
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    <Link
+                      href={getJobCategoryCountryPath(matchedCategory.slug, matchedCountry.slug)}
+                      className="tag-pill"
+                      style={{ background: "#ffffff", borderColor: "#86efac", fontWeight: 700, color: "#15803d", textDecoration: "none" }}
+                    >
+                      Remote {matchedCategory.label} in {countryName} →
+                    </Link>
+                    <Link
+                      href={getJobCategoryPath(matchedCategory.slug)}
+                      className="tag-pill"
+                      style={{ background: "#ffffff", borderColor: "#86efac", fontWeight: 700, color: "#15803d", textDecoration: "none" }}
+                    >
+                      All Remote {matchedCategory.label} Jobs →
+                    </Link>
+                    {countryHref && (
+                      <Link
+                        href={countryHref}
+                        className="tag-pill"
+                        style={{ background: "#ffffff", borderColor: "#86efac", fontWeight: 700, color: "#15803d", textDecoration: "none" }}
+                      >
+                        All Remote Jobs in {countryName} →
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* 2. Popular Categories */}
+              <div>
+                <p style={{ fontSize: "0.75rem", fontWeight: 800, color: "#475569", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "0.4rem" }}>
+                  Popular Job Categories
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {JOB_CATEGORIES.map((cat) => (
+                    <Link
+                      key={cat.slug}
+                      href={getJobCategoryPath(cat.slug)}
+                      className={`tag-pill ${matchedCategory?.slug === cat.slug ? "font-bold text-blue-700 bg-blue-50 border-blue-300" : ""}`}
+                      style={{ fontSize: "0.78rem", textDecoration: "none" }}
+                    >
+                      {cat.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              {/* 3. Top Remote Countries */}
+              <div>
+                <p style={{ fontSize: "0.75rem", fontWeight: 800, color: "#475569", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "0.4rem" }}>
+                  Top Hiring Countries
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {SEO_COUNTRIES.slice(0, 12).map((c) => (
+                    <Link
+                      key={c.code}
+                      href={`/remote-jobs-in-${c.code.toLowerCase()}`}
+                      className={`tag-pill ${countryCode === c.code.toLowerCase() ? "font-bold text-blue-700 bg-blue-50 border-blue-300" : ""}`}
+                      style={{ fontSize: "0.78rem", textDecoration: "none" }}
+                    >
+                      {COUNTRY_LABELS[c.code] || c.name}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
 
           {/* Lead Capture */}
           <NewsletterCTA
