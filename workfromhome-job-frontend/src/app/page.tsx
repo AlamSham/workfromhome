@@ -13,7 +13,7 @@ import {
 import { JOB_CATEGORIES, getJobCategoryPath } from "./lib/jobCategories";
 import { SEO_COUNTRIES } from "./lib/seoCountries";
 
-export const revalidate = 14400; // 4 hours — saves CPU on Hobby tier
+export const revalidate = 28800; // 8 hours — Cloud Run optimized
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://remotejobdesk.com";

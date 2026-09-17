@@ -5,7 +5,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://remotejobdesk.com";
 
 // Revalidate every 30 minutes so newly posted jobs automatically appear!
-export const revalidate = 1800;
+export const revalidate = 21600; // 6 hours — Cloud Run optimized
 
 const COUNTRIES = [
   { code: "us", name: "United States" },

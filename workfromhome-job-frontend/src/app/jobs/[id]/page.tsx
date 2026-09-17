@@ -19,7 +19,7 @@ import {
   getSeoCountryBySlug,
 } from "../../lib/seoCountries";
 
-export const revalidate = 28800; // 8 hours — job detail rarely changes
+export const revalidate = 86400; // 24 hours — job details rarely change
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";

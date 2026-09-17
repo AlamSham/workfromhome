@@ -3,7 +3,7 @@ import { getJobPath } from "../lib/jobUrls";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://remotejobdesk.com";
 
-export const revalidate = 3600; // 1 hour - ISR cache
+export const revalidate = 21600; // 6 hours — Cloud Run optimized
 
 function escapeXml(unsafe: string): string {
   if (!unsafe) return "";

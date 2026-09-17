@@ -4,7 +4,7 @@ import { JOB_CATEGORIES, getJobCategoryPath } from "../lib/jobCategories";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://remotejobdesk.com";
 
-export const revalidate = 1800;
+export const revalidate = 21600; // 6 hours — Cloud Run optimized
 
 const COUNTRIES = [
   { code: "us", name: "United States", currency: "USD", desc: "US work-from-home, W2 and 1099 contracts across all timezones." },

@@ -6,7 +6,7 @@ import { JOB_CATEGORIES, getJobCategoryCountryPath, getJobCategoryPath } from ".
 import { getJobPath } from "./lib/jobUrls";
 import { getFeaturedComboCountries, getSeoCountryByCode } from "./lib/seoCountries";
 
-export const revalidate = 21600; // 6 hours — sitemap internally calls multiple APIs, each costing CPU
+export const revalidate = 86400; // 24 hours — sitemap doesn't need frequent updates
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";

@@ -13,7 +13,7 @@ import {
 import { JOB_CATEGORIES, getJobCategoryCountryPath, getJobCategoryPath } from "../../lib/jobCategories";
 import { getSeoCountryByCode, getSeoCountryBySlug, SEO_COUNTRIES } from "../../lib/seoCountries";
 
-export const revalidate = 21600; // 6 hours — reduces CPU by 3x vs 2hr
+export const revalidate = 43200; // 12 hours — Cloud Run optimized
 export const dynamicParams = true; // allow non-pre-built country codes
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";

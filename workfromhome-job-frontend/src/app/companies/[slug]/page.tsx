@@ -15,7 +15,7 @@ import { JOB_CATEGORIES, getJobCategoryPath } from "../../lib/jobCategories";
 import { CompanyCountrySummary, CompanySummary, getCompanyCountryPath, getCompanyPath } from "../../lib/companies";
 import { getSeoCountryByCode } from "../../lib/seoCountries";
 
-export const revalidate = 14400; // 4 hours - optimized for low traffic
+export const revalidate = 43200; // 12 hours — Cloud Run optimized
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://remotejobdesk.com";

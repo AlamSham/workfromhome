@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import Link from "next/link";
 import Script from "next/script";
-import { Analytics } from "@vercel/analytics/react";
 import { JOB_CATEGORIES, getJobCategoryPath, getJobCategoryCountryPath } from "./lib/jobCategories";
 import { SEO_COUNTRIES } from "./lib/seoCountries";
 import { getCompanyPath } from "./lib/companies";
@@ -350,7 +349,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           data-zone="278943"
           strategy="afterInteractive"
         />
-        <Analytics />
       </body>
     </html>
   );
