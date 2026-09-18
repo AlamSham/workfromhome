@@ -97,6 +97,7 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
+  const gaId = process.env.NEXT_PUBLIC_GA_ID || "G-63B794NHWT";
   const featuredCategories = JOB_CATEGORIES;
   const featuredCompanies = [
     "Amazon",
@@ -317,10 +318,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           }}
         />
         {/* ── Google Analytics ── */}
-        {process.env.NEXT_PUBLIC_GA_ID && (
+        {gaId && (
           <>
             <Script
-              src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
+              src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
               strategy="afterInteractive"
             />
             <Script id="google-analytics" strategy="afterInteractive">
@@ -328,7 +329,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){dataLayer.push(arguments);}
                 gtag('js', new Date());
-                gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}');
+                gtag('config', '${gaId}');
               `}
             </Script>
           </>
