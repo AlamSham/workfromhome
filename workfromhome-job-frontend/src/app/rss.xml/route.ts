@@ -1,6 +1,6 @@
 import { getJobPath } from "../lib/jobUrls";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://workfromhome-git-61255565662.us-east4.run.app";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://remotejobdesk.com";
 
 export const revalidate = 21600; // 6 hours — Cloud Run optimized

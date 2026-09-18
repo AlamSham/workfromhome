@@ -9,7 +9,8 @@ import { getFeaturedComboCountries, getSeoCountryByCode } from "./lib/seoCountri
 export const revalidate = 86400; // 24 hours — sitemap doesn't need frequent updates
 
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
+  process.env.NEXT_PUBLIC_API_BASE_URL ||
+  "https://workfromhome-git-61255565662.us-east4.run.app";
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL || "https://remotejobdesk.com";
 
@@ -45,25 +46,32 @@ interface SitemapCompanyCountryCombo {
 
 async function getAllJobs(): Promise<SitemapJob[]> {
   try {
-    let page = 1;
-    const jobsForSitemap: SitemapJob[] = [];
+    const firstRes = await fetch(
+      `${API_BASE_URL}/api/jobs?page=1&limit=100`,
+      { next: { revalidate } }
+    );
+    if (!firstRes.ok) return [];
+    const firstData = await firstRes.json();
+    const jobsForSitemap: SitemapJob[] = Array.isArray(firstData?.data) ? [...firstData.data] : [];
+    const totalPages = Math.min(Number(firstData?.pagination?.totalPages) || 1, 30);
 
-    while (true) {
-      const res = await fetch(
-        `${API_BASE_URL}/api/jobs?page=${page}&limit=100`,
-        { next: { revalidate } }
-      );
-      if (!res.ok) break;
-      const data = await res.json();
-      const jobs = data?.data || [];
-      if (!Array.isArray(jobs) || jobs.length === 0) break;
-      jobsForSitemap.push(...jobs.filter((job: SitemapJob) => job?._id));
-      const totalPages = data?.pagination?.totalPages || 1;
-      if (page >= totalPages) break;
-      page++;
+    if (totalPages > 1) {
+      const pagePromises = [];
+      for (let p = 2; p <= totalPages; p++) {
+        pagePromises.push(
+          fetch(`${API_BASE_URL}/api/jobs?page=${p}&limit=100`, { next: { revalidate } })
+            .then((r) => (r.ok ? r.json() : null))
+            .then((d) => (Array.isArray(d?.data) ? d.data : []))
+            .catch(() => [])
+        );
+      }
+      const restResults = await Promise.all(pagePromises);
+      for (const batch of restResults) {
+        jobsForSitemap.push(...batch);
+      }
     }
 
-    return jobsForSitemap;
+    return jobsForSitemap.filter((job: SitemapJob) => job?._id);
   } catch {
     return [];
   }
