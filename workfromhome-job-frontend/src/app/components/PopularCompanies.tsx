@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { CompanySummary, getCompanyPath } from "../lib/companies";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://workfromhome-git-61255565662.us-east4.run.app";
 
 interface PopularCompaniesProps {
   title?: string;
