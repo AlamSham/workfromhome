@@ -18,7 +18,7 @@ import {
 } from "../../lib/jobCategories";
 import { getFeaturedComboCountries, SEO_COUNTRIES } from "../../lib/seoCountries";
 
-export const revalidate = 43200; // 12 hours — Cloud Run optimized
+export const revalidate = 300; // 5 minutes — fresh category updates
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://remotejobdesk.com";

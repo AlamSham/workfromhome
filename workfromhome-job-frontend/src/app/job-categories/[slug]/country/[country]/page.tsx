@@ -23,7 +23,7 @@ import {
   getSeoCountryBySlug,
 } from "../../../../lib/seoCountries";
 
-export const revalidate = 43200; // 12 hours — Cloud Run optimized
+export const revalidate = 300; // 5 minutes — fresh combo updates
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://remotejobdesk.com";
