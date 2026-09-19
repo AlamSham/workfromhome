@@ -53,6 +53,9 @@ export const metadata: Metadata = {
   },
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION || "",
+    other: {
+      "impact-site-verification": "33e16baa-391c-42e1-b058-06e8dfa45bc6",
+    },
   },
   alternates: {
     canonical: "/",
@@ -126,6 +129,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className="h-full antialiased">
       <head>
+        <meta
+          name="impact-site-verification"
+          value="33e16baa-391c-42e1-b058-06e8dfa45bc6"
+          content="33e16baa-391c-42e1-b058-06e8dfa45bc6"
+        />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
