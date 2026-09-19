@@ -4,6 +4,8 @@ import type { Metadata } from "next";
 import { cache } from "react";
 import RelatedJobs from "../../components/RelatedJobs";
 import NewsletterCTA from "../../components/NewsletterCTA";
+import JobShareButton from "../../components/JobShareButton";
+import JobAffiliateWidget from "../../components/JobAffiliateWidget";
 import { COUNTRY_LABELS } from "../../components/SharedJobsFeed";
 import { getCompanyPath } from "../../lib/companies";
 import {
@@ -649,6 +651,12 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
                 >
                   🚫 Listing Expired
                 </span>
+                <JobShareButton
+                  jobTitle={displayTitle}
+                  jobPath={canonicalPath}
+                  company={job.sourceLabel}
+                  variant="detail"
+                />
                 <span className="text-xs text-slate-500 font-medium">
                   This position has been filled or closed by the employer
                 </span>
@@ -668,6 +676,12 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
                 >
                   ✨ Apply Now ↗
                 </a>
+                <JobShareButton
+                  jobTitle={displayTitle}
+                  jobPath={canonicalPath}
+                  company={job.sourceLabel}
+                  variant="detail"
+                />
                 <span className="text-xs text-slate-500 font-medium">
                   Opens employer&apos;s official career page
                 </span>
@@ -698,6 +712,14 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
               ))}
             </div>
           </section>
+
+          {/* ATS Resume Builder & Career Tools Affiliate Banner (Will enable once affiliate links are approved) */}
+          {/* <JobAffiliateWidget
+            jobTitle={displayTitle}
+            company={job.sourceLabel}
+            category={job.category}
+            variant="banner"
+          /> */}
 
           {/* Description */}
           {(richDescription || job.summary) && (() => {
@@ -1057,27 +1079,23 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
             </Link>
           </div>
 
-          {/* Share */}
+          {/* Job Application Toolkit Affiliate Widget in Sidebar (Will enable once affiliate links are approved) */}
+          {/* <JobAffiliateWidget
+            jobTitle={displayTitle}
+            company={job.sourceLabel}
+            category={job.category}
+            variant="sidebar"
+          /> */}
+
+          {/* Share Direct Job Link */}
           <div className="glass-card rounded-3xl p-6 space-y-3">
             <h2 className="text-sm font-bold text-slate-900">Share This Job</h2>
-            <div className="flex flex-wrap gap-2">
-              <a
-                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(displayTitle)}&url=${encodeURIComponent(pageUrl)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-outline text-xs"
-              >
-                𝕏 Twitter
-              </a>
-              <a
-                href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(pageUrl)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-outline text-xs"
-              >
-                in LinkedIn
-              </a>
-            </div>
+            <JobShareButton
+              jobTitle={displayTitle}
+              jobPath={canonicalPath}
+              company={job.sourceLabel}
+              variant="inline"
+            />
           </div>
         </aside>
       </div>
@@ -1092,21 +1110,29 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
             {job.sourceLabel || "Remote Employer"} {job.signals?.salaryText ? `• ${job.signals.salaryText}` : "• Verified Remote"}
           </div>
         </div>
-        {isExpired ? (
-          <span className="shrink-0 px-4 py-2 text-xs font-bold text-slate-400 bg-slate-100 rounded-xl">
-            Expired
-          </span>
-        ) : (
-          <a
-            href={job.link}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="shrink-0 px-5 py-2.5 text-xs font-extrabold text-white bg-blue-600 hover:bg-blue-700 active:scale-95 rounded-xl shadow-md transition flex items-center gap-1.5"
-          >
-            <span>Apply Now</span>
-            <span className="text-sm">↗</span>
-          </a>
-        )}
+        <div className="flex items-center gap-2 shrink-0">
+          <JobShareButton
+            jobTitle={displayTitle}
+            jobPath={canonicalPath}
+            company={job.sourceLabel}
+            variant="icon"
+          />
+          {isExpired ? (
+            <span className="px-4 py-2 text-xs font-bold text-slate-400 bg-slate-100 rounded-xl">
+              Expired
+            </span>
+          ) : (
+            <a
+              href={job.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-4 py-2 text-xs font-extrabold text-white bg-blue-600 hover:bg-blue-700 active:scale-95 rounded-xl shadow-md transition flex items-center gap-1.5"
+            >
+              <span>Apply</span>
+              <span className="text-sm">↗</span>
+            </a>
+          )}
+        </div>
       </div>
     </div>
   );

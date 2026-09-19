@@ -6,6 +6,7 @@ import { getCompanyPath } from "../lib/companies";
 import { applyJobFiltersToParams, JobFilterState } from "../lib/jobFilters";
 import { JOB_CATEGORIES, getJobCategoryPath } from "../lib/jobCategories";
 import { getJobPath } from "../lib/jobUrls";
+import JobShareButton from "./JobShareButton";
 
 const COUNTRY_OPTIONS = [
   "US","UK","DE","FR","NL","IE","ES","IT",
@@ -467,10 +468,18 @@ export default function SharedJobsFeed({
                         <span>🛡️ Verified Remote Employer</span>
                       </div>
 
-                      <Link href={getJobPath(job)} className="btn-job-cta w-full sm:w-auto justify-center text-center">
-                        <span style={{ color: "#ffffff" }}>View Job & Apply</span>
-                        <span className="cta-arrow" style={{ fontSize: "1.05rem", fontWeight: 900, color: "#ffffff" }}>→</span>
-                      </Link>
+                      <div className="flex items-center gap-2 w-full sm:w-auto">
+                        <JobShareButton
+                          jobTitle={job.originalTitle}
+                          jobPath={getJobPath(job)}
+                          company={job.sourceLabel}
+                          variant="card"
+                        />
+                        <Link href={getJobPath(job)} className="btn-job-cta flex-1 sm:flex-initial justify-center text-center">
+                          <span style={{ color: "#ffffff" }}>View Job & Apply</span>
+                          <span className="cta-arrow" style={{ fontSize: "1.05rem", fontWeight: 900, color: "#ffffff" }}>→</span>
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 </div>
