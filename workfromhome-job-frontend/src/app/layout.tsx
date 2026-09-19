@@ -131,7 +131,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <head>
         <meta
           name="impact-site-verification"
-          value="33e16baa-391c-42e1-b058-06e8dfa45bc6"
           content="33e16baa-391c-42e1-b058-06e8dfa45bc6"
         />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
