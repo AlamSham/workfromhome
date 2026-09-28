@@ -139,6 +139,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800;900&display=swap"
           rel="stylesheet"
         />
+        {/* ── Google AdSense Official Script ── */}
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4518508932731576"
+          crossOrigin="anonymous"
+        />
       </head>
       <body className="flex min-h-full flex-col w-full max-w-full overflow-x-hidden">
         {/* ── Navbar ── */}
