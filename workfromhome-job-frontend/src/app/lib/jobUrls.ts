@@ -32,13 +32,22 @@ export function getJobPath(value: {
 }
 
 export function extractJobId(param: string): string {
-  const raw = String(param || "").trim();
+  // Strip query string, hash, trailing slashes/hyphens/spaces
+  const raw = String(param || "")
+    .split("?")[0]
+    .split("#")[0]
+    .replace(/[\/\s-]+$/, "")
+    .trim();
 
   // 1. Full 24-char ObjectId (legacy links backwards compatibility)
-  const fullMatch = raw.match(/([a-f0-9]{24})$/i);
+  const fullMatch = raw.match(/([a-f0-9]{24})(?:[/-]|$)/i);
   if (fullMatch?.[1]) return fullMatch[1];
 
-  // 2. Short 6-char hex ID at the end of the URL slug
+  // 2. Short 6-char hex ID preceded by a hyphen
+  const shortHyphenMatch = raw.match(/-([a-f0-9]{6})(?:[/-]|$)/i);
+  if (shortHyphenMatch?.[1]) return shortHyphenMatch[1];
+
+  // 3. Short 6-char hex ID at the end of the URL slug
   const shortMatch = raw.match(/([a-f0-9]{6})$/i);
   if (shortMatch?.[1]) return shortMatch[1];
 

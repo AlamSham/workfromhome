@@ -341,22 +341,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             </Script>
           </>
         )}
-        {/* ── Push Notification / Monetization Service Worker ── */}
-        <Script id="register-sw" strategy="afterInteractive">
-          {`
-            if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
-              window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/sw.js').catch(function() {});
-              });
-            }
-          `}
-        </Script>
-        {/* ── Monetag MultiTag All-in-One ── */}
-        <Script
-          src="https://quge5.com/88/tag.min.js"
-          data-zone="278943"
-          strategy="afterInteractive"
-        />
       </body>
     </html>
   );

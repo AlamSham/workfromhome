@@ -218,6 +218,62 @@ function getJobRelevanceScore({ title = '', summary = '', link = '', category = 
   return score;
 }
 
+const HIGH_TRAFFIC_PATTERNS = [
+  // Tier 1: Massive search volume WFH queries (Customer Support, Data Entry, Virtual Assistant)
+  {
+    regex: /\b(customer support|customer service|chat support|virtual assistant|data entry|typing|transcription|help\s?desk|technical support)\b/i,
+    weight: 6
+  },
+  // Tier 2: High-demand Tech & Engineering roles (Software, Web, Mobile, Cloud)
+  {
+    regex: /\b(software engineer|frontend|backend|full\s?stack|web developer|react|next\.js|node|python|javascript|typescript|devops|cloud engineer|qa engineer|tester|mobile developer|flutter|ios developer|android developer)\b/i,
+    weight: 5
+  },
+  // Tier 3: High search volume Business, Marketing, Content & Design
+  {
+    regex: /\b(data analyst|business analyst|digital marketing|seo specialist|seo|content writer|copywriter|social media|growth marketer|sales representative|sdr|bdr|account executive|ui\/ux|product designer|graphic designer|product manager)\b/i,
+    weight: 4
+  },
+  // Tier 4: High CTR traffic magnets
+  {
+    regex: /\b(no experience|entry level|fresher|beginner|immediate hire|urgently hiring|high paying|work from home|wfh|fully remote)\b/i,
+    weight: 4
+  },
+  // Tier 5: Reputable high-traffic tech/remote companies
+  {
+    regex: /\b(google|amazon|microsoft|apple|meta|netflix|spotify|shopify|gitlab|automattic|stripe|airbnb|uber|canva|notion)\b/i,
+    weight: 3
+  }
+];
+
+const LOW_TRAFFIC_PATTERNS = [
+  /\b(cmc|oncology|pathology|biopharma|clinical trial|actuary|underwriter|procurement logistics|tax compliance|regulatory affairs)\b/i
+];
+
+function getTrafficIntentScore(item = {}) {
+  const title = String(item.title || '');
+  const summary = String(item.summary || item.content || '');
+  const combined = `${title} ${summary}`;
+
+  let score = 0;
+
+  for (const pattern of HIGH_TRAFFIC_PATTERNS) {
+    if (pattern.regex.test(title)) {
+      score += pattern.weight * 1.5;
+    } else if (pattern.regex.test(combined)) {
+      score += pattern.weight;
+    }
+  }
+
+  for (const pattern of LOW_TRAFFIC_PATTERNS) {
+    if (pattern.test(title)) {
+      score -= 4;
+    }
+  }
+
+  return Math.round(score);
+}
+
 function isLikelyJobPosting(item, minScore = 2) {
   const titleText = String(item.title || '').toLowerCase();
   const fullText = `${item.title || ''} ${item.summary || ''}`.toLowerCase();
@@ -244,10 +300,12 @@ function isLikelyJobPosting(item, minScore = 2) {
   }
 
   if (TRUSTED_JOB_SOURCES.has(source)) {
-    const hasTitle = titleText.length >= 4;
+    const hasTitle = titleText.length >= 5;
     const hasHttpLink = /^https?:\/\//.test(linkText);
     const appearsRemote = Boolean(item.isRemote) || item.category === 'wfh' || isLikelyWorkFromHome(item);
-    return hasTitle && hasHttpLink && appearsRemote;
+    const trafficScore = getTrafficIntentScore(item);
+    // Discard negative-traffic or hyper-niche jobs
+    return hasTitle && hasHttpLink && appearsRemote && trafficScore >= 0;
   }
 
   const hasHiringIntent = [
@@ -422,5 +480,6 @@ module.exports = {
   fetchWorkFromHomeJobs,
   isLikelyWorkFromHome,
   getJobRelevanceScore,
+  getTrafficIntentScore,
   isLikelyJobPosting
 };

@@ -4,6 +4,7 @@ const { fetchCandidateJobs } = require('./jobSourceService');
 const {
   isLikelyWorkFromHome,
   getJobRelevanceScore,
+  getTrafficIntentScore,
   isLikelyJobPosting
 } = require('./rssService');
 const { extractJobSignals } = require('../utils/jobSignals');
@@ -134,10 +135,37 @@ function computeExpiresAt(publishedAt) {
 }
 
 async function ingestJobs() {
+  const now = new Date();
+  const startOfDay = new Date(now);
+  startOfDay.setHours(0, 0, 0, 0);
+
+  // 1. Hard Daily Limit Check: Ensure we strictly never exceed daily limit (e.g. 10-15 jobs/day)
+  const jobsCreatedToday = await Job.countDocuments({
+    createdAt: { $gte: startOfDay }
+  });
+
+  const dailyMaxJobs = Math.max(1, env.ingestDailyMaxJobs || 15);
+  if (jobsCreatedToday >= dailyMaxJobs) {
+    console.log(
+      `[Ingestion] Daily cap reached (${jobsCreatedToday}/${dailyMaxJobs} jobs added today). Skipping run to maintain slow, high-quality pacing.`
+    );
+    return {
+      skippedDailyCap: true,
+      jobsCreatedToday,
+      dailyMaxJobs,
+      message: `Daily limit of ${dailyMaxJobs} jobs reached (${jobsCreatedToday} added today). Will resume tomorrow.`
+    };
+  }
+
+  const remainingDailyQuota = Math.max(0, dailyMaxJobs - jobsCreatedToday);
+  const maxJobsPerRun = Math.min(Math.max(1, env.ingestMaxJobsPerRun), remainingDailyQuota);
+
+  console.log(
+    `[Ingestion] Starting run: ${jobsCreatedToday}/${dailyMaxJobs} jobs added today. Target for this run: ${maxJobsPerRun} jobs.`
+  );
+
   const sourceBundle = await fetchCandidateJobs();
   const allItems = sourceBundle.items || [];
-  const now = new Date();
-  const maxJobsPerRun = Math.max(1, env.ingestMaxJobsPerRun);
   const freshWindowHours = Math.max(1, env.ingestFreshHours);
   const trustedFreshHours = Math.max(freshWindowHours, env.ingestTrustedFreshHours);
   const freshnessCutoff = new Date(now.getTime() - freshWindowHours * 60 * 60 * 1000);
@@ -147,6 +175,9 @@ async function ingestJobs() {
   const result = {
     fetched: allItems.length,
     sourceStats: sourceBundle.sourceStats || {},
+    jobsCreatedToday,
+    dailyMaxJobs,
+    remainingDailyQuota,
     fresh: 0,
     relevant: 0,
     selectedForRun: 0,
@@ -174,12 +205,16 @@ async function ingestJobs() {
   const freshItems = allItems
     .map((item) => {
       const publishedAt = item.publishedAt ? new Date(item.publishedAt) : null;
+      const relevanceScore = getJobRelevanceScore(item);
+      const trafficScore = getTrafficIntentScore(item);
       return {
         ...item,
         publishedAt,
         isTrustedSource: TRUSTED_SOURCES.has(String(item.source || '').toLowerCase()),
         isLikelyWfh: item.category === 'wfh' || isLikelyWorkFromHome(item),
-        relevanceScore: getJobRelevanceScore(item)
+        relevanceScore,
+        trafficScore,
+        overallTrafficScore: trafficScore * 2 + relevanceScore
       };
     })
     .filter((item) => {
@@ -189,12 +224,17 @@ async function ingestJobs() {
 
       const cutoff = item.isTrustedSource ? trustedFreshnessCutoff : freshnessCutoff;
       return item.publishedAt >= cutoff;
-    })
-    .sort((a, b) => b.publishedAt.getTime() - a.publishedAt.getTime());
+    });
 
-  const relevantItems = freshItems.filter((item) =>
-    isLikelyJobPosting(item, env.ingestMinJobRelevanceScore)
-  );
+  // Filter and sort by highest traffic intent & demand first
+  const relevantItems = freshItems
+    .filter((item) => isLikelyJobPosting(item, env.ingestMinJobRelevanceScore))
+    .sort((a, b) => {
+      if (b.overallTrafficScore !== a.overallTrafficScore) {
+        return b.overallTrafficScore - a.overallTrafficScore;
+      }
+      return (b.publishedAt?.getTime() || 0) - (a.publishedAt?.getTime() || 0);
+    });
 
   result.fresh = freshItems.length;
   result.relevant = relevantItems.length;

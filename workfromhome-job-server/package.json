@@ -14,7 +14,8 @@
     "optimize-titles": "node src/utils/optimizeExistingTitles.js",
     "index-blogs": "node src/utils/indexAllBlogs.js",
     "index-existing": "node src/utils/indexExistingJobs.js",
-    "rebalance-countries": "node src/utils/rebalanceJobCountries.js"
+    "rebalance-countries": "node src/utils/rebalanceJobCountries.js",
+    "cleanup": "node src/utils/cleanupOldJobs.js"
   },
   "keywords": [
     "nodejs",

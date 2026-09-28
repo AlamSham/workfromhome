@@ -1,5 +1,6 @@
 const crypto = require('crypto');
 const env = require('../config/env');
+const { buildAbsoluteJobUrl } = require('../utils/jobUrl');
 
 const GOOGLE_KEY_JSON = process.env.GOOGLE_SERVICE_ACCOUNT_KEY || '';
 
@@ -125,22 +126,7 @@ async function submitToGoogleIndexing(newJobs) {
     const accessToken = await getAccessToken();
     
     const SITE_URL = env.siteUrl || 'https://remotejobdesk.com';
-    const urls = newJobs.map((job) => {
-      const cleanTitle = String(job.seo?.title || job.originalTitle || 'remote-job')
-        .toLowerCase()
-        .trim()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-+|-+$/g, '');
-      const company = String(job.sourceLabel || '')
-        .toLowerCase()
-        .trim()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-+|-+$/g, '');
-      const idStr = String(job._id || '');
-      const shortId = idStr.slice(-6) || idStr;
-      const slug = company ? `${cleanTitle}-${company}-${shortId}` : `${cleanTitle}-${shortId}`;
-      return `${SITE_URL}/jobs/${slug}`;
-    });
+    const urls = newJobs.map((job) => buildAbsoluteJobUrl(job, SITE_URL));
 
     const extraUrls = [
       `${SITE_URL}/`,

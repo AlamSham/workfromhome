@@ -12,25 +12,13 @@
 
 const env = require('../config/env');
 
+const { buildAbsoluteJobUrl } = require('../utils/jobUrl');
 const INDEXNOW_API_KEY = process.env.INDEXNOW_API_KEY || '';
 const SITE_URL = env.siteUrl || 'https://remotejobdesk.com';
 const INDEXNOW_ENDPOINT = 'https://api.indexnow.org/indexnow';
 
-function slugifyText(text) {
-  return String(text || '')
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-}
-
 function getJobCanonicalUrl(job, siteUrl) {
-  const cleanTitle = slugifyText(job.seo?.title || job.originalTitle || 'remote-job');
-  const company = slugifyText(job.sourceLabel || '');
-  const idStr = String(job._id || '');
-  const shortId = idStr.slice(-6) || idStr;
-  const slug = company ? `${cleanTitle}-${company}-${shortId}` : `${cleanTitle}-${shortId}`;
-  return `${siteUrl}/jobs/${slug}`;
+  return buildAbsoluteJobUrl(job, siteUrl);
 }
 
 /**

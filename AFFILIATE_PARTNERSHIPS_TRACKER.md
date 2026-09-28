@@ -65,8 +65,8 @@
 ## 5. Monetag Ad Network (Display & Pop Ads)
 
 - **Official Portal:** [https://monetag.com/](https://monetag.com/)
-- **Current Status:** 🟢 **Active & Live**
-- **Type:** Impression & Click Ads running on website traffic.
+- **Current Status:** 🔴 **Removed (Cleaned up for Google AdSense Approval)**
+- **Note:** Removed to ensure 100% clean user navigation, zero popups/redirects, and fast Google AdSense approval.
 
 ---
 

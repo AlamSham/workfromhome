@@ -273,17 +273,36 @@ async function getJobById(req, res) {
     job = await Job.findById(rawId).lean();
   }
 
-  // 2. Short 6-character ID lookup (e.g. at the end of the URL slug)
+  // 2. Short 6-character ID lookup
   if (!job) {
-    const shortMatch = rawId.match(/([a-f0-9]{6})$/i);
+    const shortMatch = rawId.match(/([a-f0-9]{6})$/i) || rawId.match(/-([a-f0-9]{6})(?:[/-]|$)/i);
     if (shortMatch) {
-      job = await Job.findOne({ shortId: shortMatch[1].toLowerCase() }).lean();
+      const hex = shortMatch[1].toLowerCase();
+      job = await Job.findOne({
+        $or: [
+          { shortId: hex },
+          { dedupeKey: new RegExp(hex + '$', 'i') }
+        ]
+      }).lean();
     }
   }
 
-  // 3. SEO Slug lookup
+  // 3. Exact SEO Slug lookup
   if (!job) {
     job = await Job.findOne({ 'seo.slug': rawId }).lean();
+  }
+
+  // 4. Fallback: Search with stripped slug (removing trailing ID/hash or company)
+  if (!job) {
+    const strippedSlug = rawId.replace(/[-_][a-f0-9]{6,24}$/i, '');
+    if (strippedSlug && strippedSlug !== rawId) {
+      job = await Job.findOne({
+        $or: [
+          { 'seo.slug': strippedSlug },
+          { 'seo.slug': new RegExp(`^${strippedSlug}`, 'i') }
+        ]
+      }).sort({ publishedAt: -1 }).lean();
+    }
   }
 
   if (!job) {

@@ -20,7 +20,7 @@ const env = {
     .map((origin) => origin.trim())
     .filter(Boolean),
   mongoUri: process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/workfromhome_jobs',
-  cronSchedule: process.env.CRON_SCHEDULE || '0 */2 * * *',
+  cronSchedule: process.env.CRON_SCHEDULE || '0 */8 * * *',
   cronTimezone: process.env.CRON_TIMEZONE || 'Asia/Kolkata',
   targetCountries: (
     process.env.TARGET_COUNTRIES || 'US,UK,DE,FR,NL,IE,ES,IT,SE,CH,NO,DK,FI,AT,BE,PT,PL,CZ,HU,RO,GR,SG'
@@ -29,7 +29,8 @@ const env = {
     .map((country) => country.trim().toUpperCase())
     .filter(Boolean),
   rssRecencyDays: Number(process.env.RSS_RECENCY_DAYS) || 7,
-  ingestMaxJobsPerRun: Number(process.env.INGEST_MAX_JOBS_PER_RUN) || 10,
+  ingestDailyMaxJobs: Number(process.env.INGEST_DAILY_MAX_JOBS) || 15,
+  ingestMaxJobsPerRun: Number(process.env.INGEST_MAX_JOBS_PER_RUN) || 5,
   ingestFreshHours: Number(process.env.INGEST_FRESH_HOURS) || 72,
   ingestTrustedFreshHours: Number(process.env.INGEST_TRUSTED_FRESH_HOURS) || 336,
   ingestWfhRatio: Number(process.env.INGEST_WFH_RATIO) || 0.8,
@@ -52,7 +53,7 @@ const env = {
   sourceFetchTimeoutMs: Number(process.env.SOURCE_FETCH_TIMEOUT_MS) || 15000,
   arbeitnowPages: Number(process.env.ARBEITNOW_PAGES) || 2,
   jobicyCount: Number(process.env.JOBICY_COUNT) || 100,
-  jobTtlDays: Number(process.env.JOB_TTL_DAYS) || 15,
+  jobTtlDays: Number(process.env.JOB_TTL_DAYS) || 30,
   activeJobDays: Number(process.env.ACTIVE_JOB_DAYS) || 30,
   aiTimeoutMs: Number(process.env.AI_TIMEOUT_MS) || 15000,
   maxSearchChars: Number(process.env.MAX_SEARCH_CHARS) || 80,

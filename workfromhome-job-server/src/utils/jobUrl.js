@@ -1,27 +1,38 @@
-const slugify = require('slugify');
-
-function buildJobPath(job = {}) {
-  const id = String(job._id || '').trim();
-  if (!id) {
-    return '/';
-  }
-
-  const slugCandidate = job?.seo?.slug || job?.originalTitle || 'remote-job';
-  const slug = slugify(String(slugCandidate || 'remote-job'), {
-    lower: true,
-    strict: true,
-    trim: true
-  }).slice(0, 80) || 'remote-job';
-
-  return `/jobs/${slug}-${id}`;
+function slugify(value) {
+  return String(value || '')
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 65);
 }
 
-function buildAbsoluteJobUrl(job = {}, siteUrl = '') {
-  const normalizedSiteUrl = String(siteUrl || '').replace(/\/+$/, '');
+function getJobSlug(job) {
+  const seoSlug = String(job?.seo?.slug || '').trim();
+  if (seoSlug) return seoSlug;
+  return slugify(String(job?.originalTitle || 'remote-job')) || 'remote-job';
+}
+
+function buildJobPath(job = {}) {
+  const titleSlug = getJobSlug(job);
+  const companySlug = slugify(job?.sourceLabel || '');
+  const idStr = String(job?._id || '');
+  const shortId = (job.shortId || idStr.slice(-6) || '').toLowerCase();
+
+  if (companySlug && !titleSlug.includes(companySlug)) {
+    return `/jobs/${titleSlug}-${companySlug}-${shortId}`;
+  }
+  return `/jobs/${titleSlug}-${shortId}`;
+}
+
+function buildAbsoluteJobUrl(job = {}, siteUrl = 'https://remotejobdesk.com') {
+  const normalizedSiteUrl = String(siteUrl || 'https://remotejobdesk.com').replace(/\/+$/, '');
   return `${normalizedSiteUrl}${buildJobPath(job)}`;
 }
 
 module.exports = {
+  slugify,
+  getJobSlug,
   buildJobPath,
   buildAbsoluteJobUrl
 };
