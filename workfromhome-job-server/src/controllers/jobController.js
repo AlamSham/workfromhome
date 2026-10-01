@@ -83,6 +83,7 @@ async function listJobs(req, res) {
     Job.countDocuments(filter)
   ]);
 
+  res.set("Cache-Control", "public, s-maxage=300, stale-while-revalidate=600");
   res.json({
     success: true,
     data: jobs.map(attachSignals),
@@ -312,6 +313,7 @@ async function getJobById(req, res) {
     });
   }
 
+  res.set("Cache-Control", "public, s-maxage=3600, stale-while-revalidate=86400");
   return res.json({
     success: true,
     data: attachSignals(job)

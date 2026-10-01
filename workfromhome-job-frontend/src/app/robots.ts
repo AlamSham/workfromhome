@@ -54,17 +54,13 @@ export default function robots(): MetadataRoute.Robots {
           "/*?minSalary=*",
         ],
       },
-      // AI Search & LLM Engines (SearchGPT, Claude, Perplexity, Gemini, Grok, DeepSeek)
+      // AI Search Engines (Traffic & Citation providers — SearchGPT, Perplexity, Gemini)
       {
         userAgent: [
-          "GPTBot",
+          "OAI-SearchBot",
           "ChatGPT-User",
-          "ClaudeBot",
-          "anthropic-ai",
           "PerplexityBot",
           "Google-Extended",
-          "cohere-ai",
-          "Meta-ExternalAgent",
         ],
         allow: ["/", "/jobs/", "/blog/", "/llms.txt", "/llms-full.txt", "/rss.xml"],
         disallow: [
@@ -75,6 +71,24 @@ export default function robots(): MetadataRoute.Robots {
           "/*?experience=*",
           "/*?minSalary=*",
         ],
+      },
+      // Block aggressive AI training scrapers & data miners (saves Cloud Run CPU/bill)
+      {
+        userAgent: [
+          "GPTBot",
+          "ClaudeBot",
+          "anthropic-ai",
+          "Meta-ExternalAgent",
+          "Bytespider",
+          "CCBot",
+          "PetalBot",
+          "MJ12bot",
+          "DotBot",
+          "Amazonbot",
+          "cohere-ai",
+          "Diffbot",
+        ],
+        disallow: "/",
       },
       // All other crawlers
       {

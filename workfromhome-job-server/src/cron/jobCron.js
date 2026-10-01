@@ -67,13 +67,17 @@ function startJobCron() {
 
   console.log(`[Cron] Alert digest scheduled with pattern "${env.alertDigestCronSchedule}" (${env.cronTimezone})`);
 
-  setTimeout(() => {
-    executeIngestion('startup').catch(() => null);
-  }, 3000);
+  if (process.env.RUN_INGEST_ON_STARTUP === "true") {
+    setTimeout(() => {
+      executeIngestion("startup").catch(() => null);
+    }, 3000);
 
-  setTimeout(() => {
-    executeAlertDigests('startup').catch(() => null);
-  }, 5000);
+    setTimeout(() => {
+      executeAlertDigests("startup").catch(() => null);
+    }, 5000);
+  } else {
+    console.log("[Cron] Cold-start ingestion skipped (saves Cloud Run CPU). Running on scheduled pattern: " + env.cronSchedule);
+  }
 
   return {
     ingestTask,
